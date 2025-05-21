@@ -106,6 +106,7 @@
     "replace": "0.3.0",
     "stylelint": "7.10.1",
     "stylelint-config-standard": "16.0.0",
+    "ts-migrate": "^0.1.35",
     "uglify-js": "mishoo/UglifyJS2#9e2290b29c86caf847e291cf120ab23bea40544c",
     "watchify": "3.9.0"
   },
