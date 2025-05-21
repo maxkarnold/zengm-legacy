@@ -4,7 +4,7 @@ const fs = require("fs");
 const CleanCSS = require('clean-css');
 const replace = require("replace");
 const fse = require('fs-extra');
-const sass = require('node-sass');
+const sass = require('sass');
 
 const reset = () => {
     console.log('Resetting "build" directory...');

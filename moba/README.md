@@ -1,6 +1,6 @@
 # MOBA GM
 
-Running this requires [Yarn 1](https://classic.yarnpkg.com/) and [Node.js](https://nodejs.org/).
+Running this requires [Yarn 1](https://classic.yarnpkg.com/), [Python](https://www.python.org/) and [Node.js](https://nodejs.org/).
 
 Install:
 
