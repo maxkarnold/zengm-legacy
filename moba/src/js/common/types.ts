@@ -333,7 +333,7 @@ export type GameAttribute = {
   value: unknown; // or any, see below
 };
 
-export type GameAttributes = {[K in GameAttributeKey]?: unknown};
+export type GameAttributes = {[K in GameAttributeKey]?: any};
 
 export type GameProcessed = {
     gid: number,
