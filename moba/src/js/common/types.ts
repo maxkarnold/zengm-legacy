@@ -1,5 +1,3 @@
-// @flow
-
 export type AchievementKey = (
     'participation' |
     'eating' |
@@ -255,7 +253,7 @@ export type Env = {
     useSharedWorker: boolean,
 
     // These are just legacy variables sent to the worker to be stored in idb.meta.attributes
-    fromLocalStorage: {[key: string]: ?string},
+    fromLocalStorage: {[key: string]: string | null | undefined},
 };
 
 export type Game = {
@@ -331,11 +329,11 @@ export type GameAttributeKey = (
 );
 
 export type GameAttribute = {
-    key: GameAttributeKey,
-    value: any,
+  key: GameAttributeKey;
+  value: unknown; // or any, see below
 };
 
-export type GameAttributes = {[key: GameAttributeKey]: any};
+export type GameAttributes = {[K in GameAttributeKey]?: unknown};
 
 export type GameProcessed = {
     gid: number,
@@ -357,7 +355,7 @@ export type GameProcessedCompleted = {
     won: boolean,
 };
 
-export type GetOutput = {[key: string]: ?(number | string)};
+export type GetOutput = {[key: string]: string | number};
 
 export type League = {
     lid: number,

@@ -1,5 +1,3 @@
-// @flow
-
 // Polyfills for Safari
 import objectEntries from 'object.entries';
 import objectValues from 'object.values';

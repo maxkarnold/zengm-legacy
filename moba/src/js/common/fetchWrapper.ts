@@ -12,7 +12,7 @@ const fetchWrapper = async ({
     headers?: {[key: string]: string},
     data: Object,
     credentials?: 'include',
-}): any => {
+}): Promise<any> => {
     let body;
     if ((typeof FormData !== 'undefined' && data instanceof FormData) || (typeof URLSearchParams !== 'undefined' && data instanceof URLSearchParams)) {
         body = data;

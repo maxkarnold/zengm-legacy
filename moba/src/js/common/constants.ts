@@ -1,4 +1,3 @@
-// @flow
 /*
 function PHASE() {
 
@@ -65,7 +64,7 @@ const COMPOSITE_WEIGHTS = {
     shotcalling: {
         ratings: ['hgt','stre', 'spd', 'jmp','endu', 'ins','fg'],
         weights: [1,1,1,1,4, 1, 1],
-    },	
+    },
     teamPlayer: {
         ratings: ['hgt','stre', 'spd', 'jmp'],
         weights: [1,1, 1, 2],
@@ -81,7 +80,7 @@ const COMPOSITE_WEIGHTS = {
     monstersKillingJ: {
         ratings: ['hgt', 'ins', 'fg', 'stre', 'spd','drb','blk','pss','reb'],
         weights: [1, 1, 1,1,1,4,2,1,1],
-    },	
+    },
     ganking: {
         ratings: ['hgt', 'stre', 'spd', 'jmp','endu','ins', 'ft', 'fg','tp','blk','drb'],
         weights: [1, 1, 1, 3,1,3,  1,12,1,1,1],
@@ -93,19 +92,19 @@ const COMPOSITE_WEIGHTS = {
     toweringAttack: {
         ratings: ['hgt', 'stre', 'spd', 'dnk','ft','tp', 'blk', 'stl'],
         weights: [1,1,1,6, 2, 2,2,2],
-    },	
+    },
     toweringDefend: {
         ratings: ['hgt', 'stre', 'spd', 'dnk','ft','tp', 'blk', 'stl'],
         weights: [1,1,1,6, 2, 2,2,2],
-    },		
+    },
     structureAttack: {
         ratings: ['hgt', 'stre', 'spd','fg','blk'],
         weights: [1,1,1,1, 4],
-    },		
+    },
     structureDefend: {
         ratings: ['blk', 'hgt', 'stre', 'jmp'],
         weights: [1, .25, .25, .25],
-    },		
+    },
     championKilling: {
         ratings: ['hgt', 'stre', 'spd', 'ins','ft', 'fg','tp', 'blk', 'drb'],
         weights:  [1,1,1,1, 3, 1, 1, 1, 1],
@@ -117,7 +116,7 @@ const COMPOSITE_WEIGHTS = {
     minionControl: {
         ratings: ['stl', 'blk', 'dnk','spd','pss','reb'],
         weights: [2, .25, .25,.25,.25,.25],
-    },	
+    },
     aggression: {
         ratings: ['fg', 'ins', 'tp'],
         weights:  [2, 1, 1],

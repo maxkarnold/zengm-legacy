@@ -1,8 +1,6 @@
-// @flow
-
 import orderBy from 'lodash.orderby';
-import {PLAYER, g} from '../common';
-import type {GameProcessed, GameProcessedCompleted, Pick, TeamBasic} from '../common/types';
+import {PLAYER, g} from '.';
+import type {GameProcessed, GameProcessedCompleted, Pick, TeamBasic} from './types';
 
 /**
  * Validate that a given abbreviation corresponds to a team.
