@@ -1,5 +1,3 @@
-// @flow
-
 const fetchWrapper = async ({
     url,
     method,
@@ -9,7 +7,7 @@ const fetchWrapper = async ({
 }: {
     url: string,
     method: 'GET' | 'POST',
-    headers?: {[key: string]: string},
+    headers?: {[key: string]: string} | Headers,
     data: Object,
     credentials?: 'include',
 }): Promise<any> => {
@@ -29,7 +27,7 @@ const fetchWrapper = async ({
         body = undefined;
     }
 
-    if (headers !== undefined) {
+    if (headers !== undefined && !(headers instanceof Headers)) {
         headers = new Headers(headers);
     }
 

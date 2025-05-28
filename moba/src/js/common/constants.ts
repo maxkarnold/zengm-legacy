@@ -3,8 +3,6 @@ function PHASE() {
 
 	var PHASE;
 
-	//console.log(g.gameType);
-	//if g.gameType
 	PHASE = {
 		FANTASY_DRAFT: -1,
 		PRESEASON: 0,
@@ -41,7 +39,7 @@ const PLAYER = {
 
 
 const PHASE_TEXT = {
- //   '-1': 'fantasy draft',
+    //'-1': 'fantasy draft',
     //'0': 'preseason',
     //'1': 'regular season',
     //'2': 'regular season',

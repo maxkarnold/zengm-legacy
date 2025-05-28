@@ -32,14 +32,14 @@ function validateAbbrev(abbrev: string): [number, string] {
  * @return {Array} Array with two elements, the validated team ID and the corresponding abbreviation.
  */
 function validateTid(tid: number | string): [number, string] {
-    tid = parseInt(tid, 10);
+    const parsedTid = typeof tid === 'string' ? parseInt(tid, 10) : tid;
 
-    if (tid < 0 || tid >= g.teamAbbrevsCache.length || isNaN(tid)) {
-        tid = g.userTid;
+    if (parsedTid < 0 || parsedTid >= g.teamAbbrevsCache.length || isNaN(parsedTid)) {
+        return [g.userTid, g.teamAbbrevsCache[g.userTid]];
     }
-    const abbrev = g.teamAbbrevsCache[tid];
+    const abbrev = g.teamAbbrevsCache[parsedTid];
 
-    return [tid, abbrev];
+    return [parsedTid, abbrev];
 }
 
 /**
@@ -52,16 +52,16 @@ function validateTid(tid: number | string): [number, string] {
  * @return {string} Abbreviation
  */
 function getAbbrev(tid: number | string): string {
-    tid = parseInt(tid, 10);
+    const parsedTid = typeof tid === 'string' ? parseInt(tid, 10) : tid;
 
-    if (tid === PLAYER.FREE_AGENT) {
+    if (parsedTid === PLAYER.FREE_AGENT) {
         return "FA";
     }
-    if (tid < 0 || isNaN(tid)) {
+    if (parsedTid < 0 || isNaN(parsedTid)) {
         // Draft prospect or retired
         return "";
     }
-    const result = validateTid(tid);
+    const result = validateTid(parsedTid);
     const abbrev = result[1];
 
     return abbrev;
@@ -81,13 +81,13 @@ function validateSeason(season?: number | string): number {
         return g.season;
     }
 
-    season = parseInt(season, 10);
+    const parsedSeason = typeof season === 'string' ? parseInt(season, 10) : season;
 
-    if (isNaN(season)) {
+    if (isNaN(parsedSeason)) {
         return g.season;
     }
 
-    return season;
+    return parsedSeason;
 }
 
 /**
@@ -750,160 +750,134 @@ function getTeamsDefault(): any[] {
 1 from TR
  Turkey */
    function getTeamsWorlds2019() {
-        var teams;
+        return [
+            // NA 3 Spots
+            {tid: 0, cid: 0, did: 0, region: "Empire Gaming", name: "Empire", abbrev: "EGA", pop: 10, country: "NA", imgURLCountry: "/img/flags/flags/48/UnitedStates.png"},
+            {tid: 1, cid: 0, did: 0, region: "Sky10", name: "Sky10", abbrev: "S10", pop: 9, country: "NA", imgURLCountry: "/img/flags/flags/48/UnitedStates.png"},
+            {tid: 2, cid: 0, did: 0, region: "Young Warrior Gaming", name: "Young Warrior", abbrev: "YWG", pop: 8, country: "NA", imgURLCountry: "/img/flags/flags/48/UnitedStates.png"},
+            {tid: 3, cid: 0, did: 0, region: "eLite5", name: "eLite5", abbrev: "EL5", pop: 7, country: "NA", imgURLCountry: "/img/flags/flags/48/UnitedStates.png"},
+            {tid: 4, cid: 0, did: 0, region: "Proper Logic Gaming", name: "Proper Logic", abbrev: "PLG", pop: 6, country: "NA", imgURLCountry: "/img/flags/flags/48/UnitedStates.png"},
+            {tid: 5, cid: 0, did: 0, region: "Faith Gaming", name: "Faith", abbrev: "FG", pop: 5, country: "NA", imgURLCountry: "/img/flags/flags/48/UnitedStates.png"},
+            {tid: 6, cid: 0, did: 0, region: "Team Unity", name: "Unity", abbrev: "TUN", pop: 4, country: "NA", imgURLCountry: "/img/flags/flags/48/UnitedStates.png"},
+            {tid: 7, cid: 0, did: 0, region: "Xtatic", name: "Xtatic", abbrev: "XTC", pop: 3, country: "NA", imgURLCountry: "/img/flags/flags/48/UnitedStates.png"},
+            {tid: 8, cid: 0, did: 0, region: "Team Repulse", name: "Repulse", abbrev: "TRP", pop: 2, country: "NA", imgURLCountry: "/img/flags/flags/48/UnitedStates.png"},
+            {tid: 9, cid: 0, did: 0, region: "Legendary eSports", name: "Legendary", abbrev: "LGD", pop: 1, country: "NA", imgURLCountry: "/img/flags/flags/48/UnitedStates.png"},
 
-        teams = [
-        {tid: 0, cid: 0, did: 0, region: "Empire Gaming", name: "Empire", abbrev: "EGA", pop: 57, country: "NA",imgURLCountry : "/img/flags/flags/48/UnitedStates.png"},
-         {tid: 1, cid: 0, did: 0, region: "Proper Logic Gaming", name: "Proper Logic", abbrev: "PLG", pop: 52, country: "NA",imgURLCountry : "/img/flags/flags/48/UnitedStates.png"},
-         {tid: 2, cid: 0, did: 0, region: "Team Repulse", name: "Repulse", abbrev: "TRP", pop: 47, country: "NA",imgURLCountry : "/img/flags/flags/48/UnitedStates.png"},
-         {tid: 3, cid: 0, did: 0, region: "Fury Gaming", name: "Fury", abbrev: "FURY", pop: 42, country: "NA",imgURLCountry : "/img/flags/flags/48/UnitedStates.png"},
-         {tid: 4, cid: 0, did: 0, region: "Hooligan Esports", name: "Hooligan", abbrev: "HGE", pop: 37, country: "NA",imgURLCountry : "/img/flags/flags/48/UnitedStates.png"},
-         {tid: 5, cid: 0, did: 0, region: "Random 5", name: "Random 5", abbrev: "R5", pop: 32, country: "NA",imgURLCountry : "/img/flags/flags/48/UnitedStates.png"},
-         {tid: 6, cid: 0, did: 0, region: "Made in Heaven", name: "Made in Heaven", abbrev: "MiH", pop: 27, country: "NA",imgURLCountry : "/img/flags/flags/48/UnitedStates.png"},
-         {tid: 7, cid: 0, did: 0, region: "KS Gaming", name: "KS", abbrev: "KS", pop: 22, country: "NA",imgURLCountry : "/img/flags/flags/48/UnitedStates.png"},
-         {tid: 8, cid: 0, did: 0, region: "Death Cap for Cutie", name: "Death Cap for Cutie", abbrev: "DCC", pop: 12, country: "NA",imgURLCountry : "/img/flags/flags/48/UnitedStates.png"},
-         {tid: 9, cid: 0, did: 0, region: "Aurea Mediocritas", name: "Aurea Mediocritas", abbrev: "AM", pop: 7, country: "NA",imgURLCountry : "/img/flags/flags/48/UnitedStates.png"},
-         {tid: 10, cid: 1, did: 1, region: "Sky10", name: "Sky10", abbrev: "S10", pop: 56,country: "EU", imgURLCountry :"/img/flags/flags/48/European Union.png"},
-         {tid: 11, cid: 1, did: 1, region: "Faith Gaming", name: "Faith", abbrev: "FGM", pop: 51,country: "EU", imgURLCountry :"/img/flags/flags/48/European Union.png"},
-         {tid: 12, cid: 1, did: 1, region: "Legendary eSports", name: "Legendary", abbrev: "LGD", pop: 46,country: "EU", imgURLCountry :"/img/flags/flags/48/European Union.png"},
-         {tid: 13, cid: 1, did: 1, region: "Lollipoppy Illuminati", name: "Lollipoppy Illuminati", abbrev: "LIL", pop: 41,country: "EU", imgURLCountry :"/img/flags/flags/48/European Union.png"},
-         {tid: 14, cid: 1, did: 1, region: "Team Solid", name: "Solid", abbrev: "TS", pop: 36,country: "EU", imgURLCountry :"/img/flags/flags/48/European Union.png"},
-         {tid: 15, cid: 1, did: 1, region: "Luckerdog eSports", name: "Luckerdog", abbrev: "LDE", pop: 31,country: "EU", imgURLCountry :"/img/flags/flags/48/European Union.png"},
-         {tid: 16, cid: 1, did: 1, region: "Oblivion", name: "Oblivion", abbrev: "OBL", pop: 26,country: "EU", imgURLCountry :"/img/flags/flags/48/European Union.png"},
-         {tid: 17, cid: 1, did: 1, region: "Team Solo Top", name: "Solo Top", abbrev: "TST", pop: 21,country: "EU", imgURLCountry :"/img/flags/flags/48/European Union.png"},
-         {tid: 18, cid: 1, did: 1, region: "Dragon Slayers Gaming", name: "Dragon Slayers", abbrev: "DSG", pop: 11,country: "EU", imgURLCountry :"/img/flags/flags/48/European Union.png"},
-         {tid: 19, cid: 1, did: 1, region: "Hamburg Lions", name: "Hamburg Lions", abbrev: "HL", pop: 6,country: "EU", imgURLCountry :"/img/flags/flags/48/European Union.png"},
-         {tid: 20, cid: 2, did: 2, region: "Team DigniCoast", name: "DigniCoast", abbrev: "TDC", pop: 55, country: "KR", imgURLCountry : "/img/flags/flags/48/Korea.png"},
-         {tid: 21, cid: 2, did: 2, region: "Team Unity", name: "Unity", abbrev: "TUN", pop: 50, country: "KR", imgURLCountry : "/img/flags/flags/48/Korea.png"},
-         {tid: 22, cid: 2, did: 2, region: "Team YP", name: "YP", abbrev: "YP", pop: 45, country: "KR", imgURLCountry : "/img/flags/flags/48/Korea.png"},
-         {tid: 23, cid: 2, did: 2, region: "Griffin Gaming", name: "Griffin", abbrev: "GrG", pop: 40, country: "KR", imgURLCountry : "/img/flags/flags/48/Korea.png"},
-         {tid: 24, cid: 2, did: 2, region: "Team AllMid", name: "AllMid", abbrev: "TAM", pop: 35, country: "KR", imgURLCountry : "/img/flags/flags/48/Korea.png"},
-         {tid: 25, cid: 2, did: 2, region: "MC Aztec Gaming", name: "MC Aztec", abbrev: "MCA", pop: 30, country: "KR", imgURLCountry : "/img/flags/flags/48/Korea.png"},
-         {tid: 26, cid: 2, did: 2, region: "Earthquake Gaming", name: "Earthquake", abbrev: "EG", pop: 25, country: "KR", imgURLCountry : "/img/flags/flags/48/Korea.png"},
-         {tid: 27, cid: 2, did: 2, region: "K2h", name: "K2h", abbrev: "K2H", pop: 20, country: "KR", imgURLCountry : "/img/flags/flags/48/Korea.png"},
-         {tid: 28, cid: 2, did: 2, region: "Cyclops Gaming", name: "Cyclops", abbrev: "CG", pop: 15, country: "KR", imgURLCountry : "/img/flags/flags/48/Korea.png"},
-         {tid: 29, cid: 2, did: 2, region: "Last Shots Gaming", name: "Last Shots", abbrev: "LSG", pop: 10, country: "KR", imgURLCountry : "/img/flags/flags/48/Korea.png"},
-         {tid: 30, cid: 3, did: 3, region: "Young Warrior Gaming", name: "Young Warrior", abbrev: "YWG", pop: 54, country: "CN",imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 31, cid: 3, did: 3, region: "Xtatic", name: "Xtatic", abbrev: "XTC", pop: 49, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 32, cid: 3, did: 3, region: "Rage Gaming", name: "Rage", abbrev: "RAGE", pop: 44, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 33, cid: 3, did: 3, region: "Summerwolf", name: "Summerwolf", abbrev: "SWF", pop: 39, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 34, cid: 3, did: 3, region: "Ignite Golems", name: "Ignite Golems", abbrev: "IG", pop: 34, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 35, cid: 3, did: 3, region: "Team Beach", name: "Beach", abbrev: "BCH", pop: 29, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 36, cid: 3, did: 3, region: "The Savage Boys", name: "The Savage Boys", abbrev: "TSB", pop: 24, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 37, cid: 3, did: 3, region: "Thunder10", name: "Thunder10", abbrev: "T10", pop: 14, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 38, cid: 3, did: 3, region: "Chemicals", name: "Chemicals", abbrev: "CH", pop: 9, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 39, cid: 3, did: 3, region: "Conclugen", name: "Conclugen", abbrev: "CON", pop: 4, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 40, cid: 3, did: 3, region: "WTF", name: "WTF", abbrev: "WTF", pop: 3, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 41, cid: 3, did: 3, region: "VAE Gaming", name: "VAE", abbrev: "VAE", pop: 2, country: "CN", imgURLCountry : "/img/flags/flags/48/China.png"},
-         {tid: 42, cid: 4, did: 4, region: "eLite5", name: "eLite5", abbrev: "EL5", pop: 53, country: "TW", imgURLCountry : "/img/flags/flags/48/Taiwan.png"},
-         {tid: 43, cid: 4, did: 4, region: "Team Tons of Damage", name: "Tons of Damage", abbrev: "TTD", pop: 48, country: "TW", imgURLCountry : "/img/flags/flags/48/Taiwan.png"},
-         {tid: 44, cid: 4, did: 4, region: "Ally eSports", name: "Ally", abbrev: "ALY", pop: 43, country: "TW", imgURLCountry : "/img/flags/flags/48/Taiwan.png"},
-         {tid: 45, cid: 4, did: 4, region: "Full Ham", name: "Full Ham", abbrev: "FH", pop: 38, country: "TW", imgURLCountry : "/img/flags/flags/48/Taiwan.png"},
-         {tid: 46, cid: 4, did: 4, region: "Spinner Esports", name: "Spinner", abbrev: "SPIN", pop: 33, country: "TW", imgURLCountry : "/img/flags/flags/48/Taiwan.png"},
-         {tid: 47, cid: 4, did: 4, region: "Djibouti Giants", name: "Djibouti Giants", abbrev: "DG", pop: 28, country: "TW", imgURLCountry : "/img/flags/flags/48/Taiwan.png"},
-         {tid: 48, cid: 4, did: 4, region: "Challenger or Cardboard", name: "Challenger or Cardboard", abbrev: "CC", pop: 23, country: "TW", imgURLCountry : "/img/flags/flags/48/Taiwan.png"},
-   {tid: 49, cid: 4, did: 4, region: "Water Dragons", name: "Water Dragons", abbrev: "WDS", pop: 13, country: "TW", imgURLCountry : "/img/flags/flags/48/Taiwan.png"},
+            // EU 3 spots
+            {tid: 10, cid: 1, did: 1, region: "Sky10", name: "Sky10", abbrev: "S10", pop: 10, country: "EU", imgURLCountry: "/img/flags/flags/48/Europe.png"},
+            {tid: 11, cid: 1, did: 1, region: "Faith Gaming", name: "Faith", abbrev: "FG", pop: 9, country: "EU", imgURLCountry: "/img/flags/flags/48/Europe.png"},
+            {tid: 12, cid: 1, did: 1, region: "Legendary eSports", name: "Legendary", abbrev: "LGD", pop: 8, country: "EU", imgURLCountry: "/img/flags/flags/48/Europe.png"},
+            {tid: 13, cid: 1, did: 1, region: "Lollipoppy Illuminati", name: "Lollipoppy", abbrev: "LPI", pop: 7, country: "EU", imgURLCountry: "/img/flags/flags/48/Europe.png"},
+            {tid: 14, cid: 1, did: 1, region: "Team Solid", name: "Solid", abbrev: "TS", pop: 6, country: "EU", imgURLCountry: "/img/flags/flags/48/Europe.png"},
+            {tid: 15, cid: 1, did: 1, region: "Luckerdog eSports", name: "Luckerdog", abbrev: "LDE", pop: 5, country: "EU", imgURLCountry: "/img/flags/flags/48/Europe.png"},
+            {tid: 16, cid: 1, did: 1, region: "Oblivion", name: "Oblivion", abbrev: "OBL", pop: 4, country: "EU", imgURLCountry: "/img/flags/flags/48/Europe.png"},
+            {tid: 17, cid: 1, did: 1, region: "Team Solo Top", name: "Solo Top", abbrev: "TST", pop: 3, country: "EU", imgURLCountry: "/img/flags/flags/48/Europe.png"},
+            {tid: 18, cid: 1, did: 1, region: "Dragon Slayers Gaming", name: "Dragon Slayers", abbrev: "DSG", pop: 2, country: "EU", imgURLCountry: "/img/flags/flags/48/Europe.png"},
+            {tid: 19, cid: 1, did: 1, region: "Hamburg Lions", name: "Hamburg Lions", abbrev: "HL", pop: 1, country: "EU", imgURLCountry: "/img/flags/flags/48/Europe.png"},
 
-   // Vietnam 8 teams, 2 spots VCS
-         {tid: 50, cid: 5, did: 5, region: "Megabyte Warriors", name: "Warriors", abbrev: "MB", pop: 2, country: "VNM",imgURLCountry : "/img/flags/flags/48/Vietnam.png"},
-         {tid: 51, cid: 5, did: 5, region: "Saigon Seekers", name: "Seekers", abbrev: "SS", pop: 2, country: "VNM",imgURLCountry : "/img/flags/flags/48/Vietnam.png"},
-         {tid: 52, cid: 5, did: 5, region: "Lotus", name: "Lotus", abbrev: "LTS", pop: 2, country: "VNM",imgURLCountry : "/img/flags/flags/48/Vietnam.png"},
-         {tid: 53, cid: 5, did: 5, region: "Terabyte Army", name: "Terabyte", abbrev: "TA", pop: 2, country: "VNM",imgURLCountry : "/img/flags/flags/48/Vietnam.png"},
-         {tid: 54, cid: 5, did: 5, region: "Charging Buffalo", name: "Buffalo", abbrev: "CB", pop: 2, country: "VNM",imgURLCountry : "/img/flags/flags/48/Vietnam.png"},
-         {tid: 55, cid: 5, did: 5, region: "Hanoi Hurricanes", name: "Hurricanes", abbrev: "HH", pop: 2, country: "VNM",imgURLCountry : "/img/flags/flags/48/Vietnam.png"},
-         {tid: 56, cid: 5, did: 5, region: "Red Dragons", name: "Dragons", abbrev: "RD", pop: 2, country: "VNM",imgURLCountry : "/img/flags/flags/48/Vietnam.png"}	,
-         {tid: 57, cid: 5, did: 5, region: "Black Crocodiles", name: "Crocodiles", abbrev: "BC", pop: 2, country: "VNM",imgURLCountry : "/img/flags/flags/48/Vietnam.png"}	,
- // korea 3
-//china 3
-// EU 	3
-//NA 3
-// LMS 3
-// VCS 2
-// SOUTHEAST ASIA – LST 1
-// BRAZIL – CBLOL - 1
-//COMMONWEALTH OF INDEPENDENT STATES – LCL - 1
-// JAPAN – LJL -1
-//LATIN AMERICA – LLA  1
-//OCEANIA – OPL - 1
-//TURKEY – TCL 1
+            // China 3 spots
+            {tid: 10, cid: 1, did: 1, region: "LPL", name: "FunPlus Phoenix", abbrev: "FPX", pop: 95, country: "CN", imgURLCountry: "/img/flags/flags/48/China.png"},
+            {tid: 11, cid: 1, did: 1, region: "LPL", name: "Royal Never Give Up", abbrev: "RNG", pop: 90, country: "CN", imgURLCountry: "/img/flags/flags/48/China.png"},
+            {tid: 12, cid: 1, did: 1, region: "LPL", name: "Invictus Gaming", abbrev: "IG", pop: 85, country: "CN", imgURLCountry: "/img/flags/flags/48/China.png"},
+            {tid: 13, cid: 1, did: 1, region: "LPL", name: "Top Esports", abbrev: "TES", pop: 80, country: "CN", imgURLCountry: "/img/flags/flags/48/China.png"},
+            {tid: 14, cid: 1, did: 1, region: "LPL", name: "JD Gaming", abbrev: "JDG", pop: 75, country: "CN", imgURLCountry: "/img/flags/flags/48/China.png"},
+            {tid: 15, cid: 1, did: 1, region: "LPL", name: "EDward Gaming", abbrev: "EDG", pop: 70, country: "CN", imgURLCountry: "/img/flags/flags/48/China.png"},
+            {tid: 16, cid: 1, did: 1, region: "LPL", name: "Bilibili Gaming", abbrev: "BLG", pop: 65, country: "CN", imgURLCountry: "/img/flags/flags/48/China.png"},
+            {tid: 17, cid: 1, did: 1, region: "LPL", name: "LNG Esports", abbrev: "LNG", pop: 60, country: "CN", imgURLCountry: "/img/flags/flags/48/China.png"},
 
-//https://nexus.leagueoflegends.com/en-us/2019/08/which-teams-are-competing-in-the-2019-wo/
-//https://lol.gamepedia.com/CBLOL/2019_Season/Split_1
-// https://lol.gamepedia.com/VCS/2019_Season
-   // SEA, LST  8 teams 1 spot
-         {tid: 58, cid: 6, did: 6, region: "Pacific Gaming", name: "Pacific", abbrev: "PG", pop: 2, country: "SEA", imgURLCountry : "/img/flags/flags/48/Philippines.png"},
-         {tid: 59, cid: 6, did: 6, region: "Singapore Giants", name: "Giants", abbrev: "SIG", pop: 2, country: "SEA", imgURLCountry : "/img/flags/flags/48/Philippines.png"},
-         {tid: 60, cid: 6, did: 6, region: "Siamese Cats", name: "Cats", abbrev: "SC", pop: 2, country: "SEA", imgURLCountry : "/img/flags/flags/48/Philippines.png"},
-         {tid: 61, cid: 6, did: 6, region: "Yellow Turtles", name: "Turtles", abbrev: "YT", pop: 2, country: "SEA", imgURLCountry : "/img/flags/flags/48/Philippines.png"},
-         {tid: 62, cid: 6, did: 6, region: "Golden Squirrels", name: "Squirrels", abbrev: "GS", pop: 2, country: "SEA", imgURLCountry : "/img/flags/flags/48/Philippines.png"},
-         {tid: 63, cid: 6, did: 6, region: "Water Buffalos", name: "Buffalos", abbrev: "WB", pop: 2, country: "SEA", imgURLCountry : "/img/flags/flags/48/Philippines.png"},
-         {tid: 64, cid: 6, did: 6, region: "White Elephants", name: "Elephants", abbrev: "WE", pop: 2, country: "SEA", imgURLCountry : "/img/flags/flags/48/Philippines.png"},
-         {tid: 65, cid: 6, did: 6, region: "Komodo Dragons", name: "Dragons", abbrev: "KD", pop: 2, country: "SEA", imgURLCountry : "/img/flags/flags/48/Philippines.png"},
 
-   // Brazil CBLOL 8 teams, 1 spot
-         {tid: 66, cid: 7, did: 7, region: "Rio Raiders", name: "Raiders", abbrev: "RR", pop: 2, country: "BR",imgURLCountry : "/img/flags/flags/48/Brazil.png"},
-         {tid: 67, cid: 7, did: 7, region: "Sao Paulo PAIN", name: "PAIN", abbrev: "PAIN", pop: 2, country: "BR",imgURLCountry : "/img/flags/flags/48/Brazil.png"},
-         {tid: 68, cid: 7, did: 7, region: "Agony Gaming", name: "Agony", abbrev: "AG", pop: 2, country: "BR",imgURLCountry : "/img/flags/flags/48/Brazil.png"},
-         {tid: 69, cid: 7, did: 7, region: "Jaguar Gaming", name: "Jaguar", abbrev: "JG", pop: 2, country: "BR",imgURLCountry : "/img/flags/flags/48/Brazil.png"},
-         {tid: 70, cid: 7, did: 7, region: "Orchid eSports", name: "Orchid", abbrev: "OE", pop: 2, country: "BR",imgURLCountry : "/img/flags/flags/48/Brazil.png"},
-         {tid: 71, cid: 7, did: 7, region: "Brazilian Gaming", name: "Brazilian", abbrev: "BRG", pop: 2, country: "BR",imgURLCountry : "/img/flags/flags/48/Brazil.png"},
-         {tid: 72, cid: 7, did: 7, region: "Ecstasy Gaming", name: "Ecstasy", abbrev: "XTSY", pop: 2, country: "BR",imgURLCountry : "/img/flags/flags/48/Brazil.png"},
-         {tid: 73, cid: 7, did: 7, region: "Rush Gaming", name: "Rush", abbrev: "RG", pop: 2, country: "BR",imgURLCountry : "/img/flags/flags/48/Brazil.png"},
-   // CIS, now LCL 8 teams 1 spot
-         {tid: 74, cid: 8, did: 8, region: "Snowed In Gaming", name: "Snow", abbrev: "SNW", pop: 2, country: "CIS",imgURLCountry : "/img/flags/flags/48/Russia.png"},
-         {tid: 75, cid: 8, did: 8, region: "Moscow United", name: "United", abbrev: "MSCW", pop: 2, country: "CIS",imgURLCountry : "/img/flags/flags/48/Russia.png"},
-         {tid: 76, cid: 8, did: 8, region: "Red Star eSports", name: "Red Star", abbrev: "RS", pop: 2, country: "CIS",imgURLCountry : "/img/flags/flags/48/Russia.png"},
-         {tid: 77, cid: 8, did: 8, region: "Tornado Rocks Gaming", name: "Tornado Rocks ", abbrev: "TR", pop: 2, country: "CIS",imgURLCountry : "/img/flags/flags/48/Russia.png"},
-         {tid: 78, cid: 8, did: 8, region: "Team Annex", name: "Annex", abbrev: "ANX", pop: 2, country: "CIS",imgURLCountry : "/img/flags/flags/48/Russia.png"},
-         {tid: 79, cid: 8, did: 8, region: "The Elementalists", name: "Elementalists", abbrev: "ELEM", pop: 2, country: "CIS",imgURLCountry : "/img/flags/flags/48/Russia.png"},
-         {tid: 80, cid: 8, did: 8, region: "Moscow Miners", name: "Miners", abbrev: "MNR", pop: 2, country: "CIS",imgURLCountry : "/img/flags/flags/48/Russia.png"},
-         {tid: 81, cid: 8, did: 8, region: "CIS Gaming", name: "CIS", abbrev: "CIS", pop: 2, country: "CIS",imgURLCountry : "/img/flags/flags/48/Russia.png"},
-   // Japan LJL, 8 teams 1 spot
-         {tid: 82, cid: 9, did: 9, region: "Suduko Esports", name: "Suduko", abbrev: "SUD", pop: 2, country: "JP",imgURLCountry : "/img/flags/flags/48/Japan.png"},
-         {tid: 83, cid: 9, did: 9, region: "Samari Esports", name: "Samari", abbrev: "SMR", pop: 2, country: "JP",imgURLCountry : "/img/flags/flags/48/Japan.png"},
-         {tid: 84, cid: 9, did: 9, region: "Rising Sun", name: "Sun", abbrev: "RISE", pop: 2, country: "JP",imgURLCountry : "/img/flags/flags/48/Japan.png"},
-         {tid: 85, cid: 9, did: 9, region: "Japanese eSports", name: "Japanese", abbrev: "JPN", pop: 2, country: "JP",imgURLCountry : "/img/flags/flags/48/Japan.png"},
-         {tid: 86, cid: 9, did: 9, region: "Kyoto Assasinins", name: "Assasinins", abbrev: "KA", pop: 2, country: "JP",imgURLCountry : "/img/flags/flags/48/Japan.png"},
-         {tid: 87, cid: 9, did: 9, region: "Team Shattered Nexus", name: "Nexus", abbrev: "NXS", pop: 2, country: "JP",imgURLCountry : "/img/flags/flags/48/Japan.png"},
-         {tid: 88, cid: 9, did: 9, region: "Don't Focus Me", name: "Focus", abbrev: "FCS", pop: 2, country: "JP",imgURLCountry : "/img/flags/flags/48/Japan.png"},
-         {tid: 89, cid: 9, did: 9, region: "Tokyo Blossom", name: "Blossom", abbrev: "TOK", pop: 2, country: "JP",imgURLCountry : "/img/flags/flags/48/Japan.png"},
-   // Latin America LlA - 8 teams 1 spot
-         {tid: 90, cid: 10, did: 10, region: "Mexico Marauders ", name: "Marauders", abbrev: "MM", pop: 2, country: "LatAm",imgURLCountry : "/img/flags/flags/48/LatinAmerica.png"},
-         {tid: 91, cid: 10, did: 10, region: "Chile Peppers", name: "Peppers", abbrev: "CP", pop: 2, country: "LatAm",imgURLCountry : "/img/flags/flags/48/LatinAmerica.png"},
-         {tid: 92, cid: 10, did: 10, region: "Latin eSports", name: "Latin", abbrev: "LE", pop: 2, country: "LatAm",imgURLCountry : "/img/flags/flags/48/LatinAmerica.png"},
-         {tid: 93, cid: 10, did: 10, region: "Buenos Aires Air", name: "Air", abbrev: "AIR", pop: 2, country: "LatAm",imgURLCountry : "/img/flags/flags/48/LatinAmerica.png"},
-         {tid: 94, cid: 10, did: 10, region: "Not Brazil eSports", name: "Not", abbrev: "NOT", pop: 2, country: "LatAm",imgURLCountry : "/img/flags/flags/48/LatinAmerica.png"},
-         {tid: 95, cid: 10, did: 10, region: "Scorching Gaming", name: "Scorching", abbrev: "SG", pop: 2, country: "LatAm",imgURLCountry : "/img/flags/flags/48/LatinAmerica.png"},
-         {tid: 96, cid: 10, did: 10, region: "Rather Be Gaming", name: "Rather Be", abbrev: "RBG", pop: 2, country: "LatAm",imgURLCountry : "/img/flags/flags/48/LatinAmerica.png"},
-         {tid: 97, cid: 10, did: 10, region: "Ecuador Line", name: "Line", abbrev: "LINE", pop: 2, country: "LatAm",imgURLCountry : "/img/flags/flags/48/LatinAmerica.png"},
-   // OCE  , OPL - 8 teams  1 spot
-         {tid: 98, cid: 11, did: 11, region: "New Zealand Marines", name: "Marines", abbrev: "NZM", pop: 2, country: "OCE",imgURLCountry : "/img/flags/flags/48/Australia.png"},
-         {tid: 99, cid: 11, did: 11, region: "Sydney Submarines", name: "Submarines", abbrev: "SUB", pop: 2, country: "OCE",imgURLCountry : "/img/flags/flags/48/Australia.png"},
-         {tid: 100, cid: 11, did: 11, region: "Canberra Caps", name: "Caps", abbrev: "CAPS", pop: 2, country: "OCE",imgURLCountry : "/img/flags/flags/48/Australia.png"},
-         {tid: 101, cid: 11, did: 11, region: "Melbourne Gaming", name: "Melbourne", abbrev: "MG", pop: 2, country: "OCE",imgURLCountry : "/img/flags/flags/48/Australia.png"},
-         {tid: 102, cid: 11, did: 11, region: "Oceanic eSports", name: "Oceanic", abbrev: "OCE", pop: 2, country: "OCE",imgURLCountry : "/img/flags/flags/48/Australia.png"},
-         {tid: 103, cid: 11, did: 11, region: "Islanders", name: "Islanders", abbrev: "ISL", pop: 2, country: "OCE",imgURLCountry : "/img/flags/flags/48/Australia.png"},
-         {tid: 104, cid: 11, did: 11, region: "Perth Worth", name: "Worth", abbrev: "PW", pop: 2, country: "OCE",imgURLCountry : "/img/flags/flags/48/Australia.png"},
-         {tid: 105, cid: 11, did: 11, region: "Auckland", name: "Auckland", abbrev: "AUCK", pop: 2, country: "OCE",imgURLCountry : "/img/flags/flags/48/Australia.png"},
-   // Turkey, TC 10 teams 1 spot
-         {tid: 106, cid: 12, did: 12, region: "Star Warriors", name: "Warriors", abbrev: "SW", pop: 2, country: "TR",imgURLCountry : "/img/flags/flags/48/Turkey.png"},
-         {tid: 107, cid: 12, did: 12, region: "Evil Eyes", name: "Eyes", abbrev: "EE", pop: 2, country: "TR",imgURLCountry : "/img/flags/flags/48/Turkey.png"},
-         {tid: 108, cid: 12, did: 12, region: "Istanbul Bulls", name: "Bulls", abbrev: "IB", pop: 2, country: "TR",imgURLCountry : "/img/flags/flags/48/Turkey.png"},
-         {tid: 109, cid: 12, did: 12, region: "Sultan Gaming", name: "Sultan", abbrev: "SUG", pop: 2, country: "TR",imgURLCountry : "/img/flags/flags/48/Turkey.png"},
-         {tid: 110, cid: 12, did: 12, region: "Sophia eSports", name: "Sophia", abbrev: "SE", pop: 2, country: "TR",imgURLCountry : "/img/flags/flags/48/Turkey.png"},
-         {tid: 111, cid: 12, did: 12, region: "Blue Gaming", name: "Blue", abbrev: "BG", pop: 2, country: "TR",imgURLCountry : "/img/flags/flags/48/Turkey.png"},
-         {tid: 112, cid: 12, did: 12, region: "Turkish Delight", name: "Turkish", abbrev: "TD", pop: 2, country: "TR",imgURLCountry : "/img/flags/flags/48/Turkey.png"},
-   {tid: 113, cid: 12, did: 12, region: "Galata Armada", name: "Armada", abbrev: "GA", pop: 2, country: "TR",imgURLCountry : "/img/flags/flags/48/Turkey.png"},
-   {tid: 114, cid: 12, did: 12, region: "Turkish Empire", name: "Empire", abbrev: "TE", pop: 2, country: "TR",imgURLCountry : "/img/flags/flags/48/Turkey.png"},
-   {tid: 115, cid: 12, did: 12, region: "Grey Wolves", name: "Wolves", abbrev: "GW", pop: 2, country: "TR",imgURLCountry : "/img/flags/flags/48/Turkey.png"},
 
+            // LMS 3 spots
+            {tid: 38, cid: 4, did: 4, region: "LMS", name: "Flash Wolves", abbrev: "FW", pop: 75, country: "TW", imgURLCountry: "/img/flags/flags/48/Taiwan.png"},
+            {tid: 39, cid: 4, did: 4, region: "LMS", name: "MAD Team", abbrev: "MAD", pop: 70, country: "TW", imgURLCountry: "/img/flags/flags/48/Taiwan.png"},
+            {tid: 40, cid: 4, did: 4, region: "LMS", name: "J Team", abbrev: "JT", pop: 65, country: "TW", imgURLCountry: "/img/flags/flags/48/Taiwan.png"},
+            {tid: 41, cid: 4, did: 4, region: "LMS", name: "ahq e-Sports Club", abbrev: "AHQ", pop: 60, country: "TW", imgURLCountry: "/img/flags/flags/48/Taiwan.png"},
+            {tid: 42, cid: 4, did: 4, region: "LMS", name: "Hong Kong Attitude", abbrev: "HKA", pop: 55, country: "TW", imgURLCountry: "/img/flags/flags/48/Taiwan.png"},
+            {tid: 43, cid: 4, did: 4, region: "LMS", name: "G-Rex", abbrev: "GRX", pop: 50, country: "TW", imgURLCountry: "/img/flags/flags/48/Taiwan.png"},
+            {tid: 44, cid: 4, did: 4, region: "LMS", name: "Alpha Esports", abbrev: "ALF", pop: 45, country: "TW", imgURLCountry: "/img/flags/flags/48/Taiwan.png"},
+            {tid: 45, cid: 4, did: 4, region: "LMS", name: "Dragon Gate Team", abbrev: "DG", pop: 40, country: "TW", imgURLCountry: "/img/flags/flags/48/Taiwan.png"},
+
+            // Vietnam 2 spots
+            {tid: 46, cid: 5, did: 5, region: "VCS", name: "GAM Esports", abbrev: "GAM", pop: 65, country: "VN", imgURLCountry: "/img/flags/flags/48/Vietnam.png"},
+            {tid: 47, cid: 5, did: 5, region: "VCS", name: "EVOS Esports", abbrev: "EVS", pop: 60, country: "VN", imgURLCountry: "/img/flags/flags/48/Vietnam.png"},
+            {tid: 48, cid: 5, did: 5, region: "VCS", name: "Team Flash", abbrev: "FL", pop: 55, country: "VN", imgURLCountry: "/img/flags/flags/48/Vietnam.png"},
+            {tid: 49, cid: 5, did: 5, region: "VCS", name: "Lowkey Esports", abbrev: "LK", pop: 50, country: "VN", imgURLCountry: "/img/flags/flags/48/Vietnam.png"},
+            {tid: 50, cid: 5, did: 5, region: "VCS", name: "MZ Gaming", abbrev: "MZ", pop: 45, country: "VN", imgURLCountry: "/img/flags/flags/48/Vietnam.png"},
+            {tid: 51, cid: 5, did: 5, region: "VCS", name: "Percent Esports", abbrev: "PER", pop: 40, country: "VN", imgURLCountry: "/img/flags/flags/48/Vietnam.png"},
+            {tid: 52, cid: 5, did: 5, region: "VCS", name: "V Gaming", abbrev: "VG", pop: 35, country: "VN", imgURLCountry: "/img/flags/flags/48/Vietnam.png"},
+            {tid: 53, cid: 5, did: 5, region: "VCS", name: "FTV Esports", abbrev: "FTV", pop: 30, country: "VN", imgURLCountry: "/img/flags/flags/48/Vietnam.png"},
+
+            // SEA 1 spot
+            {tid: 54, cid: 6, did: 6, region: "LST", name: "MEGA", abbrev: "MEGA", pop: 55, country: "TH", imgURLCountry: "/img/flags/flags/48/Thailand.png"},
+            {tid: 55, cid: 6, did: 6, region: "LST", name: "Ascension Gaming", abbrev: "ASC", pop: 50, country: "TH", imgURLCountry: "/img/flags/flags/48/Thailand.png"},
+            {tid: 56, cid: 6, did: 6, region: "LST", name: "Bangkok Titans", abbrev: "BKT", pop: 45, country: "TH", imgURLCountry: "/img/flags/flags/48/Thailand.png"},
+            {tid: 57, cid: 6, did: 6, region: "LST", name: "Mineski", abbrev: "MSK", pop: 40, country: "TH", imgURLCountry: "/img/flags/flags/48/Thailand.png"},
+            {tid: 58, cid: 6, did: 6, region: "LST", name: "Resurgence", abbrev: "RSG", pop: 35, country: "SG", imgURLCountry: "/img/flags/flags/48/Singapore.png"},
+            {tid: 59, cid: 6, did: 6, region: "LST", name: "Impunity", abbrev: "IMP", pop: 30, country: "SG", imgURLCountry: "/img/flags/flags/48/Singapore.png"},
+            {tid: 60, cid: 6, did: 6, region: "LST", name: "BOOM Esports", abbrev: "BOOM", pop: 25, country: "ID", imgURLCountry: "/img/flags/flags/48/Indonesia.png"},
+            {tid: 61, cid: 6, did: 6, region: "LST", name: "EVOS Esports", abbrev: "EVOS", pop: 20, country: "ID", imgURLCountry: "/img/flags/flags/48/Indonesia.png"},
+
+            // Brazil 1 spot
+            {tid: 62, cid: 7, did: 7, region: "CBLOL", name: "Flamengo eSports", abbrev: "FLA", pop: 55, country: "BR", imgURLCountry: "/img/flags/flags/48/Brazil.png"},
+            {tid: 63, cid: 7, did: 7, region: "CBLOL", name: "INTZ", abbrev: "ITZ", pop: 50, country: "BR", imgURLCountry: "/img/flags/flags/48/Brazil.png"},
+            {tid: 64, cid: 7, did: 7, region: "CBLOL", name: "KaBuM! e-Sports", abbrev: "KBM", pop: 45, country: "BR", imgURLCountry: "/img/flags/flags/48/Brazil.png"},
+            {tid: 65, cid: 7, did: 7, region: "CBLOL", name: "Redemption eSports", abbrev: "RD", pop: 40, country: "BR", imgURLCountry: "/img/flags/flags/48/Brazil.png"},
+            {tid: 66, cid: 7, did: 7, region: "CBLOL", name: "ProGaming e-Sports", abbrev: "PG", pop: 35, country: "BR", imgURLCountry: "/img/flags/flags/48/Brazil.png"},
+            {tid: 67, cid: 7, did: 7, region: "CBLOL", name: "Uppercut eSports", abbrev: "UP", pop: 30, country: "BR", imgURLCountry: "/img/flags/flags/48/Brazil.png"},
+            {tid: 68, cid: 7, did: 7, region: "CBLOL", name: "Vivo Keyd", abbrev: "VK", pop: 25, country: "BR", imgURLCountry: "/img/flags/flags/48/Brazil.png"},
+            {tid: 69, cid: 7, did: 7, region: "CBLOL", name: "FURIA eSports", abbrev: "FUR", pop: 20, country: "BR", imgURLCountry: "/img/flags/flags/48/Brazil.png"},
+
+            // CIS 1 spot
+            {tid: 70, cid: 8, did: 8, region: "LCL", name: "Vega Squadron", abbrev: "VEGA", pop: 55, country: "RU", imgURLCountry: "/img/flags/flags/48/Russia.png"},
+            {tid: 71, cid: 8, did: 8, region: "LCL", name: "Gambit Esports", abbrev: "GMB", pop: 50, country: "RU", imgURLCountry: "/img/flags/flags/48/Russia.png"},
+            {tid: 72, cid: 8, did: 8, region: "LCL", name: "Elements Pro Gaming", abbrev: "EPG", pop: 45, country: "RU", imgURLCountry: "/img/flags/flags/48/Russia.png"},
+            {tid: 73, cid: 8, did: 8, region: "LCL", name: "RoX", abbrev: "ROX", pop: 40, country: "RU", imgURLCountry: "/img/flags/flags/48/Russia.png"},
+            {tid: 74, cid: 8, did: 8, region: "LCL", name: "Dragon Army", abbrev: "DA", pop: 35, country: "RU", imgURLCountry: "/img/flags/flags/48/Russia.png"},
+            {tid: 75, cid: 8, did: 8, region: "LCL", name: "Virtus.pro", abbrev: "VP", pop: 30, country: "RU", imgURLCountry: "/img/flags/flags/48/Russia.png"},
+            {tid: 76, cid: 8, did: 8, region: "LCL", name: "M19", abbrev: "M19", pop: 25, country: "RU", imgURLCountry: "/img/flags/flags/48/Russia.png"},
+            {tid: 77, cid: 8, did: 8, region: "LCL", name: "CrowCrowd", abbrev: "CC", pop: 20, country: "RU", imgURLCountry: "/img/flags/flags/48/Russia.png"},
+
+            // Japan 1 spot
+            {tid: 78, cid: 9, did: 9, region: "LJL", name: "DetonatioN FocusMe", abbrev: "DFM", pop: 55, country: "JP", imgURLCountry: "/img/flags/flags/48/Japan.png"},
+            {tid: 79, cid: 9, did: 9, region: "LJL", name: "Rascal Jester", abbrev: "RJ", pop: 50, country: "JP", imgURLCountry: "/img/flags/flags/48/Japan.png"},
+            {tid: 80, cid: 9, did: 9, region: "LJL", name: "Unsold Stuff Gaming", abbrev: "USG", pop: 45, country: "JP", imgURLCountry: "/img/flags/flags/48/Japan.png"},
+            {tid: 81, cid: 9, did: 9, region: "LJL", name: "AXIZ", abbrev: "AXZ", pop: 40, country: "JP", imgURLCountry: "/img/flags/flags/48/Japan.png"},
+            {tid: 82, cid: 9, did: 9, region: "LJL", name: "Crest Gaming Act", abbrev: "CGA", pop: 35, country: "JP", imgURLCountry: "/img/flags/flags/48/Japan.png"},
+            {tid: 83, cid: 9, did: 9, region: "LJL", name: "Fukuoka SoftBank Hawks", abbrev: "FSH", pop: 30, country: "JP", imgURLCountry: "/img/flags/flags/48/Japan.png"},
+            {tid: 84, cid: 9, did: 9, region: "LJL", name: "V3 Esports", abbrev: "V3", pop: 25, country: "JP", imgURLCountry: "/img/flags/flags/48/Japan.png"},
+            {tid: 85, cid: 9, did: 9, region: "LJL", name: "Sengoku Gaming", abbrev: "SG", pop: 20, country: "JP", imgURLCountry: "/img/flags/flags/48/Japan.png"},
+
+            // Latin America 1 spot
+            {tid: 86, cid: 10, did: 10, region: "LLA", name: "Isurus Gaming", abbrev: "ISG", pop: 55, country: "LA", imgURLCountry: "/img/flags/flags/48/LatinAmerica.png"},
+            {tid: 87, cid: 10, did: 10, region: "LLA", name: "All Knights", abbrev: "AK", pop: 50, country: "LA", imgURLCountry: "/img/flags/flags/48/LatinAmerica.png"},
+            {tid: 88, cid: 10, did: 10, region: "LLA", name: "Infinity eSports", abbrev: "INF", pop: 45, country: "LA", imgURLCountry: "/img/flags/flags/48/LatinAmerica.png"},
+            {tid: 89, cid: 10, did: 10, region: "LLA", name: "Rainbow7", abbrev: "R7", pop: 40, country: "LA", imgURLCountry: "/img/flags/flags/48/LatinAmerica.png"},
+            {tid: 90, cid: 10, did: 10, region: "LLA", name: "XTEN Esports", abbrev: "XTN", pop: 35, country: "LA", imgURLCountry: "/img/flags/flags/48/LatinAmerica.png"},
+            {tid: 91, cid: 10, did: 10, region: "LLA", name: "Furious Gaming", abbrev: "FG", pop: 30, country: "LA", imgURLCountry: "/img/flags/flags/48/LatinAmerica.png"},
+            {tid: 92, cid: 10, did: 10, region: "LLA", name: "Pixel Esports Club", abbrev: "PXC", pop: 25, country: "LA", imgURLCountry: "/img/flags/flags/48/LatinAmerica.png"},
+            {tid: 93, cid: 10, did: 10, region: "LLA", name: "Azules Esports", abbrev: "AZU", pop: 20, country: "LA", imgURLCountry: "/img/flags/flags/48/LatinAmerica.png"},
+
+            // Oceania 1 spot
+            {tid: 94, cid: 11, did: 11, region: "OPL", name: "Bombers", abbrev: "BMR", pop: 55, country: "AU", imgURLCountry: "/img/flags/flags/48/Australia.png"},
+            {tid: 95, cid: 11, did: 11, region: "OPL", name: "Chiefs Esports Club", abbrev: "CHF", pop: 50, country: "AU", imgURLCountry: "/img/flags/flags/48/Australia.png"},
+            {tid: 96, cid: 11, did: 11, region: "OPL", name: "Dire Wolves", abbrev: "DW", pop: 45, country: "AU", imgURLCountry: "/img/flags/flags/48/Australia.png"},
+            {tid: 97, cid: 11, did: 11, region: "OPL", name: "Legacy Esports", abbrev: "LGC", pop: 40, country: "AU", imgURLCountry: "/img/flags/flags/48/Australia.png"},
+            {tid: 98, cid: 11, did: 11, region: "OPL", name: "Mammoth", abbrev: "MMM", pop: 35, country: "AU", imgURLCountry: "/img/flags/flags/48/Australia.png"},
+            {tid: 99, cid: 11, did: 11, region: "OPL", name: "ORDER", abbrev: "ORD", pop: 30, country: "AU", imgURLCountry: "/img/flags/flags/48/Australia.png"},
+            {tid: 100, cid: 11, did: 11, region: "OPL", name: "Pentanet.GG", abbrev: "PGG", pop: 25, country: "AU", imgURLCountry: "/img/flags/flags/48/Australia.png"},
+            {tid: 101, cid: 11, did: 11, region: "OPL", name: "Avant Gaming", abbrev: "AV", pop: 20, country: "AU", imgURLCountry: "/img/flags/flags/48/Australia.png"},
+
+            // Turkey 1 spot
+            {tid: 102, cid: 12, did: 12, region: "TCL", name: "Royal Youth", abbrev: "RYL", pop: 55, country: "TR", imgURLCountry: "/img/flags/flags/48/Turkey.png"},
+            {tid: 103, cid: 12, did: 12, region: "TCL", name: "1907 Fenerbahçe", abbrev: "FB", pop: 50, country: "TR", imgURLCountry: "/img/flags/flags/48/Turkey.png"},
+            {tid: 104, cid: 12, did: 12, region: "TCL", name: "SuperMassive", abbrev: "SUP", pop: 45, country: "TR", imgURLCountry: "/img/flags/flags/48/Turkey.png"},
+            {tid: 105, cid: 12, did: 12, region: "TCL", name: "Dark Passage", abbrev: "DP", pop: 40, country: "TR", imgURLCountry: "/img/flags/flags/48/Turkey.png"},
+            {tid: 106, cid: 12, did: 12, region: "TCL", name: "Beşiktaş Esports", abbrev: "BJK", pop: 35, country: "TR", imgURLCountry: "/img/flags/flags/48/Turkey.png"},
+            {tid: 107, cid: 12, did: 12, region: "TCL", name: "Galatasaray Esports", abbrev: "GS", pop: 30, country: "TR", imgURLCountry: "/img/flags/flags/48/Turkey.png"},
+            {tid: 108, cid: 12, did: 12, region: "TCL", name: "Team AURORA", abbrev: "AUR", pop: 25, country: "TR", imgURLCountry: "/img/flags/flags/48/Turkey.png"},
+            {tid: 109, cid: 12, did: 12, region: "TCL", name: "Bursaspor Esports", abbrev: "BUR", pop: 20, country: "TR", imgURLCountry: "/img/flags/flags/48/Turkey.png"}
         ];
-
-        teams = addPopRank(teams);
-
-        return teams;
     }
-
 
 /**
  * Clones an object.
@@ -914,7 +888,12 @@ function deepCopy<T>(obj: T): T {
     if (typeof obj !== "object" || obj === null) { return obj; }
     if (obj.constructor === RegExp) { return obj; }
 
-    const retVal = new obj.constructor();
+    // Handle arrays and objects
+    if (Array.isArray(obj)) {
+        return obj.map(item => deepCopy(item)) as T;
+    }
+
+    const retVal = {} as T;
     for (const key of Object.keys(obj)) {
         retVal[key] = deepCopy(obj[key]);
     }
@@ -922,8 +901,8 @@ function deepCopy<T>(obj: T): T {
 }
 
 // Hacky solution to http://stackoverflow.com/q/39683076/786644
-function keys<T: string>(obj: any): Array<T> {
-    return Object.keys(obj);
+function keys<T extends string>(obj: { [key: string]: any }): T[] {
+    return Object.keys(obj) as T[];
 }
 
 /**
@@ -934,7 +913,8 @@ function keys<T: string>(obj: any): Array<T> {
  * @memberOf util.helpers
  */
 function resetG() {
-    for (const key of keys(g)) {
+    const gameKeys = Object.keys(g) as Array<keyof typeof g>;
+    for (const key of gameKeys) {
         if (key !== 'lid') {
             delete g[key];
         }
@@ -1005,10 +985,11 @@ function formatCurrency(amount: number, append: string = '', precision: number =
 }
 
 /**
- * Format a number as an integer with commas in the thousands places.
+ * Format a number with commas as thousands separators
  */
 function numberWithCommas(x: number | string): string {
-    return parseFloat(x).toFixed().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const num = typeof x === 'string' ? parseFloat(x) : x;
+    return num.toFixed().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 /**
@@ -1064,39 +1045,28 @@ function formatCompletedGame(game: GameProcessed): GameProcessedCompleted {
     // If not specified, assume user's team is playing
     game.tid = game.tid !== undefined ? game.tid : g.userTid;
 
-	//console.log(game);
     // team0 and team1 are different than they are above! Here it refers to user and opponent, not home and away
     const team0 = {tid: game.tid, abbrev: g.teamAbbrevsCache[game.tid], region: g.teamRegionsCache[game.tid], name: g.teamNamesCache[game.tid], pts: game.pts};
     const team1 = {tid: game.oppTid, abbrev: g.teamAbbrevsCache[game.oppTid], region: g.teamRegionsCache[game.oppTid], name: g.teamNamesCache[game.oppTid], pts: game.oppPts};
 
+    // Set default values for optional properties
+    const seasonSplit = game.seasonSplit ?? "";
+    const seasonSplit2 = game.seasonSplit2 ?? "";
+    const playoffType = game.playoffType ?? "";
+    const playoffs = game.playoffs ?? false;
+    const playoffs2 = game.playoffs2 ?? "";
 
-	if (game.seasonSplit == undefined) {
-		game.seasonSplit = "";
-		game.seasonSplit2 = "";
-	}
-	if (game.playoffType == undefined) {
-		game.playoffType = "";
-	} else {
-	//	game.playoffType = "t";
-	}
-	//console.log(game);
-/*
-	if (game.playoffs == true) {
-		game.playoffs2 = "Playoffs";
-	} else {
-		game.playoffs2 = "Regular Season";
-	}*/
     return {
         gid: game.gid,
         overtime: game.overtime,
         score: game.won ? `${team0.pts}-${team1.pts}` : `${team1.pts}-${team0.pts}`,
         teams: game.home ? [team1, team0] : [team0, team1],
         won: game.won,
-        seasonSplit: game.seasonSplit,
-        seasonSplit2: game.seasonSplit2,
-		playoffType: game.playoffType,
-        playoffs: game.playoffs,
-        playoffs2: game.playoffs2,
+        seasonSplit,
+        seasonSplit2,
+        playoffType,
+        playoffs,
+        playoffs2,
     };
 }
 
@@ -1177,208 +1147,99 @@ function yearRanges(arr: number[]): string[] {
 }
 
 function roundsWonText(playoffRoundsWon: number, playoffRoundsWonWorldsGr: number): string {
+    const numConferences = (() => {
+        switch (g.gameType) {
+            case 0: return 1;
+            case 1: return 3;
+            case 2: return 1;
+            case 3: return 1;
+            case 4: return 1;
+            case 5: return 6;
+            case 6: return 6;
+            default: return 18;
+        }
+    })();
 
-
-	var numConferences;
-
-	if (g.gameType == 0) {
-		numConferences = 1;
-	} else if (g.gameType == 1) {
-		numConferences = 3;
-	} else if (g.gameType == 2) {
-		numConferences = 1;
-	} else if (g.gameType == 3) {
-		numConferences = 1;
-	} else if (g.gameType == 4) {
-		numConferences = 1;
-	} else if (g.gameType == 5) {
-		numConferences = 6;
-	} else if (g.gameType == 6) {
-		numConferences = 6;
-	} else {
-		numConferences = 18;
-	}
-
-
-    const playoffsByConference = g.confs.length === numConferences;// && !localStorage.getItem('top16playoffs');
-
-
-
-	if (g.gameType == 0) {
-		if (playoffRoundsWon === 0) {
-			return "made first round";
-		} else if (playoffRoundsWon === 1) {
-			return "made second round";
-		} else if (playoffRoundsWon === 2) {
-			return "made league finals";
-		} else if (playoffRoundsWon === 3) {
-			return "league champs";
-		} else if (playoffRoundsWon === 4) {
-			return "league champs";
-		}
-	} else if (g.gameType == 1) {
-		if (playoffRoundsWon === 4) {
-			return "made CS promotion";
-		} else if (playoffRoundsWon === 5) {
-			return "made CS round 2";
-		} else if (playoffRoundsWon === 6) {
-			return "made CS finals";
-		} else if (playoffRoundsWon === 7) {
-			return "made CS";
-		} else if (playoffRoundsWon === 13) {
-			return "stay at CS"; // haven't fully added, for when more teams added to CS
-		} else if (playoffRoundsWon === 14) {
-			return "demoted to CS";
-		} else if (playoffRoundsWon === 16) {
-			return "made LCS qualifiers";
-		} else if (playoffRoundsWon === 17) {
-			return "made LCS promotion";
-		} else if (playoffRoundsWon === 18) {
-			return "made LCS";
-		} else if (playoffRoundsWon === 20) {
-			return "stayed in LCS";
-		} else if (playoffRoundsWon === 24) {
-			return "made LCS quarterfinals";
-		} else if (playoffRoundsWon === 25) {
-			return "made LCS semifinals";
-		} else if (playoffRoundsWon === 26) {
-			return "made LCS finals";
-		} else if (playoffRoundsWon === 27) {
-			return "LCS champs";
-		}
-	} else if (g.gameType == 2) {
-		if (playoffRoundsWon === 0) {
-			return "made wild card";
-		} else if (playoffRoundsWon === 1) {
-			return "made quarterfinals";
-		} else if (playoffRoundsWon === 2) {
-			return "made semifinals";
-		} else if (playoffRoundsWon === 3) {
-			return "made finals";
-		} else if (playoffRoundsWon === 4) {
-			return "league champs";
-		}
-	} else if (g.gameType == 3 && (g.yearType == undefined || g.yearType == 0)) {
-		if (playoffRoundsWon === 0) {
-			return "made round 1";
-		} else if (playoffRoundsWon === 1) {
-			return "made round 2";
-		} else if (playoffRoundsWon === 2) {
-			return "made seeding match";
-		} else if (playoffRoundsWon === 3) {
-			return "made quarterfinals";
-		} else if (playoffRoundsWon === 4) {
-			return "made semifinals";
-		} else if (playoffRoundsWon === 5) {
-			return "made finals";
-		} else if (playoffRoundsWon === 6) {
-			return "league champs";
-		}
-	} else if (g.gameType == 3 && g.yearType == 2019) {
-		if (playoffRoundsWon === 0) {
-			return "made round 1";
-		} else if (playoffRoundsWon === 1) {
-			return "made round 2";
-		} else if (playoffRoundsWon === 2) {
-			return "made semifinals";
-		} else if (playoffRoundsWon === 3) {
-			return "made finals";
-		} else if (playoffRoundsWon === 4) {
-			return "league champs";
-		}
-	} else if (g.gameType == 4) {
-		if (playoffRoundsWon === 0) {
-			return "made quarterfinals";
-		} else if (playoffRoundsWon === 1) {
-			return "made semifinals";
-		} else if (playoffRoundsWon === 2) {
-			return "made finals";
-		} else if (playoffRoundsWon === 3) {
-			return "league champs";
-		}
-//	} else if (g.gameType == 5 ) {
-	} else if (g.gameType == 5 ) {
-			//extraText = ""; only for regionals, worlds,
-		if (g.yearType == 2019) {
-			if (playoffRoundsWon < 0) {
-				return "";
-			} else if (playoffRoundsWon == 0) {
-				return "made conference playoffs";
-			} else if (playoffRoundsWon == 1) {
-				return "made regionals";
-			} else if (playoffRoundsWon == 2) {
-				return "made groups 1";
-			} else if (playoffRoundsWon == 3) {
-				return "made play-in";
-			} else if (playoffRoundsWon == 6) {
-				return "made groups 2";
-			} else if (playoffRoundsWon == 7) {
-				return "made Worlds quarterfinals";
-			} else if (playoffRoundsWon === 8) {
-				return "made Worlds semifinals";
-			} else if (playoffRoundsWon === 9) {
-				return "made Worlds finals";
-			} else if (playoffRoundsWon === 10) {
-				return "Worlds champions";
-			}
-
-		} else {
-			if (playoffRoundsWon < 0) {
-				return "";
-			} else if (playoffRoundsWon == 0) {
-				return "made conference playoffs";
-			} else if (playoffRoundsWon == 1) {
-				return "made regionals";
-			} else if (playoffRoundsWon == 2) {
-				return "made groups";
-			} else if (playoffRoundsWon == 3) {
-				return "made Worlds quarterfinals";
-			} else if (playoffRoundsWon === 4) {
-				return "made Worlds semifinals";
-			} else if (playoffRoundsWon === 5) {
-				return "made Worlds finals";
-			} else if (playoffRoundsWon === 6) {
-				return "Worlds champions";
-			}
-		}
-	} else {
-		if (playoffRoundsWon < 0) {
-			if (playoffRoundsWonWorldsGr >= 0) {
-				return "made groups";
-			} else {
-				return "";
-			}
-		} else if (playoffRoundsWon == 0) {
-			return "made Worlds quarterfinals";
-		} else if (playoffRoundsWon === 1) {
-			return "made Worlds semifinals";
-		} else if (playoffRoundsWon === 2) {
-			return "made Worlds finals";
-		} else if (playoffRoundsWon === 3) {
-			return "Worlds champions";
-		} else if (playoffRoundsWonWorldsGr >= 0) {
-			return "made groups";
-		}
-	}
-
-
-
-
-  /*  if (playoffRoundsWon === g.numPlayoffRounds) {
-        return "League champs";
+    if (g.gameType === 0) {
+        if (playoffRoundsWon === 0) return "made first round";
+        if (playoffRoundsWon === 1) return "made second round";
+        if (playoffRoundsWon === 2) return "made league finals";
+        if (playoffRoundsWon >= 3) return "league champs";
+    } else if (g.gameType === 1) {
+        if (playoffRoundsWon === 4) return "made CS promotion";
+        if (playoffRoundsWon === 5) return "made CS round 2";
+        if (playoffRoundsWon === 6) return "made CS finals";
+        if (playoffRoundsWon === 7) return "made CS";
+        if (playoffRoundsWon === 13) return "stay at CS";
+        if (playoffRoundsWon === 14) return "demoted to CS";
+        if (playoffRoundsWon === 16) return "made LCS qualifiers";
+        if (playoffRoundsWon === 17) return "made LCS promotion";
+        if (playoffRoundsWon === 18) return "made LCS";
+        if (playoffRoundsWon === 20) return "stayed in LCS";
+        if (playoffRoundsWon === 24) return "made LCS quarterfinals";
+        if (playoffRoundsWon === 25) return "made LCS semifinals";
+        if (playoffRoundsWon === 26) return "made LCS finals";
+        if (playoffRoundsWon === 27) return "LCS champs";
+    } else if (g.gameType === 2) {
+        if (playoffRoundsWon === 0) return "made wild card";
+        if (playoffRoundsWon === 1) return "made quarterfinals";
+        if (playoffRoundsWon === 2) return "made semifinals";
+        if (playoffRoundsWon === 3) return "made finals";
+        if (playoffRoundsWon === 4) return "league champs";
+    } else if (g.gameType === 3) {
+        if (g.yearType === 2019) {
+            if (playoffRoundsWon === 0) return "made round 1";
+            if (playoffRoundsWon === 1) return "made round 2";
+            if (playoffRoundsWon === 2) return "made semifinals";
+            if (playoffRoundsWon === 3) return "made finals";
+            if (playoffRoundsWon === 4) return "league champs";
+        } else {
+            if (playoffRoundsWon === 0) return "made round 1";
+            if (playoffRoundsWon === 1) return "made round 2";
+            if (playoffRoundsWon === 2) return "made seeding match";
+            if (playoffRoundsWon === 3) return "made quarterfinals";
+            if (playoffRoundsWon === 4) return "made semifinals";
+            if (playoffRoundsWon === 5) return "made finals";
+            if (playoffRoundsWon === 6) return "league champs";
+        }
+    } else if (g.gameType === 4) {
+        if (playoffRoundsWon === 0) return "made quarterfinals";
+        if (playoffRoundsWon === 1) return "made semifinals";
+        if (playoffRoundsWon === 2) return "made finals";
+        if (playoffRoundsWon === 3) return "league champs";
+    } else if (g.gameType === 5) {
+        if (g.yearType === 2019) {
+            if (playoffRoundsWon < 0) return "";
+            if (playoffRoundsWon === 0) return "made conference playoffs";
+            if (playoffRoundsWon === 1) return "made regionals";
+            if (playoffRoundsWon === 2) return "made groups 1";
+            if (playoffRoundsWon === 3) return "made play-in";
+            if (playoffRoundsWon === 6) return "made groups 2";
+            if (playoffRoundsWon === 7) return "made Worlds quarterfinals";
+            if (playoffRoundsWon === 8) return "made Worlds semifinals";
+            if (playoffRoundsWon === 9) return "made Worlds finals";
+            if (playoffRoundsWon === 10) return "Worlds champions";
+        } else {
+            if (playoffRoundsWon < 0) return "";
+            if (playoffRoundsWon === 0) return "made conference playoffs";
+            if (playoffRoundsWon === 1) return "made regionals";
+            if (playoffRoundsWon === 2) return "made groups";
+            if (playoffRoundsWon === 3) return "made Worlds quarterfinals";
+            if (playoffRoundsWon === 4) return "made Worlds semifinals";
+            if (playoffRoundsWon === 5) return "made Worlds finals";
+            if (playoffRoundsWon === 6) return "Worlds champions";
+        }
+    } else {
+        if (playoffRoundsWon < 0) {
+            return playoffRoundsWonWorldsGr >= 0 ? "made groups" : "";
+        }
+        if (playoffRoundsWon === 0) return "made Worlds quarterfinals";
+        if (playoffRoundsWon === 1) return "made Worlds semifinals";
+        if (playoffRoundsWon === 2) return "made Worlds finals";
+        if (playoffRoundsWon === 3) return "Worlds champions";
+        if (playoffRoundsWonWorldsGr >= 0) return "made groups";
     }
-    if (playoffRoundsWon === g.numPlayoffRounds - 1) {
-        return playoffsByConference ? "Conference champs" : "Made finals";
-    }
-    if (playoffRoundsWon === g.numPlayoffRounds - 2) {
-        return playoffsByConference ? "Made conference finals" : "Made semifinals";
-    }
-    if (playoffRoundsWon >= 1) {
-        return `Made ${ordinal(playoffRoundsWon + 1)} round`;
-    }
-    if (playoffRoundsWon === 0) {
-        return "Made playoffs";
-    }*/
+
     return "";
 }
 
@@ -1401,41 +1262,31 @@ function roundWinp(winp: number): string {
 //winpSummer,
 
 
-const orderByChampPoints = <T: {seasonAttrs: {pointsYear: number, pointsSpring: number, pointsSummer: number, wonSummer: number}}>(teams: T[]): T[] => {
-
-	return orderBy(
-		teams,
-//		[(t) => t.seasonAttrs.pointsSpring+t.seasonAttrs.pointsSummer, (t) => t.seasonAttrs.wonSummer],
-//		[(t) => t.seasonAttrs.pointsYear, (t) => t.seasonAttrs.wonSummer],
-		[(t) => t.seasonAttrs.pointsYear, (t) => t.seasonAttrs.pointsSummer],
-		['desc', 'desc'],
-	);
-
+const orderByChampPoints = <T extends {seasonAttrs: {pointsYear: number, pointsSpring: number, pointsSummer: number, wonSummer: number}}>(teams: T[]): T[] => {
+    return orderBy(
+        teams,
+        [(t) => t.seasonAttrs.pointsYear, (t) => t.seasonAttrs.pointsSpring, (t) => t.seasonAttrs.pointsSummer, (t) => t.seasonAttrs.wonSummer],
+        ['desc', 'desc', 'desc', 'desc'],
+    );
 };
 
-const orderBySplitWinp = <T: {seasonAttrs: {winp: number, winpSpring: number, winpSummer: number, wonSummer: number, wonSpring: number,  kda: number}}>(teams: T[]): T[] => {
-
-	if (g.seasonSplit == "Summer") {
-		return orderBy(
-			teams,
-			[(t) => t.seasonAttrs.winpSummer, (t) => t.seasonAttrs.wonSummer, (t) => t.seasonAttrs.winp, (t) => t.stats.kda],
-//      [(t) => t.tid],
-//      [(t) => t.seasonAttrs.winpSummer, (t) => t.stats.kda],
-			['desc', 'desc', 'desc'],
-		);
-	} else {
-		return orderBy(
-			teams,
-			[(t) => t.seasonAttrs.winpSpring,(t) => t.seasonAttrs.wonSpring, (t) => t.seasonAttrs.winp, (t) => t.stats.kda],
-			['desc', 'desc', 'desc'],
-		);
-
-	}
-
+const orderBySplitWinp = <T extends {seasonAttrs: {winp: number, winpSpring: number, winpSummer: number, wonSummer: number, wonSpring: number, kda: number}}>(teams: T[]): T[] => {
+    if (g.seasonSplit === "Summer") {
+        return orderBy(
+            teams,
+            [(t) => t.seasonAttrs.winpSummer, (t) => t.seasonAttrs.wonSummer, (t) => t.seasonAttrs.kda],
+            ['desc', 'desc', 'desc'],
+        );
+    } else {
+        return orderBy(
+            teams,
+            [(t) => t.seasonAttrs.winpSpring, (t) => t.seasonAttrs.wonSpring, (t) => t.seasonAttrs.kda],
+            ['desc', 'desc', 'desc'],
+        );
+    }
 };
 
-
-const orderByWinp = <T: {seasonAttrs: {winp: number, won: number, kda: number}}>(teams: T[]): T[] => {
+const orderByWinp = <T extends {seasonAttrs: {winp: number, won: number, kda: number}}>(teams: T[]): T[] => {
     return orderBy(
         teams,
         [(t) => t.seasonAttrs.winp, (t) => t.seasonAttrs.won, (t) => t.stats.kda],
@@ -1443,27 +1294,26 @@ const orderByWinp = <T: {seasonAttrs: {winp: number, won: number, kda: number}}>
     );
 };
 
-const orderByWinpTowerKDA = <T: {seasonAttrs: {winp: number, diffTower: number, kda: number}}>(teams: T[]): T[] => {
+const orderByWinpTowerKDA = <T extends {seasonAttrs: {winp: number, diffTower: number, kda: number}, stats: {pf: number, oppTw: number, kda: number}}>(teams: T[]): T[] => {
     return orderBy(
         teams,
-        [(t) => t.seasonAttrs.winp, (t) => t.stats.pf-t.stats.oppTw, (t) => t.stats.kda],
+        [(t) => t.seasonAttrs.winp, (t) => t.stats.pf - t.stats.oppTw, (t) => t.stats.kda],
         ['desc', 'desc', 'desc'],
     );
 };
 
-const orderByWinpSpringTowerKDA = <T: {seasonAttrs: {winpSpring: number, diffTower: number, kda: number}}>(teams: T[]): T[] => {
+const orderByWinpSpringTowerKDA = <T extends {seasonAttrs: {winpSpring: number, diffTower: number, kda: number}, stats: {pf: number, oppTw: number, kda: number}}>(teams: T[]): T[] => {
     return orderBy(
         teams,
-        [(t) => t.seasonAttrs.winpSpring, (t) => t.stats.pf-t.stats.oppTw, (t) => t.stats.kda],
+        [(t) => t.seasonAttrs.winpSpring, (t) => t.stats.pf - t.stats.oppTw, (t) => t.stats.kda],
         ['desc', 'desc', 'desc'],
     );
 };
 
-const orderByWinpSummerTowerKDA = <T: {seasonAttrs: {winpSummer: number, diffTower: number, kda: number}}>(teams: T[]): T[] => {
+const orderByWinpSummerTowerKDA = <T extends {seasonAttrs: {winpSummer: number, diffTower: number, kda: number}, stats: {pf: number, oppTw: number, kda: number}}>(teams: T[]): T[] => {
     return orderBy(
         teams,
-        [(t) => t.seasonAttrs.winpSummer, (t) => t.stats.pf-t.stats.oppTw, (t) => t.stats.kda],
-        //[(t) => t.stats.pf-t.stats.oppTw],
+        [(t) => t.seasonAttrs.winpSummer, (t) => t.stats.pf - t.stats.oppTw, (t) => t.stats.kda],
         ['desc', 'desc', 'desc'],
     );
 };

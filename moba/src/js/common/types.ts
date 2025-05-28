@@ -325,7 +325,8 @@ export type GameAttributeKey = (
     'teamNamesCache' |
     'teamRegionsCache' |
     'userTid' |
-    'userTids'
+    'userTids' |
+    'yearType'
 );
 
 export type GameAttribute = {
@@ -345,6 +346,11 @@ export type GameProcessed = {
     tid?: number,
     pts: number,
     won: boolean,
+    seasonSplit?: string,
+    seasonSplit2?: string,
+    playoffType?: string,
+    playoffs?: boolean,
+    playoffs2?: string,
 };
 
 export type GameProcessedCompleted = {
@@ -353,6 +359,11 @@ export type GameProcessedCompleted = {
     score: string,
     teams: [Object, Object],
     won: boolean,
+    seasonSplit: string,
+    seasonSplit2: string,
+    playoffType: string,
+    playoffs: boolean,
+    playoffs2: string,
 };
 
 export type GetOutput = {[key: string]: string | number};

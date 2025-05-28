@@ -375,10 +375,10 @@ function generate(tm: any) {
         region: tm.region,
         name: tm.name,
         abbrev: tm.abbrev,
-            country: tm.country,
-			countrySpecific: tm.countrySpecific !== undefined ? tm.imgURLCountry : tm.country,
-            imgURLCountry: tm.imgURLCountry !== undefined ? tm.imgURLCountry : "",
-            imgURLStadium: tm.imgURLStadium !== undefined ? tm.imgURLStadium : "",
+        country: tm.country,
+        countrySpecific: tm.countrySpecific !== undefined ? tm.countrySpecific : tm.country,
+        imgURLCountry: tm.imgURLCountry !== undefined ? tm.imgURLCountry : "",
+        imgURLStadium: tm.imgURLStadium !== undefined ? tm.imgURLStadium : "",
         imgURL: tm.imgURL !== undefined ? tm.imgURL : "",
         budget: {
             ticketPrice: {

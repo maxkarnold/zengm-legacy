@@ -1,5 +1,3 @@
-// @flow
-
 import type {Conditions, LogEventSaveOptions, LogEventShowOptions, LogEventType} from './types';
 
 // Really, pids, tids, and type should not be optional if saveToDb is true
@@ -16,7 +14,7 @@ type LogEventOptions = {
 
 function createLogger(
     saveEvent: (LogEventSaveOptions) => void,
-    showEvent: (LogEventShowOptions) => void,
+    showEvent: (LogEventShowOptions, conditions?: Conditions) => void,
 ): (LogEventOptions) => void {
     const logEvent = ({
         extraClass,
