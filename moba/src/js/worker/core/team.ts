@@ -1,8 +1,6 @@
-// @flow
-
 import _ from 'underscore';
 import {PHASE, PLAYER, g, helpers} from '../../common';
-import {draft, player, trade} from '../core';
+import {draft, player, trade} from '.';
 import {idb} from '../db';
 import {local, logEvent, random} from '../util';
 import type {Conditions, ContractInfo, TeamSeason, TeamStats, TradePickValues} from '../../common/types';
@@ -272,7 +270,7 @@ function genSeasonRow(tid: number, cid: number, imgURLCountry: string, countrySp
  * @param {=boolean} playoffs Is this stats row for the playoffs or not? Default false.
  * @return {Object} Team stats object.
  */
-function genStatsRow(tid: number, playoffs?: boolean = false): TeamStats {
+function genStatsRow(tid: number, playoffs = false): TeamStats {
 //	console.log(tid+" "+playoffs);
     return {
         tid,
@@ -2259,27 +2257,27 @@ async function checkRosterSizes(conditions: Conditions): Promise<string | void> 
 				console.log(region);
 		if (region == 'NA') {
 			imgURLCountry = "/img/flags/flags/48/United_States.png";
-		} else if (regoin == 'EU') {
+		} else if (region == 'EU') {
 			imgURLCountry = "/img/flags/flags/48/European_Union.png";
-		} else if (regoin == 'KR') {
+		} else if (region == 'KR') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Korea-South.png";
-		} else if (regoin == 'CN') {
+		} else if (region == 'CN') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-China.png";
-		} else if (regoin == 'TW') {
+		} else if (region == 'TW') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Taiwan.png";
-		} else if (regoin == 'CIS') {
+		} else if (region == 'CIS') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Russia.png";
-		} else if (regoin == 'BR') {
+		} else if (region == 'BR') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Brazil.png";
-		} else if (regoin == 'JP') {
+		} else if (region == 'JP') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Japan.png";
-		} else if (regoin == 'OCE') {
+		} else if (region == 'OCE') {
 			imgURLCountry = "http://www.anbg.gov.au/images/flags/nation/australia.gif";
-		} else if (regoin == 'LatAm') {
+		} else if (region == 'LatAm') {
 			imgURLCountry = "http://www.flagandbanner.com/images/K20LAT35.jpg";
-		} else if (regoin == 'SEA') {
+		} else if (region == 'SEA') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Vietnam.png";
-		} else if (regoin == 'TR') {
+		} else if (region == 'TR') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Turkey.png";
 		} else {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-United-States-of-America.png";
@@ -2302,27 +2300,27 @@ async function checkRosterSizes(conditions: Conditions): Promise<string | void> 
 		console.log(getRegionImage2);
 		if (region == 'NA') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-United-States-of-America.png";
-		} else if (regoin == 'EU') {
+		} else if (region == 'EU') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Canada.png";
-		} else if (regoin == 'KR') {
+		} else if (region == 'KR') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Korea-South.png";
-		} else if (regoin == 'CN') {
+		} else if (region == 'CN') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-China.png";
-		} else if (regoin == 'TW') {
+		} else if (region == 'TW') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Taiwan.png";
-		} else if (regoin == 'CIS') {
+		} else if (region == 'CIS') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Russia.png";
-		} else if (regoin == 'BR') {
+		} else if (region == 'BR') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Brazil.png";
-		} else if (regoin == 'JP') {
+		} else if (region == 'JP') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Japan.png";
-		} else if (regoin == 'OCE') {
+		} else if (region == 'OCE') {
 			imgURLCountry = "http://www.anbg.gov.au/images/flags/nation/australia.gif";
-		} else if (regoin == 'LatAm') {
+		} else if (region == 'LatAm') {
 			imgURLCountry = "http://www.flagandbanner.com/images/K20LAT35.jpg";
-		} else if (regoin == 'SEA') {
+		} else if (region == 'SEA') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Vietnam.png";
-		} else if (regoin == 'TR') {
+		} else if (region == 'TR') {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-Turkey.png";
 		} else {
 			imgURLCountry = "https://www.countries-ofthe-world.com/flags/flag-of-United-States-of-America.png";

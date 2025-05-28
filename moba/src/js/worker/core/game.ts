@@ -1,8 +1,6 @@
-// @flow
-
 import _ from 'underscore';
 import {COMPOSITE_WEIGHTS, PHASE, PLAYER, g, helpers} from '../../common';
-import {draft, GameSim, champion, finances, freeAgents, phase, player, season, team, trade} from '../core';
+import {draft, GameSim, champion, finances, freeAgents, phase, player, season, team, trade} from '.';
 import {idb} from '../db';
 import {advStats, lock, logEvent, random, toUI, updatePlayMenu, updateStatus} from '../util';
 import type {Conditions, GameResults} from '../../common/types';
@@ -1597,7 +1595,7 @@ async function loadTeams() {
  * @param {boolean} start Is this a new request from the user to play games (true) or a recursive callback to simulate another day (false)? If true, then there is a check to make sure simulating games is allowed. Default true.
  * @param {number?} gidPlayByPlay If this number matches a game ID number, then an array of strings representing the play-by-play game simulation are included in the api.realtimeUpdate raw call.
  */
-async function play(numDays: number, conditions: Conditions, start?: boolean = true, gidPlayByPlay?: number) {
+async function play(numDays: number, conditions: Conditions, start = true, gidPlayByPlay?: number) {
 
 	//console.log("play");
     // This is called when there are no more games to play, either due to the user's request (e.g. 1 week) elapsing or at the end of the regular season

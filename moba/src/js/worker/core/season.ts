@@ -1,8 +1,6 @@
-// @flow
-
 import _ from 'underscore';
 import {PLAYER, g, helpers} from '../../common';
-import { draft,league,team} from '../core';
+import { draft,league,team} from '.';
 import {idb} from '../db';
 import {logEvent, random} from '../util';
 import type {Conditions, OwnerMoodDeltas, ScheduleGame, Team, TeamFiltered} from '../../common/types';
@@ -992,7 +990,7 @@ async function doAwards(conditions: Conditions) {
  * @param {boolean} options.oneDay Return just one day (true) or all days (false). Default false.
  * @return {Promise} Resolves to the requested schedule array.
  */
-async function getSchedule(oneDay?: boolean = false): Promise<ScheduleGame[]> {
+async function getSchedule(oneDay = false): Promise<ScheduleGame[]> {
     let schedule = await idb.cache.schedule.getAll();
 
 //	let undrafted = await idb.cache.champions.getAll();
@@ -7858,7 +7856,6 @@ function genPlayoffSeriesNACS(
 			series: series,
 		//	cidCS: cidCS,
 			cidLadder: cidLadder,
-			series: series,
 			teamsConf: teamsConf,
 			teamsConf2: teamsConf2,
 			teamsConf3: teamsConf3,

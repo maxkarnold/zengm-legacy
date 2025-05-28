@@ -3,7 +3,7 @@
 import faces from '../../vendor/faces';
 import _ from 'underscore';
 import {COMPOSITE_WEIGHTS, PHASE, PLAYER, g, helpers} from '../../common';
-import {finances} from '../core';
+import {finances} from '.';
 import {idb} from '../db';
 import * as champions from '../../data/champions2';
 import * as championPatch from '../../data/championPatch';
@@ -345,11 +345,11 @@ function fuzzRating(rating: number, fuzz: number): number {
 				var MMR
 
 				if (g.gameType == 1 || g.gameType == 6) {
-					MMR = Math.round(ovr*ovr/55*5 +2150+skillMMR*skillMMR/200*.5,0); // up to 500 + 2200 + up to 500
+					MMR = Math.round(ovr*ovr/55*5 +2150+skillMMR*skillMMR/200*.5); // up to 500 + 2200 + up to 500
 				} else if (g.gameType == 7) {
-					MMR = Math.round(ovr*ovr/55*5 +2050+skillMMR*skillMMR/200*.5,0); // up to 500 + 2200 + up to 500
+					MMR = Math.round(ovr*ovr/55*5 +2050+skillMMR*skillMMR/200*.5); // up to 500 + 2200 + up to 500
 				} else {
-					MMR = Math.round(ovr*9 +2200+skillMMR*1,0); // up to 500 + 2200 + up to 500
+					MMR = Math.round(ovr*9 +2200+skillMMR*1); // up to 500 + 2200 + up to 500
 				}
 							//console.log(MMR+" "+g.gameType);
 
@@ -801,9 +801,9 @@ function setContract(
 
 function develop(
     p: {born: {loc: string, year: number}, pos?: string, ratings: PlayerRatings[]},
-    years?: number = 1,
-    newPlayer?: boolean = false,
-    coachingRank?: number = 15.5,
+    years = 1,
+    newPlayer = false,
+    coachingRank = 15.5,
 	topADC,topMID,topJGL,topTOP,topSUP, // need to include in the develop function
 ) {
 
@@ -2066,12 +2066,7 @@ function addRatingsRow(
  * @param {Object} p Player object.
  * @param {=boolean} playoffs Is this stats row for the playoffs or not? Default false.
  */
-async function addStatsRow(p: Player, playoffs?: boolean = false) {
-
-	///console.log(p);
-	//console.log(playoffs);
-
-		const championStats = []
+async function addStatsRow(p: Player, playoffs = false) {
 
 /*		= {
 				gp: 0,
@@ -2089,7 +2084,6 @@ async function addStatsRow(p: Player, playoffs?: boolean = false) {
 			seasonSplit: g.seasonSplit,
 			tid: p.tid,
 			playoffs: playoffs,
-			championStats: championStats,
 			gp: 0,
 			gs: 0,
 			min: 0,
@@ -2220,11 +2214,11 @@ function generate(
     scoutingRank: number,
 	// need to make sure these are loaded
 	cDefault,
-	topADC: array,
-	topMID: array,
-	topJGL: array,
-	topTOP: array,
-	topSUP: array,
+	topADC: unknown[],
+	topMID: unknown[],
+	topJGL: unknown[],
+	topTOP: unknown[],
+	topSUP: unknown[],
 
 ): PlayerWithoutPid {
         var maxHgt, maxWeight, minHgt, minWeight, nationality, country, p,i;
@@ -3583,7 +3577,7 @@ async function updateValues(p: Player | PlayerWithoutPid, psOverride?: PlayerSta
  * @param {Object} p Player object.
  * @return {Object} p Updated (retired) player object.
  */
-function retire(p: Player, playerStats: PlayerStats[], conditions: Conditions, retiredNotification?: boolean = true) {
+function retire(p: Player, playerStats: PlayerStats[], conditions: Conditions, retiredNotification = true) {
     if (retiredNotification) {
         logEvent({
             type: "retired",
@@ -3874,7 +3868,7 @@ function moodColorText(p: Player) {
 				//p.champions.push({});
 	//			p.champions[i].skill =  p.ratings[0].ovr+(Math.round(Math.random()*100,0)-10);
 	//			p.champions[i].skill =  p.ratings[0].ovr+(Math.random()*100*20-10);
-				p.champions[i].skill =  Math.round( p.ratings[0].ovr+(Math.random()*40-20),0);
+				p.champions[i].skill =  Math.round( p.ratings[0].ovr+(Math.random()*40-20));
 
 				if (p.champions[i].skill< 0) {
 				   p.champions[i].skill = 0;
@@ -4043,7 +4037,7 @@ function checkStatisticalFeat(pid: number, tid: number, p: GamePlayer, results: 
         }
         if (p.stat.tp/p.stat.min >= 11) {
 			//console.log(Math.round(p.stat.tp/p.stat.min,2));
-            statArr["creep score per minute"]  = Math.round(p.stat.tp/p.stat.min,2);
+            statArr["creep score per minute"]  = Math.round((p.stat.tp/p.stat.min) * 100) / 100;
             statArr["creep score"]  = p.stat.tp;
           //  statArr.minutes  = p.stat.min;
             saveFeat = true;

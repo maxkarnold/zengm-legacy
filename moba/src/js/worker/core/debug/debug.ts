@@ -1,12 +1,10 @@
-// @flow
-
 // Functions only used for debugging the game, particularly balance issues. This should not be included or loaded in the compiled version.
 
 import backboard from 'backboard';
-import {PLAYER} from '../../common';
-import {player} from '../core';
-import {idb} from '../db';
-import type {RatingKey} from '../../common/types';
+import {PLAYER} from '../../../common';
+import {player} from '..';
+import {idb} from '../../db';
+import type {RatingKey} from '../../../common/types';
 
 async function regressRatingsPer() {
     // http://rosettacode.org/wiki/Multiple_regression#JavaScript
@@ -173,7 +171,7 @@ async function regressRatingsPer() {
     }
 
     const x = new Matrix(ratings);
-    const y = new ColumnVector(pers);
+    const y = ColumnVector(pers);
 
     const c = y.regressionCoefficients(x);
 

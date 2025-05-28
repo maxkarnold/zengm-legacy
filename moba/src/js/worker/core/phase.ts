@@ -1,8 +1,6 @@
-// @flow
-
 import _ from 'underscore';
 import {PHASE, PLAYER, g, helpers} from '../../common';
-import {contractNegotiation, draft, finances, freeAgents, league, player, season, team} from '../core';
+import {contractNegotiation, draft, finances, freeAgents, league, player, season, team} from '.';
 import {idb} from '../db';
 import {account, env, genMessage, local, lock, logEvent, random, toUI, updatePhase, updatePlayMenu, updateStatus} from '../util';
 import type {Conditions, Phase, UpdateEvents} from '../../common/types';
@@ -823,7 +821,7 @@ async function newPhaseSecondHalf() {
 
 // update standings to show spring and summer splits seperate
 
-async function newPhasePlayoffs(conditions: Conditions, liveGameSim?: boolean = false) {
+async function newPhasePlayoffs(conditions: Conditions, liveGameSim = false) {
 
 console.log(g.confs);
 	await league.setGameAttributes({seasonSplit: 'Summer'});
@@ -834,7 +832,7 @@ console.log(g.confs);
 
 }
 
-async function newPhaseBeforeDraft(conditions: Conditions, liveGameSim?: boolean = false) {
+async function newPhaseBeforeDraft(conditions: Conditions, liveGameSim = false) {
 
 
 	await league.setGameAttributes({seasonSplit: 'Summer'});

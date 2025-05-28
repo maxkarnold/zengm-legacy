@@ -1,8 +1,6 @@
-// @flow
-
 import _ from 'underscore';
 import {PLAYER, g, helpers} from '../../common';
-import {player, team} from '../core';
+import {player, team} from '.';
 import {idb} from '../db';
 import {logEvent, random} from '../util';
 import type {TradePickValues, TradeSummary, TradeTeams} from '../../common/types';
@@ -354,7 +352,7 @@ const processTrade = async (tradeSummary, tids, pids, dpids) => {
  * @param {boolean} forceTrade When true (like in God Mode), this trade is accepted regardless of the AI
  * @return {Promise.<boolean, string>} Resolves to an array. The first argument is a boolean for whether the trade was accepted or not. The second argument is a string containing a message to be dispalyed to the user.
  */
-async function propose(forceTrade?: boolean = false): Promise<[boolean, ?string]> {
+async function propose(forceTrade = false): Promise<[boolean, string | undefined]> {
     if (g.phase >= g.PHASE.AFTER_TRADE_DEADLINE && g.phase <= g.PHASE.PLAYOFFS) {
         return [false, "Error! You're not allowed to make trades now."];
     }

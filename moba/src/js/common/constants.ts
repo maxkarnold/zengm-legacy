@@ -18,14 +18,14 @@ function PHASE() {
 }*/
 
 const PHASE = {
-  //  FANTASY_DRAFT: -1,
-  //  PRESEASON: 0,
-  //  REGULAR_SEASON: 1,
-  //  AFTER_TRADE_DEADLINE: 2,
-  //  PLAYOFFS: 3,
-  //  BEFORE_DRAFT: 4,
-  //  RESIGN_PLAYERS: 5,
-  //  FREE_AGENCY: 6,
+   FANTASY_DRAFT: -1,
+   PRESEASON: 0,
+   REGULAR_SEASON: 1,
+   AFTER_TRADE_DEADLINE: 2,
+   PLAYOFFS: 3,
+   BEFORE_DRAFT: 4,
+   RESIGN_PLAYERS: 5,
+   FREE_AGENCY: 6,
 };
 
 const PLAYER = {

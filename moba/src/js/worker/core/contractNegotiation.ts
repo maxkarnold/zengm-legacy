@@ -1,7 +1,5 @@
-// @flow
-
 import {PHASE, PLAYER, g, helpers} from '../../common';
-import {freeAgents, player, team} from '../core';
+import {freeAgents, player, team} from '.';
 import {idb} from '../db';
 import {lock, logEvent, updatePlayMenu, updateStatus} from '../util';
 
@@ -44,16 +42,16 @@ async function create(pid: number, resigning: boolean, tid: number = g.userTid):
 
 	console.log(playerAmount);
 	console.log(p.freeAgentMood[g.userTid]);
-	
+
 	//console.log(p);
 	if (p.tid < 0) {
 		if (helpers.refuseToNegotiate(playerAmount, p.freeAgentMood[g.userTid]) && g.refuseToSign) {
 			return `<a href="${helpers.leagueUrl(["player", p.pid])}">${p.firstName} ${p.lastName}</a> refuses to sign with you, no matter what you offer.`;
-		}		
+		}
 	} else {
 		if (helpers.refuseToNegotiate(playerAmount, p.freeAgentMood[g.userTid]) && g.refuseToLeave ) {
 			return `<a href="${helpers.leagueUrl(["player", p.pid])}">${p.firstName} ${p.lastName}</a> refuses to sign with you, no matter what you offer.`;
-		}		
+		}
 	}
 
 
@@ -110,7 +108,7 @@ async function cancelAll() {
  * @param {number} pid An integer that must correspond with the player ID of a player in an ongoing negotiation.
  * @return {Promise.<string=>} If an error occurs, resolves to a string error message.
  */
-async function accept(pid: number, amount: number, exp: number): Promise<?string> {
+async function accept(pid: number, amount: number, exp: number): Promise<string | undefined> {
     const negotiation = await idb.cache.negotiations.get(pid);
     const payroll = (await team.getPayroll(g.userTid))[0];
 

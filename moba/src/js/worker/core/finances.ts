@@ -1,7 +1,5 @@
-// @flow
-
 import {g, helpers} from '../../common';
-import {team} from '../core';
+import {team} from '.';
 import {idb} from '../db';
 import type {TeamSeason} from '../../common/types';
 
@@ -160,12 +158,12 @@ async function updateRanks(types: BudgetTypes[]) {
  */
 function getRankLastThree(teamSeasons: TeamSeason[], category: 'expenses' | 'revenues', item: string): number {
     const s = teamSeasons.length - 1; // Most recent season index
-	
+
 	//console.log(s);
 	//console.log(teamSeasons);
-	//console.log(category);		
-	//console.log(item);	
-	
+	//console.log(category);
+	//console.log(item);
+
     if (s > 1) {
         // Use three seasons if possible
         return (teamSeasons[s][category][item].rank + teamSeasons[s - 1][category][item].rank + teamSeasons[s - 2][category][item].rank) / 3;
@@ -179,13 +177,13 @@ function getRankLastThree(teamSeasons: TeamSeason[], category: 'expenses' | 'rev
 		//console.log(teamSeasons[s]);
 		//console.log(teamSeasons[s][category]);
 		//console.log(teamSeasons[s][category][item]);
-		//console.log(item);		
+		//console.log(item);
 		//console.log(teamSeasons[s][category][item].rank);
 		//console.log((teamSeasons[s][category][item].rank + 15.5 + 15.5) / 3);
-		
+
         return (teamSeasons[s][category][item].rank + 15.5 + 15.5) / 3;
     }
-	
+
     return 15.5;
 }
 

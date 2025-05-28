@@ -1,8 +1,6 @@
-// @flow
-
 import _ from 'underscore';
 import {PHASE, PLAYER, g, helpers} from '../../common';
-import {finances, league, phase, player, season} from '../core';
+import {finances, league, phase, player, season} from '.';
 import {idb} from '../db';
 import {local, logEvent, random, updatePlayMenu, updatePhase} from '../util';
 import type {Conditions, PickRealized, TeamFiltered} from '../../common/types';
@@ -28,10 +26,10 @@ async function genPicks(season: number) {
  * @return {Promise} Resolves to an ordered array of pick objects.
  */
 async function getOrder() {
-	
+
 	// save draft order to draftOrder or schedule?
 	// use draft order could be seemless
-	
+
     const row = await idb.cache.draftOrder.get(0);
 //	console.log(row);
     return row.draftOrder;
@@ -62,9 +60,9 @@ async function setOrder(draftOrder: PickRealized[]) {
  * @param {?number=} numPlayers The number of prospects to generate. Default value is 70.
  * @return {Promise}
  */
-async function genPlayers(tid: number, scoutingRank?: ?number = null, numPlayers?: number, newLeague?: boolean = false,cDefault,topADC,topMID,topJGL,topTOP,topSUP) {
+async function genPlayers(tid: number, scoutingRank: number = null, numPlayers = 70, newLeague: boolean = false,cDefault,topADC,topMID,topJGL,topTOP,topSUP) {
 
-	
+
     if (numPlayers === null || numPlayers === undefined) {
 //        numPlayers = Math.round(70 * g.numTeams / 30); // 70 scaled by number of teams
         numPlayers = Math.round(70 * g.numTeams / 30 ) * 1.5 * g.prospectSupply; // 70 scaled by number of teams
@@ -81,17 +79,17 @@ async function genPlayers(tid: number, scoutingRank?: ?number = null, numPlayers
     const profiles = ["Point", "Wing", "Big", "Big", ""];
 
 	let baseRating;
-	let pot;	
+	let pot;
     for (let i = 0; i < numPlayers; i++) {
-		
+
 		if (g.gameType == 1 || g.gameType == 6) {
-			baseRating = random.randInt(0, 32);					
-			pot = Math.round(helpers.bound(random.realGauss(17, 55), baseRating, 100)); // 9 SUP										
+			baseRating = random.randInt(0, 32);
+			pot = Math.round(helpers.bound(random.realGauss(17, 55), baseRating, 100)); // 9 SUP
 		} else {
-			baseRating = random.randInt(0, 32);					
-			pot = Math.round(helpers.bound(random.realGauss(17, 55), baseRating, 100)); // 9 SUP										
-		}		
-		
+			baseRating = random.randInt(0, 32);
+			pot = Math.round(helpers.bound(random.realGauss(17, 55), baseRating, 100)); // 9 SUP
+		}
+
         //const baseRating = random.randInt(8, 31);
         //const pot = Math.round(helpers.bound(random.realGauss(48, 17), baseRating, 90));
 
@@ -116,10 +114,10 @@ async function genPlayers(tid: number, scoutingRank?: ?number = null, numPlayers
             draftYear += 3;
         }
 
-	
+
 		//console.log(cDefault);
 //		console.log(topADC);
-		
+
 
         const p = player.generate(tid, baseAge, profile, baseRating, pot, draftYear, false, scoutingRank, cDefault,topADC,topMID,topJGL,topTOP,topSUP);
         player.develop(p, agingYears, true, null,topADC,topMID,topJGL,topTOP,topSUP);
@@ -186,7 +184,7 @@ function logLotteryWinners(chances: number[], teams: TeamFiltered[], tm: number,
  * If isFinal is true, the remainder value is distributed randomly instead
  * of being set as a decimal value on the result.
  */
-function updateChances(chances: number[], teams: TeamFiltered[], isFinal?: boolean = false) {
+function updateChances(chances: number[], teams: TeamFiltered[], isFinal: boolean = false) {
     let wps = _.countBy(teams, (t) => t.seasonAttrs.winp);
     wps = _.pairs(wps);
     wps = _.sortBy(wps, x => Number(x[0]));
@@ -263,29 +261,29 @@ function lotterySort(teams: TeamFiltered[]) {
  */
 //async function genOrder(game, conditions: Conditions) {
 function genOrder(game, conditions: Conditions) {
-	
+
 	// call this during prep to game
 	// put draft picks in this instead of draft page
   //  const games = helpers.deepCopy(await season.getSchedule(true));
-// get user's game, then populate pick ban section with it. 
+// get user's game, then populate pick ban section with it.
 // make it known which rows are picks and which are bans.
 // may have to reorganize page.
 // 4 sections, team A bans, teams B bans, team A picks, team B picks
 // Could even display each in a special way
 
-console.log("genOrder");
-	let usersGame = {};
+	console.log("genOrder");
+	let usersGame = { draftpicks: [] };
 	let undrafted = [];
-	let drafted = [];	
-	
+	let drafted = [];
+
 	usersGame = helpers.deepCopy(game);
 
-	
-	
+
+
 	/*drafted.push({
 		draft: {
 			tid: usersGame.homeTid,
-			originalTid: usersGame.homeTid,				
+			originalTid: usersGame.homeTid,
 			round: 1,
 			pick: "BAN",
 		},
@@ -294,35 +292,35 @@ console.log("genOrder");
 	 drafted.push({
 		draft: {
 			tid: usersGame.awayTid,
-			originalTid: usersGame.awayTid,				
+			originalTid: usersGame.awayTid,
 			round: 1,
 			pick: "BAN",
 		},
 		pid: -1,
-	});	
+	});
 	 drafted.push({
 		draft: {
 			tid: usersGame.homeTid,
-			originalTid: usersGame.homeTid,				
+			originalTid: usersGame.homeTid,
 			round: 2,
 			pick: "BAN",
 		},
 		pid: -1,
-	});		
+	});
 	 drafted.push({
 		draft: {
 			tid: usersGame.awayTid,
-			originalTid: usersGame.awayTid,				
+			originalTid: usersGame.awayTid,
 			round: 2,
 			pick: "BAN",
 		},
 		pid: -1,
-	});				
+	});
 
 	drafted.push({
 		draft: {
 			tid: usersGame.homeTid,
-			originalTid: usersGame.homeTid,				
+			originalTid: usersGame.homeTid,
 			round: 3,
 			pick: "BAN",
 		},
@@ -331,79 +329,79 @@ console.log("genOrder");
 	drafted.push({
 		draft: {
 			tid: usersGame.awayTid,
-			originalTid: usersGame.awayTid,				
+			originalTid: usersGame.awayTid,
 			round: 3,
 			pick: "BAN",
 		},
 		pid: -1,
-	});	
+	});
 	 drafted.push({
 		draft: {
 			tid: usersGame.homeTid,
-			originalTid: usersGame.homeTid,				
+			originalTid: usersGame.homeTid,
 			round: 1,
 			pick: "PICK",
 		},
 		pid: -1,
-	});		
+	});
 	 drafted.push({
 		draft: {
 			tid: usersGame.awayTid,
-			originalTid: usersGame.awayTid,				
+			originalTid: usersGame.awayTid,
 			round: 1,
 			pick: "PICK",
 		},
 		pid: -1,
-	});			
+	});
 	 drafted.push({
 		draft: {
 			tid: usersGame.awayTid,
-			originalTid: usersGame.awayTid,				
-			round: 2,
-			pick: "PICK",
-		},
-		pid: -1,
-	});	
-	 drafted.push({
-		draft: {
-			tid: usersGame.homeTid,
-			originalTid: usersGame.homeTid,				
+			originalTid: usersGame.awayTid,
 			round: 2,
 			pick: "PICK",
 		},
 		pid: -1,
 	});
+	 drafted.push({
+		draft: {
+			tid: usersGame.homeTid,
+			originalTid: usersGame.homeTid,
+			round: 2,
+			pick: "PICK",
+		},
+		pid: -1,
+	});
 	drafted.push({
 		draft: {
 			tid: usersGame.homeTid,
-			originalTid: usersGame.homeTid,				
+			originalTid: usersGame.homeTid,
 			round: 3,
 			pick: "PICK",
 		},
 		pid: -1,
-	});			
+	});
 	drafted.push({
 		draft: {
 			tid: usersGame.awayTid,
-			originalTid: usersGame.awayTid,				
+			originalTid: usersGame.awayTid,
 			round: 3,
 			pick: "PICK",
 		},
 		pid: -1,
-	});		
+	});
 	drafted.push({
 		draft: {
 			tid: usersGame.awayTid,
-			originalTid: usersGame.awayTid,				
+			originalTid: usersGame.awayTid,
 			round: 4,
 			pick: "BAN",
 		},
 		pid: -1,
-	});	
+	});
 	drafted.push({
 		draft: {
 			tid: usersGame.homeTid,
-			originalTid: usersGame.homeTid,				
+			originalTid: usersGame.homeTid,
 			round: 4,
 			pick: "BAN",
 		},
@@ -412,16 +410,16 @@ console.log("genOrder");
 	drafted.push({
 		draft: {
 			tid: usersGame.awayTid,
-			originalTid: usersGame.awayTid,				
+			originalTid: usersGame.awayTid,
 			round: 5,
 			pick: "BAN",
 		},
 		pid: -1,
-	});		
+	});
 	drafted.push({
 		draft: {
 			tid: usersGame.homeTid,
-			originalTid: usersGame.homeTid,				
+			originalTid: usersGame.homeTid,
 			round: 5,
 			pick: "BAN",
 		},
@@ -430,42 +428,42 @@ console.log("genOrder");
 	drafted.push({
 		draft: {
 			tid: usersGame.awayTid,
-			originalTid: usersGame.awayTid,				
+			originalTid: usersGame.awayTid,
 			round: 4,
 			pick: "PICK",
 		},
 		pid: -1,
-	});	
+	});
 	drafted.push({
 		draft: {
 			tid: usersGame.homeTid,
-			originalTid: usersGame.homeTid,				
+			originalTid: usersGame.homeTid,
 			round: 4,
 			pick: "PICK",
 		},
 		pid: -1,
-	});		
+	});
 	drafted.push({
 		draft: {
 			tid: usersGame.homeTid,
-			originalTid: usersGame.homeTid,				
+			originalTid: usersGame.homeTid,
 			round: 5,
 			pick: "PICK",
 		},
 		pid: -1,
-	});			
+	});
 
 	drafted.push({
 		draft: {
 			tid: usersGame.awayTid,
-			originalTid: usersGame.awayTid,				
+			originalTid: usersGame.awayTid,
 			round: 5,
 			pick: "PICK",
 		},
 		pid: -1,
 	});		*/
-	
-	
+
+
 
 
 //    await setOrder(draftOrder);
@@ -563,7 +561,7 @@ function getRookieSalaries(): number[] {
  * @return {Promise}
  */
 async function selectPlayer(pick: PickRealized, pid: number) {
-	
+
 	console.log("selectPlayer");
     const p = await idb.cache.players.get(pid);
 
@@ -616,8 +614,8 @@ async function selectPlayerFantasy(pick: PickRealized, pid: number) {
     const p = await idb.cache.players.get(pid);
 
     // Draft player
-///	console.log("selectPlayer");	
-//	console.log(pick.tid);		
+///	console.log("selectPlayer");
+//	console.log(pick.tid);
     p.tid = pick.tid;
  /*   if (g.phase !== PHASE.FANTASY_DRAFT) {
 		console.log("selectPlayer");
@@ -685,12 +683,12 @@ async function untilUserOrEndFantasy(conditions: Conditions) {
             // Fantasy draft special case!
 		//	console.log(g.phase);
 		//	console.log(PHASE.FANTASY_DRAFT);
-			
+
            // if (g.phase === PHASE.FANTASY_DRAFT) {
                 // Undrafted players become free agents
                 const baseMoods = await player.genBaseMoods();
                 const playersUndrafted = await idb.cache.players.indexGetAll('playersByTid', PLAYER.UNDRAFTED);
-                for (const p of playersUndrafted) {				
+                for (const p of playersUndrafted) {
                     await player.addToFreeAgents(p, PHASE.FREE_AGENCY, baseMoods);
                 }
 
@@ -736,7 +734,7 @@ async function untilUserOrEndFantasy(conditions: Conditions) {
 				tid: pick.tid,
 			});
 			//console.log(t);
-			//console.log(t.country);			
+			//console.log(t.country);
             if (g.userTids.includes(pick.tid) && local.autoPlaySeasons === 0) {
                 draftOrder.unshift(pick);
                 return afterDoneAutoFantasy();
@@ -748,13 +746,13 @@ async function untilUserOrEndFantasy(conditions: Conditions) {
 			let selection;
 			for (let i = 0; i < playersAll.length; i++) {
 			///	console.log(playersAll.length+" "+i+" "+playersAll[i].ratings[0].region+" "+t.country);
-				selection = i;				
+				selection = i;
 				if (playersAll[i].ratings[0].region == t.country) {
 					// can have 1-2 imports, need ot think about this more
 					//if (Math.random() > .15) {
-					//	console.log(t.country);			
+					//	console.log(t.country);
 					//	console.log(playersAll[i].ratings[0].region);
-						
+
 						//selection = i;
 						break;
 					//}
@@ -765,7 +763,7 @@ async function untilUserOrEndFantasy(conditions: Conditions) {
       //      const selection = Math.floor(Math.abs(random.gauss(0, 2))); // 0=best prospect, 1=next best prospect, etc.
             const pid = playersAll[selection].pid;
 			//console.log(pick);
-			//console.log(pick.tid);			
+			//console.log(pick.tid);
 			//console.log(selection);
 			//console.log(playersAll[selection]);
             await selectPlayerFantasy(pick, pid);
@@ -790,8 +788,8 @@ async function champDraftValues(championRank, champions, players, i, conditions:
 		//	console.log(championRank); // patch  championRank[iv].rank
 		//	console.log(champions); // champ
 			// champions[ii].counter[iii]
-			// champions[ii].synergy[iii]			
-	//		console.log(players);	// players.champion[i].skill		
+			// champions[ii].synergy[iii]
+	//		console.log(players);	// players.champion[i].skill
 			//console.log(i);
            let rating = players[i].ratings.find(r => r.season === g.season);
 			//console.log(rating);
@@ -799,7 +797,7 @@ async function champDraftValues(championRank, champions, players, i, conditions:
                 // Sometimes this happens for unknown reasons, so gracefully handle it
                 rating = players[i].ratings[players[i].ratings.length - 1];
             }
-		
+
 			/*if (players[i].pos == "JGL") {
 			   position = "Jungle";
 			} else 	if (players[i].pos == "SUP") {
@@ -810,13 +808,13 @@ async function champDraftValues(championRank, champions, players, i, conditions:
 			   position = "Top";
 			} else {*/
 			//}
-			
+
 			// need to change all player position to SAFE OFF for DOTA 2 champions?
 			// if so, then this will need to be changed as well
-			
+
 			if (g.champType == 0) {
 			   position = players[i].pos;
-				
+
 				if (i==0) {
 					idealPosition = "TOP";
 				} else if (i==1) {
@@ -827,8 +825,8 @@ async function champDraftValues(championRank, champions, players, i, conditions:
 					idealPosition = "ADC";
 				} else if (i==4) {
 					idealPosition = "SUP";
-				}	
-///console.log(position+" "+idealPosition);				
+				}
+///console.log(position+" "+idealPosition);
 			}	else {
 				if (players[i].pos == "JGL") {
 				   position = "OFF";
@@ -839,10 +837,10 @@ async function champDraftValues(championRank, champions, players, i, conditions:
 				} else 	if (players[i].pos == "TOP") {
 				   position = "OFF";
 				} else {
-				   position = "SAFE";				
-				}	
+				   position = "SAFE";
+				}
 
-				
+
 				if (i==0) {
 					idealPosition = "OFF";
 				} else if (i==1) {
@@ -853,49 +851,49 @@ async function champDraftValues(championRank, champions, players, i, conditions:
 					idealPosition = "SAFE";
 				} else if (i==4) {
 					idealPosition = "SAFE";
-				}						
+				}
 			}
-				
+
 		//console.log(players[i]);
 	//	console.log(players[i].userID+" "+i+" "+idealPosition+" "+position);
 			if (idealPosition ==  position) {
 				adjustment = 1.00;
 			} else {
-				adjustment = 0.10;							  
-			}					
-		
+				adjustment = 0.10;
+			}
+
 		//	console.log(champions.length);
 			let playerChamps = true;
 			if (players[i].champions == undefined) {
 				players[i].champions = [];
-				//playerChamps = 
+				//playerChamps =
 			}
 			//console.log(players[i].champions);
-			
+
 			for (let j = 0; j < champions.length; j++) { // champions
 			//console.log(j+" "+i+" "+players[i].championAverage+" "+players[i].champions[j].skill);
 			//	console.log(players[i].champions[j].draftValue+" "+players[i].championAverage+" "+players[i].champions[j].skill);
 				if (players[i].champions[j] == undefined) {
 					players[i].champions[j] = {};
-					players[i].champions[j].draftValue =  .50;	
-					players[i].champions[j].name = champions[j].name;					
+					players[i].champions[j].draftValue =  .50;
+					players[i].champions[j].name = champions[j].name;
 				//console.log("got here");
 				} else if ( (players[i].championAverage == -1) || (players[i].championAverage == undefined)) {
 
-					players[i].champions[j].draftValue =  (players[i].champions[j].skill)/100;		
-					
-				//	console.log(i+" "+j+" "+players[i].champions[j].skill+" "+players[i].champions[j].draftValue)					
-//				console.log("got here");			
-				} else {						
-					players[i].champions[j].draftValue =  Number(players[i].championAverage)/100;							
-			//	console.log("got here");				
+					players[i].champions[j].draftValue =  (players[i].champions[j].skill)/100;
+
+				//	console.log(i+" "+j+" "+players[i].champions[j].skill+" "+players[i].champions[j].draftValue)
+//				console.log("got here");
+				} else {
+					players[i].champions[j].draftValue =  Number(players[i].championAverage)/100;
+			//	console.log("got here");
 				}
 				//console.log(players[i].champions[j].draftValue);
 //				topRanked = championPatch.length;
 //				topRanked = championRank.length;
 
 				topRanked = 0.00;
-				let cpid = 0;				
+				let cpid = 0;
 				for (let r = 0; r < championRank.length; r++) {		// patch
 //				for (let r = 0; r < championPatch.length; r++) {
 
@@ -907,14 +905,14 @@ async function champDraftValues(championRank, champions, players, i, conditions:
 						  if  (championRank[r].rank > topRanked) {
 								topRanked = championRank[r].rank;
 								cpid = r;
-						//		console.log(topRanked+" "+r);								
+						//		console.log(topRanked+" "+r);
 								// wrong match between cpid and champion role?
-								
+
 								// impact of player champ ability and champ win rate?
 								// put in a variable here that can be adjusted in god mode?
 								// make impact %10 on win rate?
 								//console.log(i+" "+j+" "+g.playerChampRatingImpact+" "+topRanked+" "+adjustment+" "+players[i].champions[j].draftValue);
-								
+
 								players[i].champions[j].draftValue *= g.playerChampRatingImpact; // range from 1 to .5, or same to double
 								//console.log(i+" "+j+" "+g.playerChampRatingImpact+" "+topRanked+" "+adjustment+" "+players[i].champions[j].draftValue);
 								players[i].champions[j].draftValue += Number(topRanked); // range from 1 to .5, or same to double
@@ -922,35 +920,35 @@ async function champDraftValues(championRank, champions, players, i, conditions:
 								// if not playing position adjustment will make champ win rate + player skill almost 0, putting the team at a big disadvantage
 								players[i].champions[j].draftValue *= adjustment; // range from 1 to .5, or same to double
 								//console.log(i+" "+j+" "+g.playerChampRatingImpact+" "+topRanked+" "+adjustment+" "+players[i].champions[j].draftValue);
-								
+
 								players[i].champions[j].cpid = cpid; // range from 1 to .5, or same to double
 								players[i].champions[j].hid = j; // range from 1 to .5, or same to double
 								players[i].champions[j].role = position; // range from 1 to .5, or same to double
 								//console.log(i+" "+j+" "+players[i].champions[j].draftValue);
 						//		console.log(players[i].champions[j].name+" "+position+" "+topRanked+" "+players[i].champions[j].draftValue+" "+players[i].champions[j].cpid);
-								
-						  }				   
+
+						  }
 						}
-				   } 
+				   }
 				}
-				//console.log(players[i].champions[j].draftValue);				
+				//console.log(players[i].champions[j].draftValue);
 //				if (topRanked == championRank.length) {
 				if (topRanked == 0.00) {
 //					players[i].champions[j].draftValue *= adjustment; // range from 1 to .5, or same to double
 					players[i].champions[j].draftValue *= g.playerChampRatingImpact; // range from 1 to .5, or same to double
 					players[i].champions[j].cpid = ""; // range from 1 to .5, or same to double
 					//console.log(players[i].champions[j].name+" "+position+" "+topRanked+" "+players[i].champions[j].draftValue+" "+players[i].champions[j].cpid);
-					
-				} 
-				
-				
-			}			
+
+				}
+
+
+			}
 		//	console.log(players[i].champions);
-	//	console.log(players[i]);			
-			players[i].champions.length = champions.length;	
+	//	console.log(players[i]);
+			players[i].champions.length = champions.length;
 			//console.log(players[i].champions);
 			return players;
-}	
+}
 
 
 async function setDraftOrder(drafted, usersGame, conditions: Conditions) {
@@ -958,7 +956,7 @@ async function setDraftOrder(drafted, usersGame, conditions: Conditions) {
 			drafted.push({
 				draft: {
 					tid: usersGame.homeTid,
-					originalTid: usersGame.homeTid,				
+					originalTid: usersGame.homeTid,
 					round: 1,
 					pick: "BAN",
 				},
@@ -967,35 +965,35 @@ async function setDraftOrder(drafted, usersGame, conditions: Conditions) {
 			 drafted.push({
 				draft: {
 					tid: usersGame.awayTid,
-					originalTid: usersGame.awayTid,				
+					originalTid: usersGame.awayTid,
 					round: 1,
 					pick: "BAN",
 				},
 				pid: -1,
-			});	
+			});
 			 drafted.push({
 				draft: {
 					tid: usersGame.homeTid,
-					originalTid: usersGame.homeTid,				
+					originalTid: usersGame.homeTid,
 					round: 2,
 					pick: "BAN",
 				},
 				pid: -1,
-			});		
+			});
 			 drafted.push({
 				draft: {
 					tid: usersGame.awayTid,
-					originalTid: usersGame.awayTid,				
+					originalTid: usersGame.awayTid,
 					round: 2,
 					pick: "BAN",
 				},
 				pid: -1,
-			});				
+			});
 
 			drafted.push({
 				draft: {
 					tid: usersGame.homeTid,
-					originalTid: usersGame.homeTid,				
+					originalTid: usersGame.homeTid,
 					round: 3,
 					pick: "BAN",
 				},
@@ -1004,79 +1002,79 @@ async function setDraftOrder(drafted, usersGame, conditions: Conditions) {
 			drafted.push({
 				draft: {
 					tid: usersGame.awayTid,
-					originalTid: usersGame.awayTid,				
+					originalTid: usersGame.awayTid,
 					round: 3,
 					pick: "BAN",
 				},
 				pid: -1,
-			});	
+			});
 			 drafted.push({
 				draft: {
 					tid: usersGame.homeTid,
-					originalTid: usersGame.homeTid,				
+					originalTid: usersGame.homeTid,
 					round: 1,
 					pick: "PICK",
 				},
 				pid: -1,
-			});		
+			});
 			 drafted.push({
 				draft: {
 					tid: usersGame.awayTid,
-					originalTid: usersGame.awayTid,				
+					originalTid: usersGame.awayTid,
 					round: 1,
 					pick: "PICK",
 				},
 				pid: -1,
-			});			
+			});
 			 drafted.push({
 				draft: {
 					tid: usersGame.awayTid,
-					originalTid: usersGame.awayTid,				
-					round: 2,
-					pick: "PICK",
-				},
-				pid: -1,
-			});	
-			 drafted.push({
-				draft: {
-					tid: usersGame.homeTid,
-					originalTid: usersGame.homeTid,				
+					originalTid: usersGame.awayTid,
 					round: 2,
 					pick: "PICK",
 				},
 				pid: -1,
 			});
+			 drafted.push({
+				draft: {
+					tid: usersGame.homeTid,
+					originalTid: usersGame.homeTid,
+					round: 2,
+					pick: "PICK",
+				},
+				pid: -1,
+			});
 			drafted.push({
 				draft: {
 					tid: usersGame.homeTid,
-					originalTid: usersGame.homeTid,				
+					originalTid: usersGame.homeTid,
 					round: 3,
 					pick: "PICK",
 				},
 				pid: -1,
-			});			
+			});
 			drafted.push({
 				draft: {
 					tid: usersGame.awayTid,
-					originalTid: usersGame.awayTid,				
+					originalTid: usersGame.awayTid,
 					round: 3,
 					pick: "PICK",
 				},
 				pid: -1,
-			});		
+			});
 			drafted.push({
 				draft: {
 					tid: usersGame.awayTid,
-					originalTid: usersGame.awayTid,				
+					originalTid: usersGame.awayTid,
 					round: 4,
 					pick: "BAN",
 				},
 				pid: -1,
-			});	
+			});
 			drafted.push({
 				draft: {
 					tid: usersGame.homeTid,
-					originalTid: usersGame.homeTid,				
+					originalTid: usersGame.homeTid,
 					round: 4,
 					pick: "BAN",
 				},
@@ -1085,16 +1083,16 @@ async function setDraftOrder(drafted, usersGame, conditions: Conditions) {
 			drafted.push({
 				draft: {
 					tid: usersGame.awayTid,
-					originalTid: usersGame.awayTid,				
+					originalTid: usersGame.awayTid,
 					round: 5,
 					pick: "BAN",
 				},
 				pid: -1,
-			});		
+			});
 			drafted.push({
 				draft: {
 					tid: usersGame.homeTid,
-					originalTid: usersGame.homeTid,				
+					originalTid: usersGame.homeTid,
 					round: 5,
 					pick: "BAN",
 				},
@@ -1103,44 +1101,44 @@ async function setDraftOrder(drafted, usersGame, conditions: Conditions) {
 			drafted.push({
 				draft: {
 					tid: usersGame.awayTid,
-					originalTid: usersGame.awayTid,				
+					originalTid: usersGame.awayTid,
 					round: 4,
 					pick: "PICK",
 				},
 				pid: -1,
-			});	
+			});
 			drafted.push({
 				draft: {
 					tid: usersGame.homeTid,
-					originalTid: usersGame.homeTid,				
+					originalTid: usersGame.homeTid,
 					round: 4,
 					pick: "PICK",
 				},
 				pid: -1,
-			});		
+			});
 			drafted.push({
 				draft: {
 					tid: usersGame.homeTid,
-					originalTid: usersGame.homeTid,				
+					originalTid: usersGame.homeTid,
 					round: 5,
 					pick: "PICK",
 				},
 				pid: -1,
-			});			
+			});
 
 			drafted.push({
 				draft: {
 					tid: usersGame.awayTid,
-					originalTid: usersGame.awayTid,				
+					originalTid: usersGame.awayTid,
 					round: 5,
 					pick: "PICK",
 				},
 				pid: -1,
-			});	
+			});
 
 			//console.log(players[i].champions);
 			return drafted;
-}	
+}
 
 /**
  * Simulate draft picks until it's the user's turn or the draft is over.
@@ -1160,7 +1158,7 @@ async function untilUserOrEnd(conditions: Conditions) {
     const [playersAll, draftOrder, schedule] = await Promise.all([
         idb.cache.players.indexGetAll('playersByTid', PLAYER.UNDRAFTED),
         getOrder(),
-		await idb.cache.schedule.getAll()	
+		await idb.cache.schedule.getAll()
     ]);
 
 	console.log(playersAll);
@@ -1174,23 +1172,23 @@ async function untilUserOrEnd(conditions: Conditions) {
 		console.log(i+" "+schedule[i].homeTid+" "+schedule[i].awayTid+" "+g.userTid);
 		if (schedule[i].homeTid == g.userTid || schedule[i].awayTid == g.userTid) {
 			usersGame = helpers.deepCopy(schedule[i]);
-			userGame = true;	
+			userGame = true;
 	console.log(userGame);
-			break;		
+			break;
 		}
-	}	
+	}
 	console.log(usersGame);
 	console.log(draftOrder);
 	var round;
 	for ( i = 0; i < 20; i++) {
 		if (usersGame.champions.drafted[i].name == undefined) {
 			round = i;
-			break;		
+			break;
 		}
 		round = 20;
-	}		
-		
-	
+	}
+
+
     playersAll.sort((a, b) => b.value - a.value);
 
     // Called after either the draft is over or it's the user's pick
@@ -1239,21 +1237,21 @@ async function untilUserOrEnd(conditions: Conditions) {
 
     // This will actually draft "untilUserOrEnd"
     const autoSelectPlayer = async () => {
-		
+
 		/////////////// this is where to put the pick/ban logic
 	console.log("autoSelectPlayer");
 		console.log(round);
-		console.log(schedule);		
-		console.log(usersGame);		
-		
+		console.log(schedule);
+		console.log(usersGame);
+
         //if (draftOrder.length > 0) {
-        if (round < 20) {			
-			
+        if (round < 20) {
+
          //   const pick = draftOrder.shift();
 		//console.log(pick);
         /*    if (g.userTids.includes(pick.tid) && local.autoPlaySeasons === 0) {
                 draftOrder.unshift(pick);
-    console.log("return afterDoneAuto();");				
+    console.log("return afterDoneAuto();");
                 return afterDoneAuto();
             }*/
 
@@ -1286,7 +1284,7 @@ export default {
 	untilUserOrEndFantasy,
     getRookieSalaries,
     selectPlayer,
-    selectPlayerFantasy,	
+    selectPlayerFantasy,
     updateChances,
     lotterySort,
 	champDraftValues,

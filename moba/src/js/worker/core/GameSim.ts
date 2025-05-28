@@ -1,5 +1,3 @@
-// @flow
-
 import {g, helpers} from '../../common';
 //import _ from 'underscore';
 import {idb} from '../db'; // temporary to test champion data
@@ -66,7 +64,6 @@ type TeamGameSim = {
     stat: Object,
     compositeRating: Object,
     player: PlayerGameSim[],
-    compositeRating: Object,
 	champ2Rel: Object,
 	championRank: Object,
     synergy: {

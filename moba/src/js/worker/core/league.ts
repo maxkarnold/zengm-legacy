@@ -1,10 +1,8 @@
-// @flow
-
 import backboard from 'backboard';
 import _ from 'underscore';
 import {Cache, connectLeague, idb} from '../db';
 import {PHASE, PLAYER, g, helpers} from '../../common';
-import {champion, draft, finances, freeAgents, game, phase, player, season, team} from '../core';
+import {champion, draft, finances, freeAgents, game, phase, player, season, team} from '.';
 import * as championPatch from '../../data/championPatch';
 import * as champions from '../../data/champions2';
 import * as championPatchLOL from '../../data/championPatchLOL';
@@ -78,16 +76,15 @@ async function create(
     startingSeason: number,
     name: string,
     tid: number,
-	typeid2: string,
-	typeid: number,
-	champid: number,
-	patchid: number,
-	yearid: number,
-	GMCoachid: number,
-	difficulty: number,
+    typeid2: string,
+    typeid: number,
+    champid: number,
+    patchid: number,
+    yearid: number,
+    GMCoachid: number,
+    difficulty: number,
     leagueFile: Object = {},
-
-    randomizeRosters?: boolean = false,
+    randomizeRosters = false,
     conditions: Conditions,
 ): Promise<number> {
     await idb.meta.attributes.put(tid, 'lastSelectedTid');
