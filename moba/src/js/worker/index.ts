@@ -1,9 +1,9 @@
 import "../common/polyfills.ts";
 import api from "./api/index.ts";
 import * as common from "../common/index";
-import * as core from "./core/index.js";
-import * as db from "./db/index.ts";
-import * as util from "./util/index.ts";
+import * as core from "./core/index";
+import * as db from "./db/index";
+import * as util from "./util/index";
 
 // TODO: Fix this later, bbgm is not defined in the global scope
 

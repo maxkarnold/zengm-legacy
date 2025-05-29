@@ -20,7 +20,7 @@ const BLACKLIST = {
 };
 
 for (const name of ['ui', 'worker']) {
-    browserify(`src/js/${name}/index.js`, {debug: true})
+    browserify(`src/js/${name}/index.ts`, {debug: true})
         .transform(blacklistify(BLACKLIST[name]))
         .transform({global: true}, envify({NODE_ENV: 'production'}))
         .plugin(collapse)
