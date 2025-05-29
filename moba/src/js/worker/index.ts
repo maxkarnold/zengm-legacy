@@ -1,16 +1,26 @@
-import "../common/polyfills.ts";
-import api from "./api/index.js";
+/// <reference lib="webworker" />
+
+// import "../common/polyfills.ts";
+import api from "./api/index";
 import * as common from "../common/index";
 import * as core from "./core/index";
 import * as db from "./db/index";
 import * as util from "./util/index";
 
-// TODO: Fix this later, bbgm is not defined in the global scope
+declare global {
+	interface WorkerGlobalScope {
+		bbgm: any;
+	}
+}
+
+declare const self: WorkerGlobalScope;
+
+
 
 self.bbgm = { api, ...common, ...core, ...db, ...util };
 
 if (process.env.NODE_ENV === "development") {
-	import("./core/debug/debug.js").then(({ default: debug }) => {
+	import("./core/debug/debug").then(({ default: debug }) => {
 		self.bbgm.debug = debug;
 	});
 }

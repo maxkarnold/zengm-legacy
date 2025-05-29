@@ -20,7 +20,7 @@
     "build-js": "NODE_ENV=production node tools/build-js.js",
     "minify-js": "node tools/minify-js.js",
     "watch-js": "concurrently --raw 'yarn run watch-js-ui' 'yarn run watch-js-worker'",
-    "watch-js-ui": "watchify -d src/js/ui/index.ts -o build/gen/ui.js -v",
+    "watch-js-ui": "watchify -d src/js/ui/index.tsx -o build/gen/ui.js -v",
     "watch-js-worker": "watchify -d src/js/worker/index.ts -o build/gen/worker.js -v",
     "lint": "concurrently --raw 'yarn run flow' 'yarn run lint-css' 'yarn run lint-js'",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
@@ -57,8 +57,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
+    "@babel/plugin-transform-typescript": "^7.23.3",
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.23.3",
     "@nkzw/eslint-config": "^2.4.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.3",
@@ -88,7 +90,7 @@
     "babel-plugin-transform-exponentiation-operator": "6.22.0",
     "babel-plugin-transform-flow-strip-types": "6.22.0",
     "babel-preset-react": "6.23.0",
-    "babelify": "7.3.0",
+    "babelify": "^10.0.0",
     "blacklistify": "0.0.3",
     "browserify": "14.3.0",
     "bundle-collapser": "1.2.1",
@@ -128,35 +130,6 @@
   "browserify": {
     "transform": [
       "babelify"
-    ]
-  },
-  "babel": {
-    "presets": [
-      "react"
-    ],
-    "plugins": [
-      "external-helpers",
-      "transform-flow-strip-types",
-      "transform-es2015-template-literals",
-      "transform-es2015-literals",
-      "transform-es2015-arrow-functions",
-      "transform-es2015-block-scoped-functions",
-      "transform-es2015-classes",
-      "transform-es2015-object-super",
-      "transform-es2015-shorthand-properties",
-      "transform-es2015-computed-properties",
-      "transform-es2015-for-of",
-      "check-es2015-constants",
-      "transform-es2015-spread",
-      "transform-es2015-parameters",
-      "transform-es2015-destructuring",
-      "transform-es2015-block-scoping",
-      "transform-es2015-modules-commonjs",
-      "transform-exponentiation-operator",
-      "transform-async-to-generator"
-    ],
-    "ignore": [
-      "js/lib/html2canvas.js"
     ]
   },
   "private": true

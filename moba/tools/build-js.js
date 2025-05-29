@@ -1,5 +1,3 @@
-// @flow
-
 // Used to be:
 // browserify -d -p [minifyify --map app.js.map --output gen/app.js.map] js/app.js -o gen/app.js
 // ...but then it got too complicated, and this seemed easier
@@ -10,7 +8,13 @@ const collapse = require('bundle-collapser/plugin');
 const envify = require('envify/custom');
 const exorcist = require('exorcist');
 const fs = require('fs');
+const path = require('path');
 
+// Ensure build directory exists
+const buildDir = path.join(__dirname, '../build/gen');
+if (!fs.existsSync(buildDir)) {
+    fs.mkdirSync(buildDir, { recursive: true });
+}
 
 console.log('Bundling JavaScript files...');
 
@@ -20,7 +24,16 @@ const BLACKLIST = {
 };
 
 for (const name of ['ui', 'worker']) {
-    browserify(`src/js/${name}/index.ts`, {debug: true})
+    browserify(`src/js/${name}/index.ts${name === 'ui' ? 'x' : ''}`, {
+        debug: true,
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
+        transform: [
+            ['babelify', {
+                babelrc: true,
+                extensions: ['.ts', '.tsx', '.js', '.jsx']
+            }]
+        ]
+    })
         .transform(blacklistify(BLACKLIST[name]))
         .transform({global: true}, envify({NODE_ENV: 'production'}))
         .plugin(collapse)

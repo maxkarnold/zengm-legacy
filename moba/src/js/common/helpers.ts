@@ -947,7 +947,7 @@ function leagueUrl(components: (number | string)[]): string {
  * @param {number} length Desired length.
  * @return {Array} Original array padded with null or truncated so that it has the required length.
  */
-function nullPad<T>(array: (?T)[], length: number): (?T)[] {
+function nullPad<T>(array: (T | undefined)[], length: number): (T | undefined)[] {
     if (array.length > length) {
         return array.slice(0, length);
     }
@@ -1020,7 +1020,7 @@ function pickDesc(pick: Pick): string {
     return desc;
 }
 
-function ordinal(x?: ?number): string {
+function ordinal(x?: number): string {
     if (x === undefined || x === null) {
         return '';
     }
