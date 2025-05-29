@@ -1,5 +1,3 @@
-// @flow
-
 import Backboard from 'backboard';
 
 /**
@@ -46,7 +44,7 @@ const migrateMeta = (upgradeDB, fromLocalStorage) => {
     }
 };
 
-const connectMeta = async (fromLocalStorage: {[key: string]: ?string}) => {
+const connectMeta = async (fromLocalStorage: {[key: string]: string | undefined}) => {
     // Would like to await on createMeta/migrateMeta and inside those functions, but Firefox
     const db = await Backboard.open('meta', 8, (upgradeDB) => {
         if (upgradeDB.oldVersion === 0) {

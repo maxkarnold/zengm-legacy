@@ -1,15 +1,13 @@
-// @flow
-
 import backboard from 'backboard';
 import orderBy from 'lodash.orderby';
 import {PLAYER, g} from '../../common';
-import {idb} from '../db';
+import {idb} from '.';
 import {lock, local} from '../util';
 import type {
     Awards,
     BackboardTx,
-	Champions,
-	ChampionPatch,
+    Champions,
+    ChampionPatch,
     DraftOrder,
     DraftPick,
     DraftPickWithoutDpid,
@@ -18,7 +16,7 @@ import type {
     GameAttribute,
     Message,
     MessageWithoutMid,
-    MSISeries,	
+    MSISeries,
     Negotiation,
     Player,
     PlayerFeat,
@@ -127,14 +125,14 @@ class Cache {
 
     awards: StoreAPI<Awards, Awards, number>;
 	champions: StoreAPI<Champions, Champions, number>;
-	championPatch: StoreAPI<ChampionPatch, ChampionPatch, number>;	
+	championPatch: StoreAPI<ChampionPatch, ChampionPatch, number>;
     draftOrder: StoreAPI<DraftOrder, DraftOrder, number>;
     draftPicks: StoreAPI<(DraftPick | DraftPickWithoutDpid), DraftPick, number>;
     events: StoreAPI<EventBBGM, EventBBGM, number>;
     gameAttributes: StoreAPI<GameAttribute, GameAttribute, string>;
     games: StoreAPI<Game, Game, number>;
     messages: StoreAPI<(Message | MessageWithoutMid), Message, number>;
-    msiSeries: StoreAPI<MSISeries, MSISeries, number>;	
+    msiSeries: StoreAPI<MSISeries, MSISeries, number>;
     negotiations: StoreAPI<Negotiation, Negotiation, number>;
     playerFeats: StoreAPI<PlayerFeat, PlayerFeat, number>;
     playerStats: StoreAPI<PlayerStats, PlayerStats, number>;
@@ -179,7 +177,7 @@ class Cache {
                 pkType: 'number',
                 autoIncrement: false,
                 getData: (tx: BackboardTx) => tx.championPatch.getAll(),
-            },			
+            },
             draftOrder: {
                 pk: 'rid',
                 pkType: 'number',
@@ -230,7 +228,7 @@ class Cache {
 
                 // Current season
                 getData: (tx: BackboardTx) => tx.msiSeries.getAll(this._season),
-            },			
+            },
             negotiations: {
                 pk: 'pid',
                 pkType: 'number',
@@ -369,15 +367,15 @@ class Cache {
         }
 
         this.awards = new StoreAPI(this, 'awards');
-        this.champions = new StoreAPI(this, 'champions');		
-        this.championPatch = new StoreAPI(this, 'championPatch');				
+        this.champions = new StoreAPI(this, 'champions');
+        this.championPatch = new StoreAPI(this, 'championPatch');
         this.draftOrder = new StoreAPI(this, 'draftOrder');
         this.draftPicks = new StoreAPI(this, 'draftPicks');
         this.events = new StoreAPI(this, 'events');
         this.gameAttributes = new StoreAPI(this, 'gameAttributes');
         this.games = new StoreAPI(this, 'games');
         this.messages = new StoreAPI(this, 'messages');
-        this.msiSeries = new StoreAPI(this, 'msiSeries');		
+        this.msiSeries = new StoreAPI(this, 'msiSeries');
         this.negotiations = new StoreAPI(this, 'negotiations');
         this.playerFeats = new StoreAPI(this, 'playerFeats');
         this.playerStats = new StoreAPI(this, 'playerStats');

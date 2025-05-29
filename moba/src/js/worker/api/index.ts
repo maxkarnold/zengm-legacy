@@ -1,5 +1,3 @@
-// @flow
-
 import _ from 'underscore';
 import {PHASE, PLAYER, g, helpers} from '../../common';
 import actions from './actions';
@@ -9,7 +7,7 @@ import {account, beforeView, changes, checkNaNs, env, local, lock, random, toUI,
 import * as views from '../views';
 import type {Conditions, Env, GameAttributes, GetOutput, Local, LockName, Player, PlayerWithoutPid, UpdateEvents} from '../../common/types';
 
-const acceptContractNegotiation = async (pid: number, amount: number, exp: number): Promise<?string> => {
+const acceptContractNegotiation = async (pid: number, amount: number, exp: number): Promise<string | undefined> => {
     return contractNegotiation.accept(pid, amount, exp);
 };
 
@@ -194,52 +192,52 @@ const draftUntilUserOrEnd = async (conditions: Conditions) => {
 	for ( i = 0; i < schedule.length; i++) {
 		if (schedule[i].homeTid == g.userTid || schedule[i].awayTid == g.userTid) {
 			usersGame = helpers.deepCopy(schedule[i]);
-			userGame = true;	
+			userGame = true;
 			userGameLocation = i;
-			break;		
+			break;
 		}
-	}	
+	}
 	var round,i;
 	var pid, ii;
 
 	// get user draft value data
-	// first sort by roster order	
+	// first sort by roster order
 
 	if (usersGame.champions.drafted[0].draft.name == undefined || usersGame.champions.drafted[1].draft.name == undefined)  {
 		var teamHome = await idb.cache.players.indexGetAll(
 				"playersByTid",
 				usersGame.homeTid,
-			);				
+			);
 		var teamAway = await idb.cache.players.indexGetAll(
 				"playersByTid",
 				usersGame.awayTid,
-			);		
+			);
 		usersGame.teamAway = helpers.deepCopy(teamAway);
 		usersGame.teamHome = helpers.deepCopy(teamHome);
 
 	}
-	
-	/////////////////////////////////////////////////  This ensures correct position win rate of champion is used 
+
+	/////////////////////////////////////////////////  This ensures correct position win rate of champion is used
 	// really need to roster sort before getting to draft phase
-	usersGame.teamAway.sort(function (a, b) { return a.rosterOrder - b.rosterOrder; });		
-	for (let  i = 0; i < usersGame.teamAway.length; i++) {		
+	usersGame.teamAway.sort(function (a, b) { return a.rosterOrder - b.rosterOrder; });
+	for (let  i = 0; i < usersGame.teamAway.length; i++) {
 		// currently only player skill and patch strength
 		// in the future can include countering,synergy, and early/mid/late info
-		// can also do balance (magic/ad, squishy/assasin/tank, 
-		if (i<5) {		
+		// can also do balance (magic/ad, squishy/assasin/tank,
+		if (i<5) {
 			usersGame.teamAway =  await draft.champDraftValues(usersGame.champions.patch,usersGame.champions.undrafted,usersGame.teamAway,i);
 		}
 	}
 	// first sort by roster order
 	usersGame.teamHome.sort(function (a, b) { return a.rosterOrder - b.rosterOrder; });
-	for (let  i = 0; i < usersGame.teamHome.length; i++) {		
+	for (let  i = 0; i < usersGame.teamHome.length; i++) {
 		// currently only player skill and patch strength
 		// in the future can include countering,synergy, and early/mid/late info
-		// can also do balance (magic/ad, squishy/assasin/tank, 
+		// can also do balance (magic/ad, squishy/assasin/tank,
 		if (i<5) {
 			usersGame.teamHome =  await draft.champDraftValues(usersGame.champions.patch,usersGame.champions.undrafted,usersGame.teamHome,i);
 		}
-	}	
+	}
 
 	let playersAI;
 	let allPossiblePicks = [];
@@ -247,20 +245,20 @@ const draftUntilUserOrEnd = async (conditions: Conditions) => {
 	for ( i = 0; i < 20; i++) {
 		allPossiblePicks = [];
 		// have ai draft here, this is where AI logic goes?
-		// 
+		//
 		// order gets mixed up, why?
-		round = i;	
-		
+		round = i;
+
 		if (usersGame.champions.drafted[i].draft.name == undefined &&  !g.userTids.includes(usersGame.champions.drafted[i].draft.tid) ) {
-			
-			
+
+
 			let idSame = false;
 			let isPick = false;
 			if (usersGame.awayTid == usersGame.champions.drafted[i].draft.tid) {
 				idSame = true;
 			}
 			if (usersGame.champions.drafted[i].draft.pick == "PICK") {
-				isPick = true;				
+				isPick = true;
 			}
 			// picks (reverse for bans)
 //			if (usersGame.awayTid == usersGame.champions.drafted[i].draft.tid && usersGame.champions.drafted[i].draft.pick == "PICK") {
@@ -270,20 +268,20 @@ const draftUntilUserOrEnd = async (conditions: Conditions) => {
 				playersAI = helpers.deepCopy(usersGame.teamHome);
 			}
 			playersAI.sort(function (a, b) { return a.rosterOrder - b.rosterOrder; });
-			
+
 			// eventually better AI selection of champs (bring from game sim)
-				// then filter through players, add all possibilities										
+				// then filter through players, add all possibilities
 			for (let iv = 0; iv < 5; iv++) {
 				// check if player has picked before
-				
+
 				if (playersUsed.includes(iv)) {
 				} else {
 					for (let v = 0; v < playersAI[iv].champions.length; v++) {
 						for (let vi = 0; vi < usersGame.champions.undrafted.length; vi++) {
-							if (usersGame.champions.undrafted[vi].name == playersAI[iv].champions[v].name) {							
+							if (usersGame.champions.undrafted[vi].name == playersAI[iv].champions[v].name) {
 								for (let vii = 0; vii < usersGame.champions.patch.length; vii++) {
-									
-									
+
+
 									let role = usersGame.champions.patch[vii].role;
 									if (role == "SAFE") {
 										if (Math.random() < .5) {
@@ -296,11 +294,11 @@ const draftUntilUserOrEnd = async (conditions: Conditions) => {
 									} else if (role == "ROAM") {
 										role = "JGL";
 									}
-									
-									
+
+
 										if (usersGame.champions.undrafted[vi].name  == usersGame.champions.patch[vii].champion &&  playersAI[iv].pos == role) {
-																				
-									
+
+
 								//	if (usersGame.champions.undrafted[vi].name == usersGame.champions.patch[vii].champion) {
 										// safe player/role
 										let possiblePick = playersAI[iv].champions[v];
@@ -315,13 +313,13 @@ const draftUntilUserOrEnd = async (conditions: Conditions) => {
 										possiblePick.counter = usersGame.champions.undrafted[vi].ratings.counter;
 										possiblePick.name = usersGame.champions.undrafted[vi].name;
 										possiblePick.undraftedLocation = vi;
-										
-										allPossiblePicks.push(possiblePick);																			
-									}									
-								}					
-							}					
-							// then do patch?, then include all matches						
-						}					
+
+										allPossiblePicks.push(possiblePick);
+									}
+								}
+							}
+							// then do patch?, then include all matches
+						}
 					}
 				}
 			}
@@ -336,7 +334,7 @@ const draftUntilUserOrEnd = async (conditions: Conditions) => {
 							// do synergy
 							allPossiblePicks[p].draftValue +=  allPossiblePicks[p].synergy[usersGame.champions.drafted[d].draft.hid];
 						} else {
-							// do counter							
+							// do counter
 							allPossiblePicks[p].draftValue +=  allPossiblePicks[p].counter[usersGame.champions.drafted[d].draft.hid];
 
 						}
@@ -344,17 +342,17 @@ const draftUntilUserOrEnd = async (conditions: Conditions) => {
 					// skip bans
 					// only check picks
 					// if on team do synvergy adjustment
-					// if on other team do counter adjustment					
-				}					
-			}			
+					// if on other team do counter adjustment
+				}
+			}
 			// now do early/mid/late game checking (in case imbalanced)
-			
+
 			// now do melee ranged checks?
-			
+
 			// other balance checks before sorting values
-						
+
 			allPossiblePicks.sort((a, b) => b.draftValue - a.draftValue);
-			
+
 	//		console.log(allPossiblePicks.length);
 			let difficulty = 3;
 			if (g.GMCoachType == 0) {
@@ -372,77 +370,77 @@ const draftUntilUserOrEnd = async (conditions: Conditions) => {
 				difficulty = 5;
 			} else {
 				difficulty = 0;
-			}			
-			
-			if (g.applyToCoachMode) {
-				difficulty = g.aiPickBanStrength;				
 			}
-			
-			let pickLocation = random.randInt(0, difficulty);			
-			
+
+			if (g.applyToCoachMode) {
+				difficulty = g.aiPickBanStrength;
+			}
+
+			let pickLocation = random.randInt(0, difficulty);
+
 			// sort to get highest available champ with remaining players
 			if (allPossiblePicks.length <= pickLocation) {
 				pickLocation = allPossiblePicks.length-1;
-			}			
-			
-			
+			}
+
+
 			if (usersGame.champions.drafted[i].draft.pick == "PICK" &&  !g.userTids.includes(usersGame.champions.drafted[i].draft.tid)) {
 				playersUsed.push(allPossiblePicks[pickLocation].player);
 			}
-			
 
-						
+
+
 			pid = allPossiblePicks[pickLocation].player;
 			// inputting new champ
 			ii = pid;
 			usersGame.champions.drafted[i].pid = pid;
 
 			usersGame.champions.drafted[i].draft.hid = allPossiblePicks[pickLocation].hid;
-			usersGame.champions.drafted[i].draft.name = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].name;			
-			usersGame.champions.drafted[i].draft.nameReal = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].nameReal;			
-			usersGame.champions.drafted[i].draft.posPlayer = allPossiblePicks[pickLocation].posPlayer;			
-			usersGame.champions.drafted[i].draft.rosterOrder = allPossiblePicks[pickLocation].rosterOrder;			
-			usersGame.champions.drafted[i].draft.role = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].role;			
-			usersGame.champions.drafted[i].draft.lane = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].lane;			
-			usersGame.champions.drafted[i].draft.ratings  = {};			
-			usersGame.champions.drafted[i].draft.ratings.MR = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.MR;			
-			usersGame.champions.drafted[i].draft.ratings.ability2 = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.ability2;			
-			usersGame.champions.drafted[i].draft.ratings.defense2 = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.defense2;			
-			usersGame.champions.drafted[i].draft.ratings.attack2 = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.attack2;					
-			usersGame.champions.drafted[i].draft.ratings.control = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.control;					
-			usersGame.champions.drafted[i].draft.ratings.damage = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.damage;					
-			usersGame.champions.drafted[i].draft.ratings.mobility = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.mobility;					
-			usersGame.champions.drafted[i].draft.ratings.toughness = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.toughness;					
-			usersGame.champions.drafted[i].draft.ratings.utility = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.utility;					
-			usersGame.champions.drafted[i].draft.ratings.damageType = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.damageType;					
+			usersGame.champions.drafted[i].draft.name = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].name;
+			usersGame.champions.drafted[i].draft.nameReal = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].nameReal;
+			usersGame.champions.drafted[i].draft.posPlayer = allPossiblePicks[pickLocation].posPlayer;
+			usersGame.champions.drafted[i].draft.rosterOrder = allPossiblePicks[pickLocation].rosterOrder;
+			usersGame.champions.drafted[i].draft.role = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].role;
+			usersGame.champions.drafted[i].draft.lane = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].lane;
+			usersGame.champions.drafted[i].draft.ratings  = {};
+			usersGame.champions.drafted[i].draft.ratings.MR = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.MR;
+			usersGame.champions.drafted[i].draft.ratings.ability2 = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.ability2;
+			usersGame.champions.drafted[i].draft.ratings.defense2 = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.defense2;
+			usersGame.champions.drafted[i].draft.ratings.attack2 = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.attack2;
+			usersGame.champions.drafted[i].draft.ratings.control = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.control;
+			usersGame.champions.drafted[i].draft.ratings.damage = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.damage;
+			usersGame.champions.drafted[i].draft.ratings.mobility = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.mobility;
+			usersGame.champions.drafted[i].draft.ratings.toughness = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.toughness;
+			usersGame.champions.drafted[i].draft.ratings.utility = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.utility;
+			usersGame.champions.drafted[i].draft.ratings.damageType = usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.damageType;
 			let early =  usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.early;
-			let mid =  usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.mid;			
-			let late  =  usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.late;			
+			let mid =  usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.mid;
+			let late  =  usersGame.champions.undrafted[allPossiblePicks[pickLocation].undraftedLocation].ratings.late;
 			if (early>mid && early>late) {
 				usersGame.champions.drafted[i].draft.ratings.earlyMidLate = "Early";
 			} else if (mid>early && mid>late) {
-				usersGame.champions.drafted[i].draft.ratings.earlyMidLate = "Mid";			
+				usersGame.champions.drafted[i].draft.ratings.earlyMidLate = "Mid";
 			} else {
-				usersGame.champions.drafted[i].draft.ratings.earlyMidLate = "Late";						
-			}			
-			
+				usersGame.champions.drafted[i].draft.ratings.earlyMidLate = "Late";
+			}
+
 			usersGame.champions.drafted[i].draft.cpid = allPossiblePicks[pickLocation].cpid;
 			usersGame.champions.drafted[i].draft.draftValue = allPossiblePicks[pickLocation].draftValue;
 			usersGame.champions.undrafted.splice(allPossiblePicks[pickLocation].undraftedLocation, 1);
 
 		} else if (usersGame.champions.drafted[i].draft.name != undefined &&  !g.userTids.includes(usersGame.champions.drafted[i].draft.tid) &&  usersGame.champions.drafted[i].draft.pick == "PICK")  {
-				playersUsed.push(usersGame.champions.drafted[i].pid);						
+				playersUsed.push(usersGame.champions.drafted[i].pid);
 		} else if (usersGame.champions.drafted[i].draft.name == undefined) {
-			break;			
+			break;
 		} else {
 		}
-	}	
+	}
 		// save the ai pick
-	schedule[userGameLocation] = usersGame;	
+	schedule[userGameLocation] = usersGame;
 	for ( i = 0; i < schedule.length; i++) {
 		await idb.cache.schedule.put(schedule[i]);
-	}	
-		
+	}
+
     if (round >= 19 && usersGame.champions.drafted[19].draft.name != undefined) {
         await updateStatus('Idle');
 	}
@@ -465,8 +463,8 @@ const draftUserFantasy = async (pid: number) => {
 
 
 const draftUser = async (pid: number) => {
-	
-	//console.log("draftUser");	
+
+	//console.log("draftUser");
    // const draftOrder = await draft.getOrder();
    var draftOrder;
    //const pick = draftOrder[0];
@@ -478,20 +476,20 @@ const draftUser = async (pid: number) => {
 	for ( i = 0; i < schedule.length; i++) {
 		if (schedule[i].homeTid == g.userTid || schedule[i].awayTid == g.userTid) {
 			usersGame = helpers.deepCopy(schedule[i]);
-			userGame = true;	
-			break;		
+			userGame = true;
+			break;
 		}
-	}	
-	
+	}
+
 	userGameLocation = i;
-	
+
 	//console.log(schedule);
 	//console.log(usersGame);
 	//console.log(draftOrder);
 	draftOrder =  helpers.deepCopy(usersGame.champions.drafted);
-	//console.log(draftOrder);	
-//	console.log(pick.tid);	
-	//console.log(g.userTids);	
+	//console.log(draftOrder);
+//	console.log(pick.tid);
+	//console.log(g.userTids);
 	//console.log(pid);
 	var round = 0;
 	for ( i = 0; i < 20; i++) {
@@ -506,35 +504,35 @@ const draftUser = async (pid: number) => {
 				if (usersGame.champions.undrafted[ii].hid == pid) {
 					usersGame.champions.drafted[i].pid = pid;
 					usersGame.champions.drafted[i].draft.hid = usersGame.champions.undrafted[ii].hid;
-					usersGame.champions.drafted[i].draft.name = usersGame.champions.undrafted[ii].name;			
-					usersGame.champions.drafted[i].draft.nameReal = usersGame.champions.undrafted[ii].nameReal;	
-					
-					usersGame.champions.drafted[i].draft.role = usersGame.champions.undrafted[ii].role;			
-					usersGame.champions.drafted[i].draft.lane = usersGame.champions.undrafted[ii].lane;			
-					usersGame.champions.drafted[i].draft.ratings  = {};			
-					usersGame.champions.drafted[i].draft.ratings.MR = usersGame.champions.undrafted[ii].ratings.MR;			
-					usersGame.champions.drafted[i].draft.ratings.ability2 = usersGame.champions.undrafted[ii].ratings.ability2;			
-					usersGame.champions.drafted[i].draft.ratings.defense2 = usersGame.champions.undrafted[ii].ratings.defense2;			
-					usersGame.champions.drafted[i].draft.ratings.attack2 = usersGame.champions.undrafted[ii].ratings.attack2;					
-					usersGame.champions.drafted[i].draft.ratings.control = usersGame.champions.undrafted[ii].ratings.control;					
-					usersGame.champions.drafted[i].draft.ratings.damage = usersGame.champions.undrafted[ii].ratings.damage;					
-					usersGame.champions.drafted[i].draft.ratings.mobility = usersGame.champions.undrafted[ii].ratings.mobility;					
-					usersGame.champions.drafted[i].draft.ratings.toughness = usersGame.champions.undrafted[ii].ratings.toughness;					
-					usersGame.champions.drafted[i].draft.ratings.utility = usersGame.champions.undrafted[ii].ratings.utility;	
-					usersGame.champions.drafted[i].draft.ratings.damageType = usersGame.champions.undrafted[ii].ratings.damageType;	
+					usersGame.champions.drafted[i].draft.name = usersGame.champions.undrafted[ii].name;
+					usersGame.champions.drafted[i].draft.nameReal = usersGame.champions.undrafted[ii].nameReal;
+
+					usersGame.champions.drafted[i].draft.role = usersGame.champions.undrafted[ii].role;
+					usersGame.champions.drafted[i].draft.lane = usersGame.champions.undrafted[ii].lane;
+					usersGame.champions.drafted[i].draft.ratings  = {};
+					usersGame.champions.drafted[i].draft.ratings.MR = usersGame.champions.undrafted[ii].ratings.MR;
+					usersGame.champions.drafted[i].draft.ratings.ability2 = usersGame.champions.undrafted[ii].ratings.ability2;
+					usersGame.champions.drafted[i].draft.ratings.defense2 = usersGame.champions.undrafted[ii].ratings.defense2;
+					usersGame.champions.drafted[i].draft.ratings.attack2 = usersGame.champions.undrafted[ii].ratings.attack2;
+					usersGame.champions.drafted[i].draft.ratings.control = usersGame.champions.undrafted[ii].ratings.control;
+					usersGame.champions.drafted[i].draft.ratings.damage = usersGame.champions.undrafted[ii].ratings.damage;
+					usersGame.champions.drafted[i].draft.ratings.mobility = usersGame.champions.undrafted[ii].ratings.mobility;
+					usersGame.champions.drafted[i].draft.ratings.toughness = usersGame.champions.undrafted[ii].ratings.toughness;
+					usersGame.champions.drafted[i].draft.ratings.utility = usersGame.champions.undrafted[ii].ratings.utility;
+					usersGame.champions.drafted[i].draft.ratings.damageType = usersGame.champions.undrafted[ii].ratings.damageType;
 					let early =  usersGame.champions.undrafted[ii].ratings.early;
-					let mid =  usersGame.champions.undrafted[ii].ratings.mid;			
-					let late  =  usersGame.champions.undrafted[ii].ratings.late;			
+					let mid =  usersGame.champions.undrafted[ii].ratings.mid;
+					let late  =  usersGame.champions.undrafted[ii].ratings.late;
 					if (early>mid && early>late) {
 						usersGame.champions.drafted[i].draft.ratings.earlyMidLate = "Early";
 					} else if (mid>early && mid>late) {
-						usersGame.champions.drafted[i].draft.ratings.earlyMidLate = "Mid";			
+						usersGame.champions.drafted[i].draft.ratings.earlyMidLate = "Mid";
 					} else {
-						usersGame.champions.drafted[i].draft.ratings.earlyMidLate = "Late";						
-					}	
+						usersGame.champions.drafted[i].draft.ratings.earlyMidLate = "Late";
+					}
 					usersGame.champions.undrafted.splice(ii, 1);
 				//	console.log(usersGame.champions.drafted[i].draft);
-				//	console.log(usersGame.champions.undrafted);					
+				//	console.log(usersGame.champions.undrafted);
 					break;
 				}
 			}
@@ -544,22 +542,22 @@ const draftUser = async (pid: number) => {
 			break;
 		}
 	}
-	//console.log(usersGame);	
-	//console.log(userGameLocation);	
+	//console.log(usersGame);
+	//console.log(userGameLocation);
 	schedule[userGameLocation] = usersGame;
-	//console.log(schedule);	
+	//console.log(schedule);
 	// removing this prevents updating?
-    //await idb.cache.schedule.clear();	
+    //await idb.cache.schedule.clear();
 	// the above did erase
 	// the below did put back (how to update?)
 	for ( i = 0; i < schedule.length; i++) {
 		await idb.cache.schedule.put(schedule[i]);
 		//await idb.cache.schedule.add(schedule[i]);
 
-	}	
-	
+	}
+
 	const schedule2 = await idb.cache.schedule.getAll();
-//console.log(schedule2);	
+//console.log(schedule2);
 
     if (round >= 19 && usersGame.champions.drafted[19].draft.name != undefined) {
         await updateStatus('Idle');
@@ -573,10 +571,10 @@ const draftUser = async (pid: number) => {
 	// make sure pid works
 	// remove pid from undraftred and add to drafted
 	// repeat until done?
-	//console.log(pick);	
-//	console.log(g.userTids.includes(pick.tid));	
-	//console.log(pick.tid);	
-	
+	//console.log(pick);
+//	console.log(g.userTids.includes(pick.tid));
+	//console.log(pick.tid);
+
    /* if (pick && g.userTids.includes(pick.tid)) {
         draftOrder.shift();
         await draft.selectPlayer(pick, pid);
@@ -623,11 +621,11 @@ const exportPlayerAveragesCsv = async (season: number | 'all') => {
 //            attrs: ["pid", "name", "age"],
   //          ratings: ["pos"],
     //        stats: ["abbrev", "gp", "gs", "min", "fg", "fga", "fgp", "tp", "tpa", "tpp", "ft", "fta", "ftp", "orb", "drb", "trb", "ast", "tov", "stl", "blk", "ba", "pf", "pts", "pm", "per", "ewa"],
-			
+
 			attrs: ["pid", "name",  "age","born"],
 			ratings: ["pos","languages","region"],
 			stats: ["abbrev", "gp", "gs", "min", "fg", "fga", "fgp", "tp", "tpa", "tpp", "ft", "fta", "ftp", "orb", "drb", "trb", "ast", "tov", "stl", "blk", "pf", "pts", "per", "ewa","fgLowPost","fgaLowPost","fgMidRange","oppJM","kda","scTwr","scKills"],
-		
+
             season: s,
         });
 
@@ -664,7 +662,7 @@ const exportPlayerGamesCsv = async (season: number | 'all') => {
             for (const p of t.players) {
             //    output += `${[p.pid, p.name, p.pos, g.teamAbbrevsCache[t.tid], g.teamAbbrevsCache[t2.tid], `${t.pts}-${t2.pts}`, t.pts > t2.pts ? "W" : "L", seasons[i], games[i].playoffs, p.min, p.fg, p.fga, p.fgp, p.tp, p.tpa, p.tpp, p.ft, p.fta, p.ftp, p.orb, p.drb, p.trb, p.ast, p.tov, p.stl, p.blk, p.ba, p.pf, p.pts, p.pm].join(",")}\n`;
             output += `${[p.pid, p.name, p.pos, g.teamAbbrevsCache[t.tid], g.teamAbbrevsCache[t2.tid], t.pts + "-" + t2.pts, t.pts > t2.pts ? "W" : "L", seasons[i],  games[i].playoffs, p.min, p.fg, p.fga, p.fgp, p.kda, p.sckills, p.pf, p.orb, p.scTwr, p.fgaLowPost, p.fgLowPost, p.tp, p.tpa, p.ft, p.fta, p.fgMidRange, p.oppJM, p.drb, p.blk, p.tov, p.ast, p.trb].join(",")}\n`;
-				
+
             }
         }
     }
@@ -681,7 +679,7 @@ const getLeagueName = async (lid: number) => {
     return l.name;
 };
 
-const getLocal = async (name: $Keys<Local>): any => {
+const getLocal = async (name: keyof Local): Promise<any> => {
     return local[name];
 };
 
@@ -783,9 +781,9 @@ const getTradingBlockOffers = async (pids: number[], dpids: number[]) => {
 const handleUploadedDraftClass = async (uploadedFile: any, seasonOffset: 0 | 1 | 2) => {
     // What tid to replace?
     let draftClassTid;
-	
+
 	//console.log(uploadedFile);
-	
+
     if (seasonOffset === 0) {
         draftClassTid = PLAYER.UNDRAFTED;
     } else if (seasonOffset === 1) {
@@ -809,7 +807,7 @@ const handleUploadedDraftClass = async (uploadedFile: any, seasonOffset: 0 | 1 |
 
     // Delete old players from draft class
     const oldPlayers = await idb.cache.players.indexGetAll('playersByTid', draftClassTid);
-	
+
 	//console.log(oldPlayers);
     for (const p of oldPlayers) {
         await idb.cache.players.delete(p.pid);
@@ -829,32 +827,32 @@ const handleUploadedDraftClass = async (uploadedFile: any, seasonOffset: 0 | 1 |
     }
 
     let seasonOffset2 = seasonOffset;
-//	console.log(seasonOffset2);	
+//	console.log(seasonOffset2);
     if (g.phase >= g.PHASE.FREE_AGENCY) {
         // Already generated next year's draft, so bump up one
         seasonOffset2 += 1;
     }
 
     const draftYear = g.season + seasonOffset2;
-	//console.log(draftYear);	
+	//console.log(draftYear);
     // Add new players to database
 		//var i,j;
 	var cpSorted;
 	var topADC,topMID,topJGL,topTOP,topSUP;
-	
+
 	const c = await idb.cache.champions.getAll();
-	
-	const cp = await idb.cache.championPatch.getAll();		
-	
+
+	const cp = await idb.cache.championPatch.getAll();
+
 	cpSorted = [];
-	
+
 	//g.numChampions
 	for (let i = 0; i < g.numChampionsPatch; i++) {
 		cpSorted.push({"champion": cp[i].champion,"cpid": cp[i].cpid,"rank": cp[i].rank,"role": cp[i].role});
-	}					
-	
-	cpSorted.sort(function (a, b) { return a.rank - b.rank; });		
-	
+	}
+
+	cpSorted.sort(function (a, b) { return a.rank - b.rank; });
+
 
 	topADC = [];
 	topMID = [];
@@ -908,17 +906,17 @@ const handleUploadedDraftClass = async (uploadedFile: any, seasonOffset: 0 | 1 |
 				}
 			}
 		}
-	
-	}				
-	
-	
+
+	}
+
+
     await Promise.all(players.map(async (p) => {
         // Make sure player object is fully defined
 		//console.log(c);
 		//console.log(topADC);
 		////console.log(topMID);
 		//console.log(topJGL);
-		
+
         p = player.augmentPartialPlayer(p, scoutingRank,c,topADC,topMID,topJGL,topTOP,topSUP);
 
         // Manually set TID, since at this point it is always PLAYER.UNDRAFTED
@@ -969,7 +967,7 @@ const init = async (inputEnv: Env, conditions: Conditions) => {
         changes.check(conditions);
         account.check(conditions);
 	}
-	
+
 	await toUI(['initAds']);
 };
 
@@ -994,36 +992,36 @@ const ratingsStatsPopoverInfo = async (pid: number) => {
 
 const ratingsStatsPopoverInfoChampions = async (pid: number) => {
 	const championPatch = await idb.cache.championPatch.getAll();
-	const champions = await idb.cache.champions.getAll();	
+	const champions = await idb.cache.champions.getAll();
 	console.log(championPatch);
 	console.log(champions);
-	
- 	var championAdjusted = helpers.deepCopy(champions);	
+
+ 	var championAdjusted = helpers.deepCopy(champions);
 
 	var low, medium;
-		if (g.champType == 0) {			
+		if (g.champType == 0) {
 			low = 0.025;
-			medium = 0.05;			
+			medium = 0.05;
 		} else {
 			low = 0.0025;
-			medium = 0.01;			
-		}	
+			medium = 0.01;
+		}
 	//	console.log(championPatch);
-	//	console.log(champions);		
-	//	console.log(championAdjusted);				
+	//	console.log(champions);
+	//	console.log(championAdjusted);
 	//	console.log(low);
 	//	console.log(medium);
-	//	console.log(pid);		
-		
+	//	console.log(pid);
+
 		async function calcChampSynergy(champions, championAdjusted,hid) {
-			
+
 			for (let i = 0; i < champions.length; i++) {
 				if (i == hid) {
-				championAdjusted[i].ratings.namesSyn =  []	;				
-				championAdjusted[i].ratings.namesCtrs =  []	;				
-				championAdjusted[i].ratings.namesCtr =  []	;				
-					for (let j = 0; j < champions[i].ratings.synergy.length; j++) {	
-						if (g.realChampNames) {	
+				championAdjusted[i].ratings.namesSyn =  []	;
+				championAdjusted[i].ratings.namesCtrs =  []	;
+				championAdjusted[i].ratings.namesCtr =  []	;
+					for (let j = 0; j < champions[i].ratings.synergy.length; j++) {
+						if (g.realChampNames) {
 						championAdjusted[i].ratings.namesSyn.push([champions[i].ratings.synergy[j],champions[j].nameReal]);
 						championAdjusted[i].ratings.namesCtrs.push([champions[i].ratings.counter[j],champions[j].nameReal]);
 						championAdjusted[i].ratings.namesCtr.push([champions[i].ratings.counter[j],champions[j].nameReal]);
@@ -1031,33 +1029,33 @@ const ratingsStatsPopoverInfoChampions = async (pid: number) => {
 						championAdjusted[i].ratings.namesSyn.push([champions[i].ratings.synergy[j],champions[j].name]);
 						championAdjusted[i].ratings.namesCtrs.push([champions[i].ratings.counter[j],champions[j].name]);
 						championAdjusted[i].ratings.namesCtr.push([champions[i].ratings.counter[j],champions[j].name]);
-							
+
 						}
-					}			
+					}
 				}
 			}
-		
+
 		}
-		
-		await calcChampSynergy(champions, championAdjusted,pid);	
-		//console.log(pid);				
-		//console.log(championAdjusted[pid]);				
-//		console.log(championAdjusted[pid]);		
-		//console.log(championAdjusted[pid].ratings);		
+
+		await calcChampSynergy(champions, championAdjusted,pid);
+		//console.log(pid);
+		//console.log(championAdjusted[pid]);
+//		console.log(championAdjusted[pid]);
+		//console.log(championAdjusted[pid].ratings);
 		//championAdjusted[pid].sort((a, b) => b.ratings.synergy - a.ratings.synergy);
 //	championAdjusted[pid].ratings.synergy.sort(function (a, b) { return a.rosterOrder - b.rosterOrder; });
 //	championAdjusted[pid].ratings.names.sort();
 championAdjusted[pid].ratings.namesSyn.sort(function(a, b) {
     return b[0] - a[0];
-});		
+});
 championAdjusted[pid].ratings.namesCtrs.sort(function(a, b) {
     return b[0] - a[0];
-});		
+});
 championAdjusted[pid].ratings.namesCtr.sort(function(a, b) {
     return a[0] - b[0];
-});		
-		console.log(championAdjusted[pid].ratings);		
-		
+});
+		console.log(championAdjusted[pid].ratings);
+
 		return championAdjusted[pid].ratings;
 };
 
@@ -1111,7 +1109,7 @@ const runBefore = async (
 
 /*const sortChampions = async () => {
   let sortedChamps = helpers.deepCopy(g.cCache);
-	sortedChamps.sort((a, b) => a.name - b.name);	
+	sortedChamps.sort((a, b) => a.name - b.name);
 	console.log(sortedChamps);
     return sortedChamps;
 };*/
@@ -1162,24 +1160,24 @@ const updateBudget = async (budgetAmounts: {
 const updateTeamCoachSelections = async (changes) => {
     //await league.setGameAttributes(gameAttributes);
 	console.log(changes);
-	const t = await idb.cache.teams.get(g.userTid);	
+	const t = await idb.cache.teams.get(g.userTid);
 	console.log(t);
-	console.log(t.coach);	
+	console.log(t.coach);
 	t.coach.top = changes.coachTOP;
 //	t.coach.top = changes.top;
 	t.coach.jgl = changes.coachJGL;
 	t.coach.mid = changes.coachMID;
 	t.coach.adc = changes.coachADC;
 	t.coach.sup = changes.coachADC;
-	
+
 	t.coach.topJGL = changes.coachTOPjgl;
 	t.coach.jglJGL = changes.coachJGLjgl;
 	t.coach.midJGL = changes.coachMIDjgl;
 	t.coach.adcJGL = changes.coachADCjgl;
-	t.coach.supJGL = changes.coachADCjgl;	
-	
-	console.log(t);	
-    await idb.cache.teams.put(t);	
+	t.coach.supJGL = changes.coachADCjgl;
+
+	console.log(t);
+    await idb.cache.teams.put(t);
 };
 
 const updateGameAttributes = async (gameAttributes: GameAttributes) => {
@@ -1234,10 +1232,10 @@ const updateTeamInfo = async (newTeams: {
         if (newTeams[t.tid].hasOwnProperty('did') && typeof newTeams[t.tid].did === 'number') {
             t.did = newTeams[t.tid].did;
         }
-        t.region = newTeams[t.tid].region;		
+        t.region = newTeams[t.tid].region;
         t.name = newTeams[t.tid].name;
         t.abbrev = newTeams[t.tid].abbrev;
-        t.country = newTeams[t.tid].country;		
+        t.country = newTeams[t.tid].country;
         if (newTeams[t.tid].hasOwnProperty('imgURL')) {
             t.imgURL = newTeams[t.tid].imgURL;
         }
@@ -1266,7 +1264,7 @@ const updateTeamInfo = async (newTeams: {
 
 
 const updateChampionInfo = async (newChampions: {
-    hid?: number,    
+    hid?: number,
     name: string,
     early: number,
     mid: number,
@@ -1278,10 +1276,10 @@ const updateChampionInfo = async (newChampions: {
     const champions = await idb.cache.champions.getAll();
     const championPatch = await idb.cache.championPatch.getAll();
  //   const players = await idb.cache.players.getAll();
-	
+
 
     for (const c of champions) {
-		if (newChampions[c.hid] == undefined) {	
+		if (newChampions[c.hid] == undefined) {
 			console.log("can't reduce number of champions")
 		} else {
 			if (c.name != newChampions[c.hid].name) {
@@ -1289,27 +1287,27 @@ const updateChampionInfo = async (newChampions: {
 					if (cp.champion == c.name) {
 						cp.champion = newChampions[c.hid].name;
 						await idb.cache.championPatch.put(cp);
-					}					
+					}
 				}
 			}
 			c.name = newChampions[c.hid].name;
 			c.ratings.early = newChampions[c.hid].ratings.early;
 			c.ratings.mid = newChampions[c.hid].ratings.mid;
-		    c.ratings.late = newChampions[c.hid].ratings.late;			
-			
+		    c.ratings.late = newChampions[c.hid].ratings.late;
+
 			await idb.cache.champions.put(newChampions[c.hid]);
 
 		}
     }
 
 
-	const players = await idb.cache.players.getAll();		
+	const players = await idb.cache.players.getAll();
 
 	for (const p of players) {
 
-		for (let i = 0; i < newChampions.length; i++) {	
+		for (let i = 0; i < newChampions.length; i++) {
 			p.champions[i] = {};
-		
+
 			p.champions[i].skill =  Math.round( p.ratings[p.ratings.length-1].ovr+(Math.random()*40-20),0);
 
 			if (p.champions[i].skill< 0) {
@@ -1323,37 +1321,37 @@ const updateChampionInfo = async (newChampions: {
 		}
 		await idb.cache.players.put(p);
 
-	}			
-//	}	
-		
+	}
+//	}
+
 	if (newChampions.length < champions.length) {
-		console.log("got here");				
-		for (let i = 0; i < newChampions.length; i++) {	
-			await idb.cache.champions.put(newChampions[i]);				
-		}		
+		console.log("got here");
+		for (let i = 0; i < newChampions.length; i++) {
+			await idb.cache.champions.put(newChampions[i]);
+		}
 		let maxi;
-		for (let i = newChampions.length ; i < champions.length; i++) {			
-	console.log("can't lower number of champions");												
+		for (let i = newChampions.length ; i < champions.length; i++) {
+	console.log("can't lower number of champions");
 		}
 
 
-		
+
 	} else if (newChampions.length > champions.length) {
-				console.log("got here");		
+				console.log("got here");
 		 //add new champions
-		for (let i =  0; i < champions.length; i++) {	
-			await idb.cache.champions.put(newChampions[i]);				
-		}	
-		
-		for (let i = champions.length ; i < newChampions.length; i++) {	
+		for (let i =  0; i < champions.length; i++) {
+			await idb.cache.champions.put(newChampions[i]);
+		}
+
+		for (let i = champions.length ; i < newChampions.length; i++) {
 				console.log(i);
 			await idb.cache.champions.add(newChampions[i]);
 		}
 	}
-	
+
 
 	console.log("got here");
-			
+
 };
 
 const updateChampionPatch = async (newChampionPatch: {
@@ -1361,66 +1359,66 @@ const updateChampionPatch = async (newChampionPatch: {
     champion: string,
     role: string,
     rank: number,
-	
+
 }[]) => {
-	
+
     let userName;
     let userRegion;
 
     const championPatch = await idb.cache.championPatch.getAll();
-    const cDefault = await idb.cache.champions.getAll();	
+    const cDefault = await idb.cache.champions.getAll();
 	//console.log(championPatch);
-//	console.log(cDefault);	
+//	console.log(cDefault);
 	console.log(championPatch.length);
-	console.log(newChampionPatch.length);	
+	console.log(newChampionPatch.length);
     for (const cp of championPatch) {
 
 		if (newChampionPatch[cp.cpid] == undefined) {
 			//console.log(championPatch);
 			//console.log(championPatch.pop());
-			//console.log(championPatch);			
-			//await idb.cache.championPatch.put(cp);	
-			console.log("can't lower number of patch items");			
+			//console.log(championPatch);
+			//await idb.cache.championPatch.put(cp);
+			console.log("can't lower number of patch items");
 		} else {
 			cp.champion = newChampionPatch[cp.cpid].champion;
 			cp.role = newChampionPatch[cp.cpid].role;
 			cp.rank = newChampionPatch[cp.cpid].rank;
 
 			await idb.cache.championPatch.put(cp);
-			
+
 		}
-		
+
     }
-	//console.log(championPatch);	
+	//console.log(championPatch);
 	// Add new champions
-	if ( g.numChampionsPatch < newChampionPatch.length) {				
-		for (let i = championPatch.length  ; i < newChampionPatch.length; i++) {	
+	if ( g.numChampionsPatch < newChampionPatch.length) {
+		for (let i = championPatch.length  ; i < newChampionPatch.length; i++) {
 				console.log(i);
 			await idb.cache.championPatch.add(newChampionPatch[i]);
 		}
 	} else if (g.numChampionsPatch > newChampionPatch.length) {
-	//	for (let i = newChampionPatch.length ; i < g.numChampionsPatch; i++) {	
-		//		console.log(i);					
-			//	await idb.cache.championPatch.delete(i);	
-		//}			
+	//	for (let i = newChampionPatch.length ; i < g.numChampionsPatch; i++) {
+		//		console.log(i);
+			//	await idb.cache.championPatch.delete(i);
+		//}
 		console.log("can't lower number of patch items");
 	}
-	
+
 	// update MMR/Rank of players based on new meta
 	const players = await idb.cache.players.getAll();
-	
+
 	var cpSorted;
 	cpSorted = [];
-	
+
 	for (let i = 0; i < _.size(newChampionPatch); i++) {
 //    for (const cp of championPatch) {
 //		cpSorted.push({"champion": cp[i].champion,"cpid": cp[i].cpid,"rank": cp[i].rank,"role": cp[i].role});
-		
+
 		cpSorted.push({"champion": newChampionPatch[i].champion,"cpid": newChampionPatch[i].cpid,"rank": newChampionPatch[i].rank,"role": newChampionPatch[i].role});
-	}					
-	
-	cpSorted.sort(function (a, b) { return a.rank - b.rank; });		
-	
+	}
+
+	cpSorted.sort(function (a, b) { return a.rank - b.rank; });
+
 	var topADC,topMID,topJGL,topTOP,topSUP;
 
 	topADC = [];
@@ -1430,7 +1428,7 @@ const updateChampionPatch = async (newChampionPatch: {
 	topSUP = [];
 	//console.log(cpSorted);
 	//console.log(cDefault);
-	
+
 	for (let i = 0; i < _.size(cpSorted); i++) {
 		if ((cpSorted[i].role == "ADC") && (topADC.length < 5) ) {
 	//	   console.log(_.size(cDefault));
@@ -1478,45 +1476,45 @@ const updateChampionPatch = async (newChampionPatch: {
 			}
 
 		}
-	
-	}			
+
+	}
 //	console.log(topADC);
 //	console.log(topTOP);
 //	console.log(topMID);
 //	console.log(topJGL);
 //	console.log(topSUP);
-	
-    for (const p of players) {	
-	
+
+    for (const p of players) {
+
 		//console.log(p);
 		let skillMMR = 0;
 		let r = p.ratings.length - 1;
-		
-		if (p.ratings[0].pos== "ADC") { 
-			for (let j = 0; j <  topADC.length; j++) {		
+
+		if (p.ratings[0].pos== "ADC") {
+			for (let j = 0; j <  topADC.length; j++) {
 				skillMMR += p.champions[topADC[j]].skill
 			}
 		}
 		if (p.ratings[0].pos== "TOP") {
-			for (let j = 0; j <  topTOP.length; j++) {		
+			for (let j = 0; j <  topTOP.length; j++) {
 				skillMMR += p.champions[topTOP[j]].skill
 			}
 		}
 		if (p.ratings[0].pos== "MID") {
-			for (let j = 0; j <  topMID.length; j++) {		
+			for (let j = 0; j <  topMID.length; j++) {
 				skillMMR += p.champions[topMID[j]].skill
 			}
 		}
 		if (p.ratings[0].pos== "JGL") {
-			for (let j = 0; j <  topJGL.length; j++) {		
+			for (let j = 0; j <  topJGL.length; j++) {
 				skillMMR += p.champions[topJGL[j]].skill
 			}
 		}
 		if (p.ratings[0].pos== "SUP") {
-			for (let j = 0; j <  topSUP.length; j++) {		
+			for (let j = 0; j <  topSUP.length; j++) {
 				skillMMR += p.champions[topSUP[j]].skill
 			}
-		}		
+		}
 	//	console.log(skillMMR);
 		p.ratings[r].MMR = player.MMRcalc(p.ratings[r].ovr,skillMMR);
 		//p.ratings[r].MMR = Math.round(p.ratings[r].ovr*9 +2200+skillMMR*1,0); // up to 500 + 2200 + up to 500
@@ -1541,11 +1539,11 @@ const updateChampionPatch = async (newChampionPatch: {
 			p.ratings[r].rank = "Master";
 		} else  {
 			p.ratings[r].rank = "Challenger";
-		}	
+		}
 	//	console.log(p);
         await idb.cache.players.put(p);
 	}
-			
+
 };
 
 const upsertCustomizedTeam = async (
@@ -1555,81 +1553,81 @@ const upsertCustomizedTeam = async (
 
 
     // Save to database, adding pid if it doesn't already exist
-	//console.log(teamCreate);	
-	//console.log(teamCreate.tid);	
-	//console.log(originalTid);	
+	//console.log(teamCreate);
+	//console.log(teamCreate.tid);
+	//console.log(originalTid);
 	if (originalTid == undefined) {
-	
-		const t = team.generate(teamCreate);	
+
+		const t = team.generate(teamCreate);
 		//	console.log(t.tid);
 		await idb.cache.teams.put(t);
 		//	console.log(t);
 
 		let teamSeasons = [team.genSeasonRow(t.tid,t.cid,t.imgURLCountry,t.countrySpecific,false)];
 //	teamSeasons[0].pop = t[i].pop;
-		
+
 		teamSeasons[0].pop = 10;
 		teamSeasons[0].cidMid = t.cid;
 		teamSeasons[0].cidNext = t.cid;
 		teamSeasons[0].cidStart = t.cid;
 		teamSeasons[0].countrySpecific = t.countrySpecific;
-	//	console.log(t);	
+	//	console.log(t);
 	//	console.log(teamSeasons);
-		
-	   for (const teamSeason of teamSeasons) { 
+
+	   for (const teamSeason of teamSeasons) {
 		//	console.log(teamSeason);
 			teamSeason.tid = t.tid;
 			await idb.cache.teamSeasons.add(teamSeason);
-		}	
-		
-		 
-		 let teamStats = [team.genStatsRow(t.tid)];	
+		}
+
+
+		 let teamStats = [team.genStatsRow(t.tid)];
 		 for (const teamStat of teamStats) {
-		//	console.log(teamStat);			
+		//	console.log(teamStat);
 			teamStat.tid = t.tid;
 			if (!teamStat.hasOwnProperty("ba")) {
 				teamStat.ba = 0;
 			}
 			await idb.cache.teamStats.add(teamStat);
-		}	
-		
-		
+		}
+
+
 	   const teams = await idb.cache.teams.getAll();
-	  
+
 		await league.setGameAttributes({
-			numTeams: g.numTeams + 1,		
+			numTeams: g.numTeams + 1,
 			teamCountryCache: teams.map(tt => tt.country),
 			teamAbbrevsCache: teams.map(tt => tt.abbrev),
 			teamRegionsCache: teams.map(tt => tt.region),
 			teamNamesCache: teams.map(tt => tt.name),
-		});	
-				
+		});
+
 		if (typeof t.tid !== 'number') {
 			throw new Error('Unknown tid');
 		}
 
-		return t.tid;				
-				
-			
+		return t.tid;
+
+
 	} else {
-		
+
 		//teamCreate.seasonAttr[0].
-		await idb.cache.teams.put(teamCreate);	
-		let teamSeason = await idb.cache.teamSeasons.indexGet('teamSeasonsBySeasonTid', `${g.season},${teamCreate.tid}`);		
+		await idb.cache.teams.put(teamCreate);
+		let teamSeason = await idb.cache.teamSeasons.indexGet('teamSeasonsBySeasonTid', `${g.season},${teamCreate.tid}`);
 	//	console.log(teamSeason);
 	//	teamCreate.seasonAttrs.tid = teamCreate.tid;
 		teamSeason.cidMid = teamCreate.cid;
 		teamSeason.cidNext = teamCreate.cid;
 		teamSeason.cidStart = teamCreate.cid;
-		teamSeason.countrySpecific = teamCreate.countrySpecific;		
-	//	console.log(teamSeason);		
-	//	console.log(teamCreate);	
-	//	console.log(teamCreate.seasonAttrs);			
-		await idb.cache.teamSeasons.put(teamSeason);		
-		return originalTid;		
+		teamSeason.countrySpecific = teamCreate.countrySpecific;
+	//	console.log(teamSeason);
+	//	console.log(teamCreate);
+	//	console.log(teamCreate.seasonAttrs);
+		await idb.cache.teamSeasons.put(teamSeason);
+		return originalTid;
 	}
 
-	
+
    // await league.setGameAttributes({
 	//	numTeams: g.numTeams + 1,
 //		teamAbbrevsCache: t.abbrev,
@@ -1639,11 +1637,11 @@ const upsertCustomizedTeam = async (
      //teamAbbrevsCache: teams.map(t => t.abbrev),
        // teamRegionsCache: teams.map(t => t.region),
         //teamNamesCache: teams.map(t => t.name),
-	
+
 //	console.log(t);
-	//console.log(teamStats);	
-	//console.log(teamSeasons);	
-  
+	//console.log(teamStats);
+	//console.log(teamSeasons);
+
 };
 
 
@@ -1655,7 +1653,7 @@ const upsertCustomizedPlayer = async (
 
 	//console.log(p);
 	//console.log(p.tid);
-	//console.log(originalTid);	
+	//console.log(originalTid);
     // Fix draft season
     if (p.tid === PLAYER.UNDRAFTED || p.tid === PLAYER.UNDRAFTED_2 || p.tid === PLAYER.UNDRAFTED_3) {
         if (p.tid === PLAYER.UNDRAFTED) {
@@ -1678,7 +1676,7 @@ const upsertCustomizedPlayer = async (
 	console.log(ovrOption);
 	console.log(p.ratings[r]);
 	console.log(p.ratings[r].oldOVR);
-	
+
 //	if (ovrOption == "OVR") {
 	if (p.ratings[r].oldOVR) {
 		let oldOVR = player.ovr(p.ratings[r]);
@@ -1690,7 +1688,7 @@ const upsertCustomizedPlayer = async (
 				p.ratings[r][rating] +=  ovrDifference ;
 				p.ratings[r][rating] = helpers.bound(parseInt(p.ratings[r][rating], 10), 0, 100);
 			}
-		}		 
+		}
 		p.ratings[r].ovr = player.ovr(p.ratings[r]);
 	} else {
 		p.ratings[r].ovr = player.ovr(p.ratings[r]);
@@ -1719,24 +1717,24 @@ const upsertCustomizedPlayer = async (
 		}
 		//
 	//	p.ratings.champions[i].name =   cDefault[i].name;
-	}	
+	}
 //	console.log(p);
 
     const championPatch = await idb.cache.championPatch.getAll();
-    const cDefault = await idb.cache.champions.getAll();		
-	
+    const cDefault = await idb.cache.champions.getAll();
+
 	var cpSorted;
 	cpSorted = [];
-	
+
 	for (let i = 0; i < _.size(championPatch); i++) {
 //    for (const cp of championPatch) {
 //		cpSorted.push({"champion": cp[i].champion,"cpid": cp[i].cpid,"rank": cp[i].rank,"role": cp[i].role});
-		
+
 		cpSorted.push({"champion": championPatch[i].champion,"cpid": championPatch[i].cpid,"rank": championPatch[i].rank,"role": championPatch[i].role});
-	}					
-	
-	cpSorted.sort(function (a, b) { return a.rank - b.rank; });		
-	
+	}
+
+	cpSorted.sort(function (a, b) { return a.rank - b.rank; });
+
 	var topADC,topMID,topJGL,topTOP,topSUP;
 
 	topADC = [];
@@ -1746,7 +1744,7 @@ const upsertCustomizedPlayer = async (
 	topSUP = [];
 	//console.log(cpSorted);
 	//console.log(cDefault);
-	
+
 	for (let i = 0; i < _.size(cpSorted); i++) {
 		if ((cpSorted[i].role == "ADC") && (topADC.length < 5) ) {
 	//	   console.log(_.size(cDefault));
@@ -1794,16 +1792,16 @@ const upsertCustomizedPlayer = async (
 			}
 
 		}
-	
-	}			
-	
+
+	}
+
 	var skillMMR;
 	skillMMR = 0;
 	//	console.log(p);
 	if (p.pos != p.ratings[r].pos) {
 		console.log("got here");
 		p.champions = [];
-	
+
 	// this needs to call from champions list, really should be global
 //        for (i = 0; i <  champions.champion.length; i++) {
 //	console.log(g.numChampions);
@@ -1828,46 +1826,46 @@ const upsertCustomizedPlayer = async (
 			//
 			p.champions[i].name =   cDefault[i].name;
 			//p.champions.length = i;
-		}		
-		
+		}
+
 	}
-		
+
 	if (p.champions == undefined)	{
 		console.log(p);
 	}
-		
+
 	if (p.ratings[r].pos== "ADC") {
-		for (let i = 0; i <  topADC.length; i++) {		
+		for (let i = 0; i <  topADC.length; i++) {
 			skillMMR += p.champions[topADC[i]].skill
 		}
 	}
 	if (p.ratings[r].pos== "TOP") {
-		for (let i = 0; i <  topTOP.length; i++) {		
+		for (let i = 0; i <  topTOP.length; i++) {
 			skillMMR += p.champions[topTOP[i]].skill
 		}
 	}
 	if (p.ratings[r].pos== "MID") {
-		for (let i = 0; i <  topMID.length; i++) {		
+		for (let i = 0; i <  topMID.length; i++) {
 			skillMMR += p.champions[topMID[i]].skill
 		}
 	}
-	if (p.ratings[r].pos== "JGL") { 
-		
-		for (let i = 0; i <  topJGL.length; i++) {		
+	if (p.ratings[r].pos== "JGL") {
+
+		for (let i = 0; i <  topJGL.length; i++) {
 		//console.log(i);
-		//console.log(topJGL[i]);						
+		//console.log(topJGL[i]);
 			skillMMR += p.champions[topJGL[i]].skill
-		//console.log(skillMMR);										
+		//console.log(skillMMR);
 		}
 	}
 	if (p.ratings[r].pos== "SUP") {
-		for (let i = 0; i <  topSUP.length; i++) {		
+		for (let i = 0; i <  topSUP.length; i++) {
 			skillMMR += p.champions[topSUP[i]].skill
 		}
-	}		
+	}
 //	console.log(skillMMR);
 	p.ratings[r].MMR = player.MMRcalc(p.ratings[r].ovr,skillMMR);
-	
+
 	var fuzzedMMR;
 	fuzzedMMR = p.ratings[r].MMR+random.randInt(-50, 50);
 	if ( fuzzedMMR < 2200) {
@@ -1886,7 +1884,7 @@ const upsertCustomizedPlayer = async (
 		p.ratings[r].rank = "Master";
 	} else  {
 		p.ratings[r].rank = "Challenger";
-	}	
+	}
     // If player was retired, add ratings (but don't develop, because that would change ratings)
     if (originalTid === PLAYER.RETIRED) {
         if (g.season - p.ratings[r].season > 0) {
@@ -1942,7 +1940,7 @@ const createTrade = async (teams: [{
     await trade.create(teams);
 };
 
-const proposeTrade = async (forceTrade: boolean): Promise<[boolean, ?string]> => {
+const proposeTrade = async (forceTrade: boolean): Promise<[boolean, string | undefined]> => {
     const output = await trade.propose(forceTrade);
     return output;
 };

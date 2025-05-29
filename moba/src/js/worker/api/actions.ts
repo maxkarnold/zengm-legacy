@@ -1,5 +1,3 @@
-// @flow
-
 import {PHASE, g, helpers} from '../../common';
 import {contractNegotiation, draft, freeAgents, game, league, phase, season, trade} from '../core';
 import {idb, reset} from '../db';
@@ -84,16 +82,16 @@ const playAmount = async (amount: 'day' | 'week' | 'month' | 'untilPreseason', c
         numDays = 1;
     } else if (amount === "week") {
 		if (g.phase == g.PHASE.MSI || g.phase == g.PHASE.PLAYOFFS) {
-        numDays = 7;			
+        numDays = 7;
 		} else {
         numDays = 1;
 		}
     } else if (amount === "month") {
 		if (g.phase == g.PHASE.MSI || g.phase == g.PHASE.PLAYOFFS) {
-        numDays = 30;			
+        numDays = 30;
 		} else {
         numDays = 4;
-		}		
+		}
 
     } else if (amount === "untilPreseason") {
         numDays = g.daysLeft;
@@ -142,13 +140,13 @@ const playMenu = {
     },
 
     untilMSI: async (conditions: Conditions) => {
-        if (g.phase < g.PHASE.MSI) {		
+        if (g.phase < g.PHASE.MSI) {
             await updateStatus('Playing...'); // For quick UI updating, before await
             const numDays = await season.getDaysLeftSchedule();
             game.play(numDays, conditions);
         }
-    },	
-	
+    },
+
     throughMSI: async (conditions: Conditions) => {
         if (g.phase === g.PHASE.MSI) {
             await updateStatus('Playing...'); // For quick UI updating, before await
@@ -167,15 +165,15 @@ const playMenu = {
             game.play(numDays, conditions);
         }
     },
-	
+
     untilMidseason: async (conditions: Conditions) => {
         await playAmount('untilMidseason', conditions);
-    },	
-	
+    },
+
     untilPlayoffs: async (conditions: Conditions) => {
         if (g.phase < g.PHASE.PLAYOFFS) {
 
-			
+
             await updateStatus('Playing...'); // For quick UI updating, before await
             const numDays = await season.getDaysLeftSchedule();
             game.play(numDays, conditions);
@@ -240,18 +238,18 @@ const playMenu = {
             await phase.newPhase(g.PHASE.REGULAR_SEASON, conditions);
         }
     },*/
-	
+
     untilRegularSeason: async (conditions: Conditions) => {
         if (g.phase === g.PHASE.PRESEASON) {
             await phase.newPhase(g.PHASE.REGULAR_SEASON, conditions);
         }
-    },	
-	
-    untilSecondHalf: async (conditions: Conditions) => 	{	
+    },
+
+    untilSecondHalf: async (conditions: Conditions) => 	{
         if (g.phase === g.PHASE.MIDSEASON) {
             await phase.newPhase(g.PHASE.SECOND_HALF, conditions);
         }
-    },	
+    },
     stopAuto: async () => {
         local.autoPlaySeasons = 0;
         updatePlayMenu();
@@ -270,7 +268,7 @@ const toolsMenu = {
 
     skipToMidseason: async (conditions: Conditions) => {
         await phase.newPhase(g.PHASE.MIDSEASON, conditions);
-    },	
+    },
 
     skipToPlayoffs: async (conditions: Conditions) => {
         await phase.newPhase(g.PHASE.PLAYOFFS, conditions);

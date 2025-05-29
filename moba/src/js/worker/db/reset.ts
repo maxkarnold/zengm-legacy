@@ -1,8 +1,6 @@
-// @flow
-
 import Backboard from 'backboard';
 import {league} from '../core';
-import {idb} from '../db';
+import {idb} from '.';
 
 const reset = async () => {
     // Delete any current league databases

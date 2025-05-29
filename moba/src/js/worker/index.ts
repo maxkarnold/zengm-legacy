@@ -1,5 +1,5 @@
 import "../common/polyfills.ts";
-import api from "./api/index.ts";
+import api from "./api/index.js";
 import * as common from "../common/index";
 import * as core from "./core/index";
 import * as db from "./db/index";

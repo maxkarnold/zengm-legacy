@@ -1,9 +1,7 @@
-// @flow
-
 import Backboard from 'backboard';
 import Cache from './Cache';
-import * as getCopies from './getCopies';
-import * as getCopy from './getCopy';
+import * as getCopies from './getCopies/index';
+import * as getCopy from './getCopy/index';
 import {logEvent} from '../util';
 
 Backboard.setPromiseConstructor(Promise);
