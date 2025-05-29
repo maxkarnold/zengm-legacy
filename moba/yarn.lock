@@ -2137,6 +2137,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/prop-types@npm:^15.7.14":
+  version: 15.7.14
+  resolution: "@types/prop-types@npm:15.7.14"
+  checksum: 10c0/1ec775160bfab90b67a782d735952158c7e702ca4502968aa82565bd8e452c2de8601c8dfe349733073c31179116cf7340710160d3836aa8a1ef76d1532893b1
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:^19.1.5":
   version: 19.1.5
   resolution: "@types/react-dom@npm:19.1.5"
@@ -3952,6 +3959,7 @@ __metadata:
     "@rollup/plugin-node-resolve": "npm:^16.0.1"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
+    "@types/prop-types": "npm:^15.7.14"
     "@types/react": "npm:^19.1.6"
     "@types/react-dom": "npm:^19.1.5"
     babel-plugin-check-es2015-constants: "npm:6.22.0"

@@ -1,5 +1,3 @@
-// @flow
-
 export {default as awards} from './awards';
 export {default as events} from './events';
 export {default as games} from './games';
