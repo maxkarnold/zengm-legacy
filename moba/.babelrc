@@ -1,17 +1,15 @@
 {
-  "sourceType": "unambiguous",
+  "sourceType": "module",
   "presets": [
     ["@babel/preset-env", {
       "targets": {
         "browsers": ["last 2 versions", "safari >= 15"]
-      }
+      },
+      "modules": false
     }],
     ["@babel/preset-react", {
       "runtime": "automatic"
     }],
     "@babel/preset-typescript"
-  ],
-  "plugins": [
-    "@babel/plugin-transform-modules-commonjs"
   ]
 }

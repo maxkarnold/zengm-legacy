@@ -24,3 +24,18 @@ export {default as notify} from './notify';
 export {default as realtimeUpdate} from './realtimeUpdate';
 export {default as setTitle} from './setTitle';
 export {default as toWorker} from './toWorker';
+
+import initView from './initView';
+import processInputs from '../processInputs';
+import * as views from '../views';
+
+export const genPage = (id: string, inLeague = true) => {
+    const componentName = id.charAt(0).toUpperCase() + id.slice(1);
+
+    return initView({
+        id,
+        inLeague,
+        get: processInputs.hasOwnProperty(id) ? processInputs[id] : undefined,
+        Component: views[componentName],
+    });
+};

@@ -35,6 +35,7 @@
     "watch-test": "yarn run copy-mocha && watchify -d src/js/test/index.js -o build/gen/test.js"
   },
   "dependencies": {
+    "@types/react-router-dom": "^5.3.3",
     "backboard": "1.0.7",
     "classnames": "2.2.5",
     "dompurify": "0.8.5",
@@ -49,6 +50,7 @@
     "react-bootstrap": "0.30.8",
     "react-dom": "^19.1.0",
     "react-overlays": "0.6.12",
+    "react-router-dom": "^7.6.1",
     "react-sortable-hoc": "dumbmatter/react-sortable-hoc#502ef32e771653656385843ffb3c1ac491d70d36",
     "sass": "^1.89.0",
     "underscore": "1.8.3",

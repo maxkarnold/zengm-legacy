@@ -1,8 +1,10 @@
 import type {GetOutput, PageCtx} from '../../common/types';
 import {emitter} from '.';
+import { useEffect } from 'react';
+import React from 'react';
 
 type InitArgs = {
-    Component: any,
+    Component: React.ComponentType,
     id: string,
     inLeague?: boolean,
     get?: (ctx: PageCtx) => GetOutput | undefined,
@@ -14,22 +16,17 @@ const initView = (args: InitArgs) => {
 
     if (!args.Component) { throw new Error('Missing arg Component'); }
 
-    return (ctx: PageCtx, next: () => void) => {
-        if (ctx.bbgm === undefined) {
-            ctx.bbgm = {};
-        }
-        if (ctx.bbgm.cb === undefined) {
-            ctx.bbgm.cb = next;
-        } else {
-            const prevCb = ctx.bbgm.cb;
-            ctx.bbgm.cb = () => {
-                prevCb();
-                next();
-            };
-        }
-        ctx.bbgm.handled = true;
-        emitter.emit('get', args, ctx);
+    const ViewWrapper: React.FC = () => {
+        useEffect(() => {
+            const ctx: PageCtx = { bbgm: {} };
+            ctx.bbgm.handled = true;
+            emitter.emit('get', args, ctx);
+        }, []);
+
+        return React.createElement(args.Component);
     };
+
+    return React.createElement(ViewWrapper);
 };
 
 export default initView;
