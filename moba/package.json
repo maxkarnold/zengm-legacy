@@ -20,8 +20,12 @@
     "build-js": "NODE_ENV=production node tools/build-js.js",
     "minify-js": "node tools/minify-js.js",
     "watch-js": "concurrently --raw 'yarn run watch-js-ui' 'yarn run watch-js-worker'",
-    "watch-js-ui": "watchify -d src/js/ui/index.tsx -o build/gen/ui.js -v",
-    "watch-js-worker": "watchify -d src/js/worker/index.ts -o build/gen/worker.js -v",
+    "watch-js-ui": "watchify -d src/js/ui/index.tsx -o build/gen/ui.js -v --debug --verbose",
+    "watch-js-worker": "watchify -d src/js/worker/index.ts -o build/gen/worker.js -v --debug --verbose -t [ babelify --presets [ @babel/preset-env @babel/preset-typescript ] --extensions .ts,.tsx,.js,.jsx ] --no-browser-field",
+    "vite-build": "NODE_ENV=production vite build",
+    "vite-start": "concurrently --kill-others 'yarn run start' 'yarn run vite-dev'",
+    "vite-dev": "vite",
+    "vite-preview": "vite preview",
     "lint": "concurrently --raw 'yarn run flow' 'yarn run lint-css' 'yarn run lint-js'",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "lint-css": "stylelint 'src/css/*.*css'",
@@ -41,9 +45,7 @@
     "dompurify": "0.8.5",
     "indexeddb-getall-shim": "1.3.1",
     "lodash.orderby": "4.6.0",
-    "object.entries": "1.0.4",
-    "object.values": "1.0.4",
-    "page": "1.7.1",
+    "page": "^1.11.6",
     "promise-worker-bi": "2.2.0",
     "react": "^19.1.0",
     "react-addons-text-content": "0.0.4",
@@ -69,9 +71,11 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@types/babel__core": "^7",
     "@types/babel__preset-env": "^7",
+    "@types/page": "^1",
     "@types/prop-types": "^15.7.14",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.5",
+    "@vitejs/plugin-react": "^4.5.0",
     "babel-plugin-check-es2015-constants": "6.22.0",
     "babel-plugin-external-helpers": "6.22.0",
     "babel-plugin-transform-async-to-generator": "6.22.0",
@@ -127,12 +131,83 @@
     "ts-migrate": "^0.1.35",
     "typescript": "^5.8.3",
     "uglify-js": "mishoo/UglifyJS2#9e2290b29c86caf847e291cf120ab23bea40544c",
+    "vite": "^6.3.5",
     "watchify": "3.9.0"
   },
   "browserify": {
     "transform": [
-      "babelify"
+      [
+        "babelify",
+        {
+          "extensions": [
+            ".ts",
+            ".tsx",
+            ".js",
+            ".jsx"
+          ],
+          "presets": [
+            [
+              "@babel/preset-env",
+              {
+                "targets": {
+                  "browsers": [
+                    "last 2 versions"
+                  ]
+                }
+              }
+            ],
+            [
+              "@babel/preset-react",
+              {
+                "runtime": "automatic"
+              }
+            ],
+            [
+              "@babel/preset-typescript",
+              {
+                "isTSX": true,
+                "allExtensions": true
+              }
+            ]
+          ],
+          "plugins": [
+            "@babel/plugin-transform-runtime"
+          ]
+        }
+      ],
+      [
+        "envify",
+        {
+          "NODE_ENV": "development"
+        }
+      ]
+    ],
+    "extensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".jsx"
+    ],
+    "resolveExtensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".jsx"
+    ],
+    "paths": [
+      "src/js/*",
+      "src/js/common/*",
+      "src/js/worker/*",
+      "src/js/worker/api/*",
+      "src/js/worker/core/*",
+      "src/js/worker/db/*",
+      "src/js/worker/util/*",
+      "src/js/ui/*"
     ]
+  },
+  "browser": {
+    "webworker": false,
+    "worker_threads": false
   },
   "private": true
 }

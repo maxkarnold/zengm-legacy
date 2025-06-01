@@ -1,4 +1,3 @@
-import page from 'page';
 import type {UpdateEvents} from '../../common/types';
 
 /**
@@ -15,29 +14,26 @@ async function realtimeUpdate(updateEvents: UpdateEvents = [], url?: string, raw
     return new Promise<void>((resolve) => {
         url = url !== undefined ? url : location.pathname + location.search;
 
-		console.log(url);
+        console.log(url);
 
         const inLeague = url.substr(0, 3) === "/l/"; // Check the URL to be redirected to, not the current league (g.lid)
         const refresh = url === location.pathname && inLeague;
 
-        const ctx = new page.Context(url);
-        ctx.bbgm = {};
-        for (const key of Object.keys(raw)) {
-            ctx.bbgm[key] = raw[key];
+        // Store the update events and raw data in sessionStorage
+        if (updateEvents.length > 0 || Object.keys(raw).length > 0) {
+            sessionStorage.setItem('bbgm-update', JSON.stringify({
+                updateEvents,
+                raw,
+                timestamp: Date.now()
+            }));
         }
-        ctx.bbgm.updateEvents = updateEvents;
-        ctx.bbgm.cb = () => resolve();
-        if (refresh) {
-            ctx.bbgm.noTrack = true;
-        }
-        page.current = ctx.path;
 
-        // This prevents the Create New League form from inappropriately refreshing after it is submitted
         if (refresh) {
-            page.dispatch(ctx);
+            // For refresh, just reload the current page
+            window.location.reload();
         } else if (inLeague || url === "/" || url.indexOf("/account") === 0) {
-            page.dispatch(ctx);
-            ctx.pushState();
+            // For navigation, use window.location
+            window.location.href = url;
         } else {
             resolve();
         }

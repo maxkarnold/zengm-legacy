@@ -9,6 +9,9 @@ import { useRoutes } from 'react-router-dom';
 import routes from './routes';
 import { useEffect } from 'react';
 
+// Import CSS
+import '../../css/bbgm.scss';
+
 // Add window type definitions
 declare global {
     interface Window {
@@ -99,6 +102,28 @@ promiseWorker.register(([name, ...params]) => {
     };
 
     await toWorker('init', env);
+
+    // Check for stored updates
+    const storedUpdate = sessionStorage.getItem('bbgm-update');
+    if (storedUpdate) {
+        try {
+            const { updateEvents, raw, timestamp } = JSON.parse(storedUpdate);
+            // Clear the stored update
+            sessionStorage.removeItem('bbgm-update');
+
+            // Process the update events
+            if (updateEvents && updateEvents.length > 0) {
+                await toWorker('processUpdateEvents', updateEvents);
+            }
+
+            // Process any raw data
+            if (raw && Object.keys(raw).length > 0) {
+                await toWorker('processRawData', raw);
+            }
+        } catch (error) {
+            console.error('Error processing stored update:', error);
+        }
+    }
 
     // Initialize the app
     const root = document.getElementById('content');
