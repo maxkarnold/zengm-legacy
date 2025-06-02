@@ -223,7 +223,18 @@ export type Awards = {
 export type BackboardTx = any;
 
 export type Conditions = {
-    hostID?: number,
+    hostID?: number;
+};
+
+export type Conference = {
+    cid: number,
+    name: string,
+};
+
+export type Division = {
+    did: number,
+    cid: number,
+    name: string,
 };
 
 export type DraftOrder = any;
@@ -245,17 +256,6 @@ export type DraftPickWithoutDpid = {
 
 export type EventBBGM = any;
 
-export type Env = {
-    enableLogging: boolean,
-    heartbeatID: string,
-    inCordova: boolean,
-    tld: string,
-    useSharedWorker: boolean,
-
-    // These are just legacy variables sent to the worker to be stored in idb.meta.attributes
-    fromLocalStorage: {[key: string]: string | null | undefined},
-};
-
 export type Game = {
     att: number,
     gid: number,
@@ -269,72 +269,6 @@ export type Game = {
 export type GamePlayer = any;
 
 export type GameResults = any;
-
-export type GameAttributeKey = (
-	'aiTrades' |
-	'bothSplits' |
-	'cCache' |
-	'cpCache' |
-    'confs' |
-	'champType' |
-    'daysLeft' |
-	'difficulty' |
-    'disableInjuries' |
-    'divs' |
-	'fullLadder' |
-    'gameOver' |
-	'gameType' |
-	'GMCoachType' |
-    'godMode' |
-    'godModeInPast' |
-    'gracePeriodEnd' |
-    'leagueName' |
-    'lid' |
-    'luxuryPayroll' |
-    'luxuryTax' |
-    'maxContract' |
-    'maxRosterSize' |
-    'minContract' |
-    'minPayroll' |
-    'minRosterSize' |
-    'names' |
-    'nextPhase' |
-	'numChampions' |
-	'numChampionsPatch' |
-    'numGames' |
-    'numPlayoffRounds' |
-    'numTeams' |
-    'ownerMood' |
-	'ownerType' |
-	'patchType' |
-    'phase' |
-	'PHASE_TEXT' |
-	'PHASE' |
-	'playerChampRatingImpact' |
-	'playoffWins' |
-    'quarterLength' |
-	'realChampNames' |
-	'regionType' |
-    'salaryCap' |
-    'season' |
-	'seasonSplit' |
-    'showFirstOwnerMessage' |
-    'startingSeason' |
-    'startingSplit' |
-    'teamAbbrevsCache' |
-    'teamNamesCache' |
-    'teamRegionsCache' |
-    'userTid' |
-    'userTids' |
-    'yearType'
-);
-
-export type GameAttribute = {
-  key: GameAttributeKey;
-  value: unknown; // or any, see below
-};
-
-export type GameAttributes = {[K in GameAttributeKey]?: any};
 
 export type GameProcessed = {
     gid: number,
@@ -550,56 +484,71 @@ export type PlayerSalary = {
 
 export type PlayerStats = any;
 
-export type PlayerWithoutPid = {
-    awards: {
-        season: number,
-        type: string,
-    }[],
+export type Player = {
+    pid: number;
+    tid: number;
+    name: string;
+    pos: string;
+    ratings: PlayerRatings[];
+    champions?: Array<{
+        skill: number;
+        name: string;
+    }>;
     born: {
-        year: number,
-        loc: string,
-    },
-    college: string,
-    contract: PlayerContract,
-    diedYear?: number,
-    draft: {
-        round: number,
-        pick: number,
-        tid: number,
-        originalTid: number,
-        year: number,
-        pot: number,
-        ovr: number,
-        skills: PlayerSkill[],
-    },
-    face: Object,
-    firstName: string,
-    freeAgentMood: number[],
-    gamesUntilTradable: number,
-    hgt: number,
-    hof: boolean,
-    imgURL: string,
-    injury: PlayerInjury,
-    lastName: string,
-    pos?: string, // Only in players from custom league files
-    ptModifier: number,
-    ratings: PlayerRatings[],
-    retiredYear: number,
-    rosterOrder: number,
-    salaries: PlayerSalary[],
-    statsTids: number[],
-    tid: number,
-    value: number,
-    valueNoPot: number,
-    valueFuzz: number,
-    valueNoPotFuzz: number,
-    valueWithContract: number,
-    watch: boolean,
-    weight: number,
-    yearsFreeAgent: number,
+        loc: string;
+        year: number;
+    };
+    awards?: {
+        season: number;
+        type: string;
+    }[];
+    college?: string;
+    contract?: {
+        amount: number;
+        exp: number;
+    };
+    diedYear?: number;
+    draft?: {
+        round: number;
+        pick: number;
+        tid: number;
+        originalTid: number;
+        year: number;
+        pot: number;
+        ovr: number;
+        skills: string[];
+    };
+    face?: any;
+    firstName?: string;
+    freeAgentMood?: number[];
+    gamesUntilTradable?: number;
+    hgt?: number;
+    hof?: boolean;
+    imgURL?: string;
+    injury?: {
+        gamesRemaining: number;
+        type: string;
+    };
+    lastName?: string;
+    ptModifier?: number;
+    retiredYear?: number;
+    rosterOrder?: number;
+    salaries?: Array<{
+        amount: number;
+        season: number;
+    }>;
+    statsTids?: number[];
+    value?: number;
+    valueNoPot?: number;
+    valueFuzz?: number;
+    valueNoPotFuzz?: number;
+    valueWithContract?: number;
+    watch?: boolean;
+    weight?: number;
+    yearsFreeAgent?: number;
 };
 
-export type Player = PlayerWithoutPid & {pid: number};
+export type PlayerWithoutPid = Omit<Player, 'pid'>;
 
 export type PlayerWithStats = Player & {stats: PlayerStats[]};
 
@@ -696,7 +645,6 @@ export type TeamBasic = {
     popRank?: number,
     imgURL?: string,
 };
-
 
 export type TeamAttr = string;
 

@@ -1,5 +1,12 @@
 import type {UpdateEvents} from '../../common/types';
 
+// Global navigate function that will be set by the React app
+let globalNavigate: ((url: string) => void) | null = null;
+
+export const setGlobalNavigate = (navigate: (url: string) => void) => {
+    globalNavigate = navigate;
+};
+
 /**
  * Smartly update the currently loaded view or redirect to a new one.
  *
@@ -32,8 +39,12 @@ async function realtimeUpdate(updateEvents: UpdateEvents = [], url?: string, raw
             // For refresh, just reload the current page
             window.location.reload();
         } else if (inLeague || url === "/" || url.indexOf("/account") === 0) {
-            // For navigation, use window.location
-            window.location.href = url;
+            // For navigation, use React Router's navigate if available, otherwise fall back to window.location
+            if (globalNavigate) {
+                globalNavigate(url);
+            } else {
+                window.location.href = url;
+            }
         } else {
             resolve();
         }

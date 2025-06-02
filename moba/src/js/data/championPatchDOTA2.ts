@@ -1,11 +1,11 @@
 
 
-const championPatch = [
+export const championPatchDOTA2: [string, string, number][] = [
 
     //Role		Champion		Win Rate
 
 
-	["MID","Hacker",0.4987,"Tinker"],
+	["MID","Hacker",0.4987],
 	["MID","Dark Devil",0.4905],
 	["MID","Thunder Soul",0.4924],
 	["MID","Templar Killer",0.4892],
@@ -365,5 +365,3 @@ const championPatch = [
 	["ROAM","Certain Death",0.413],
 
 ];
-
-export default championPatch;

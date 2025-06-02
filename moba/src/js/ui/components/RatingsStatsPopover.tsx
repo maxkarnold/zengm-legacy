@@ -1,7 +1,6 @@
 import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
 import Popover from 'react-bootstrap/lib/Popover';
 import {toWorker} from '../util';
-import PropTypes from 'prop-types';
 import { Component } from 'react';
 
 const colorRating = (rating: number, type?: 'ovr') => {
@@ -56,10 +55,7 @@ type State = {
     } | void,
 };
 
-class RatingsStatsPopover extends Component {
-    props: Props;
-    state: State;
-    loadData: () => void;
+class RatingsStatsPopover extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
@@ -181,8 +177,6 @@ class RatingsStatsPopover extends Component {
     }
 }
 
-RatingsStatsPopover.propTypes = {
-    pid: PropTypes.number.isRequired,
-};
+
 
 export default RatingsStatsPopover;

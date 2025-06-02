@@ -6,7 +6,7 @@
  * @copyright http://champion.gg/statistics/#?sortBy=general.overallPosition&order=ascend
  */
 
-const championPatch = [
+export const championPatchLOL: [string, string, number][] = [
 
 	["TOP","Eternal Warrior",0.5519],
 	["TOP","Pirate",0.521],
@@ -200,5 +200,3 @@ const championPatch = [
 	["MID","The Boss",0.5347],
 	["JGL","The Boss",0.5354],
 ];
-
-export default championPatch;

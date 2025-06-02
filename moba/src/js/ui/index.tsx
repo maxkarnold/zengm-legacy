@@ -8,6 +8,7 @@ import type {Env} from '../common/types';
 import { useRoutes } from 'react-router-dom';
 import routes from './routes';
 import { useEffect } from 'react';
+import { setGlobalNavigate } from './util/realtimeUpdate';
 
 // Import CSS
 import '../../css/bbgm.scss';
@@ -53,6 +54,13 @@ const ErrorPage = () => {
 };
 
 function AppRouter() {
+    const navigate = useNavigate();
+
+    // Set up the global navigate function
+    useEffect(() => {
+        setGlobalNavigate(navigate);
+    }, [navigate]);
+
     const element = useRoutes([
         ...routes,
         {

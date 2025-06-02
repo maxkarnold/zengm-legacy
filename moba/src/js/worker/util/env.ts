@@ -6,7 +6,11 @@ const env: Env = {
     heartbeatID: '',
     inCordova: false,
     tld: 'com',
-    fromLocalStorage: {},
+    fromLocalStorage: {
+        changesRead: null,
+        lastSelectedTid: null,
+        nagged: null,
+    },
     useSharedWorker: false,
 };
 

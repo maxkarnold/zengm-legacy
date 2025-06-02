@@ -1,6 +1,5 @@
 /**
  * @name data.playerID
- * @namespace Name, Role, Role, Attack, Defense, Ability, Difficulty, Tracking Number (hid)
  * @description from a website capture of real userIDs, all between 5-7 letters, 321,190 of them
  */
 

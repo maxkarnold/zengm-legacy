@@ -1,15 +1,13 @@
-// @flow
-
 //import faces from 'facesjs';
 import _ from 'underscore';
 //import {COMPOSITE_WEIGHTS, PHASE, PLAYER, g, helpers} from '../../common';
 //import {idb} from '../db';
-import * as championPatch from '../../data/championPatch';
-import * as champions from '../../data/champions2';
-import * as championPatchLOL from '../../data/championPatchLOL';
-import * as championPatchDOTA2 from '../../data/championPatchDOTA2';
-import * as championsLOL from '../../data/championsLOL';
-import * as championsDOTA2 from '../../data/championsDOTA2';
+// import * as championPatch from '../../data/championPatch';
+// import * as champions from '../../data/champions2';
+import { championPatchLOL } from '../../data/championPatchLOL';
+import { championPatchDOTA2 } from '../../data/championPatchDOTA2';
+import { championsLOL } from '../../data/championsLOL';
+import { champions as championsDOTA2 } from '../../data/championsDOTA2';
 import {random} from '../util';
 
 
@@ -83,13 +81,13 @@ import {random} from '../util';
 	//console.log(championPatchDOTA2.championPatch);
   console.log(champid);
 		if (champid == 0) {
-			championRank.role = championPatchLOL.championPatch[i][0];
-			championRank.champion = championPatchLOL.championPatch[i][1];
-			championRank.rank = championPatchLOL.championPatch[i][2];
+			championRank.role = championPatchLOL[i][0];
+			championRank.champion = championPatchLOL[i][1];
+			championRank.rank = championPatchLOL[i][2];
 
 
      ////////// convert patch data to real names
-      for (let hid = 0; hid < championsLOL.champion.length; hid++) {
+      for (let hid = 0; hid < championsLOL.length; hid++) {
   //      console.log(hid+" "+championRank.champion+" "+name(0,hid,0)+" "+name(0,hid,1));
         if (championRank.champion ==  name(0,hid,1)) {
             championRank.champion = name(0,hid,0);
@@ -98,11 +96,11 @@ import {random} from '../util';
 			}
       /////////// end conversion
 		} else {
-			championRank.role = championPatchDOTA2.championPatch[i][0];
-			championRank.champion = championPatchDOTA2.championPatch[i][1];
-			championRank.rank = championPatchDOTA2.championPatch[i][2];
+			championRank.role = championPatchDOTA2[i][0];
+			championRank.champion = championPatchDOTA2[i][1];
+			championRank.rank = championPatchDOTA2[i][2];
       ////////// convert patch data to real names
-      for (let hid = 0; hid < championsDOTA2.champion.length; hid++) {
+      for (let hid = 0; hid < championsLOL.length; hid++) {
          //console.log(hid+" "+championRank.champion+" "+name(1,hid,0)+" "+name(1,hid,1));
        if (championRank.champion ==  name(1,hid,1)) {
            championRank.champion = name(1,hid,0);
@@ -122,9 +120,9 @@ import {random} from '../util';
 
   		if (champid == 0) {
 
-  			cn = championsLOL.champion[hid][data];
+  			cn = championsLOL[hid][data];
   		} else {
-  			cn = championsDOTA2.champion[hid][data];
+  			cn = championsLOL[hid][data];
   		}
       return cn;
     }
@@ -162,14 +160,14 @@ import {random} from '../util';
 			c.ratings.late = name(champid,hid,11);
 			// 12 is win rate, but not used
 			c.ratings.counter = [];
-			for (i = 0; i < championsLOL.champion.length; i++) {
+			for (i = 0; i < championsLOL.length; i++) {
 				c.ratings.counter[i] =  name(champid,hid,13+i);;
 			}
 
 //			c.ratings.synergyWith = [];
 			c.ratings.synergy = [];
-			for (i = 0; i < championsLOL.champion.length; i++) {
-				c.ratings.synergy[i] =  name(champid,hid,13+championsLOL.champion.length+i);;
+			for (i = 0; i < championsLOL.length; i++) {
+				c.ratings.synergy[i] =  name(champid,hid,13+championsLOL.length+i);;
 			}
 
 		} else {
@@ -191,14 +189,14 @@ import {random} from '../util';
 			// 17 is win rate, but not used
 //			c.ratings.strengthAgainst = [];
 			c.ratings.counter = [];
-			for (i = 0; i < championsDOTA2.champion.length; i++) {
+			for (i = 0; i < championsDOTA2.length; i++) {
 				c.ratings.counter[i] =  name(champid,hid,18+i);;
 			}
 
 //			c.ratings.synergyWith = [];
 			c.ratings.synergy = [];
-			for (i = 0; i < championsDOTA2.champion.length; i++) {
-				c.ratings.synergy[i] =  name(champid,hid,18+championsDOTA2.champion.length+i);;
+			for (i = 0; i < championsDOTA2.length; i++) {
+				c.ratings.synergy[i] =  name(champid,hid,18+championsDOTA2.length+i);;
 			}
 
 		}

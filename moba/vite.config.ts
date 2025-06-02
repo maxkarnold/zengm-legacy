@@ -26,7 +26,8 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    open: true
+    open: true,
+    host: true
   },
   optimizeDeps: {
     exclude: ['../vendor/babel-external-helpers'],
@@ -47,5 +48,5 @@ export default defineConfig({
       }
     }
   },
-  publicDir: 'build'
+  publicDir: 'public'
 });

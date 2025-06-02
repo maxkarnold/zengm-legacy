@@ -2,122 +2,96 @@ import classNames from 'classnames';
 import {helpers} from '../../common';
 import {emitter, logEvent, realtimeUpdate, setTitle, toWorker} from '../util';
 import {HelpPopover, NewWindowLink} from '../components';
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
+import { GodModeProps, GodModeState } from '../../common/godmode.types';
+import { GameAttributes } from '../../common/gameAttributes';
 
-class GodMode extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            dirty: false,
-            disableInjuries: String(props.disableInjuries),
-            luxuryPayroll: props.luxuryPayroll,
-            luxuryTax: props.luxuryTax,
-            maxContract: props.maxContract,
-            minContract: props.minContract,
-            minPayroll: props.minPayroll,
-            minRosterSize: props.minRosterSize,
-            numGames: props.numGames,
-            quarterLength: props.quarterLength,
-            salaryCap: props.salaryCap,
+const GodMode: React.FC<GodModeProps> = (props) => {
+    const [state, setState] = useState<GodModeState>({
+        dirty: false,
+        disableInjuries: String(props.disableInjuries),
+        luxuryPayroll: props.luxuryPayroll,
+        luxuryTax: props.luxuryTax,
+        maxContract: props.maxContract,
+        minContract: props.minContract,
+        minPayroll: props.minPayroll,
+        minRosterSize: props.minRosterSize,
+        numGames: props.numGames,
+        quarterLength: props.quarterLength,
+        salaryCap: props.salaryCap,
+        gameBalance: props.gameBalance,
+        importRestriction: props.importRestriction,
+        residencyRequirement: props.residencyRequirement,
+        countryConcentration: props.countryConcentration,
+        ratioEU: props.ratioEU,
+        germanRatio: props.germanRatio,
+        playoffWins: props.playoffWins,
+        customRoster: props.customRoster,
+        regionalRestriction: props.regionalRestriction,
+    });
 
-            gameBalance: props.gameBalance,
-			importRestriction: props.importRestriction,
-			residencyRequirement: props.residencyRequirement,
-			countryConcentration: props.countryConcentration,
-			ratioEU: props.ratioEU,
-			germanRatio: props.germanRatio,
-			playoffWins: props.playoffWins,
-
-        };
-        this.handleChanges = {
-            disableInjuries: this.handleChange.bind(this, 'disableInjuries'),
-            luxuryPayroll: this.handleChange.bind(this, 'luxuryPayroll'),
-            luxuryTax: this.handleChange.bind(this, 'luxuryTax'),
-            maxContract: this.handleChange.bind(this, 'maxContract'),
-            minContract: this.handleChange.bind(this, 'minContract'),
-            minPayroll: this.handleChange.bind(this, 'minPayroll'),
-            minRosterSize: this.handleChange.bind(this, 'minRosterSize'),
-            numGames: this.handleChange.bind(this, 'numGames'),
-            quarterLength: this.handleChange.bind(this, 'quarterLength'),
-            salaryCap: this.handleChange.bind(this, 'salaryCap'),
-
-            gameBalance: this.handleChange.bind(this, 'gameBalance'),
-            importRestriction: this.handleChange.bind(this, 'importRestriction'),
-            residencyRequirement: this.handleChange.bind(this, 'residencyRequirement'),
-            countryConcentration: this.handleChange.bind(this, 'countryConcentration'),
-            ratioEU: this.handleChange.bind(this, 'ratioEU'),
-            germanRatio: this.handleChange.bind(this, 'germanRatio'),
-            playoffWins: this.handleChange.bind(this, 'playoffWins'),
-
-
-        };
-        this.handleFormSubmit = this.handleFormSubmit.bind(this);
-        this.handleGodModeToggle = this.handleGodModeToggle.bind(this);
-        this.handleCustomRosterToggle = this.handleCustomRosterToggle.bind(this);
-        this.handleRegionalRestrictionToggle = this.handleRegionalRestrictionToggle.bind(this);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (!this.state.dirty) {
-            this.setState({
-                disableInjuries: String(nextProps.disableInjuries),
-                luxuryPayroll: nextProps.luxuryPayroll,
-                luxuryTax: nextProps.luxuryTax,
-                maxContract: nextProps.maxContract,
-                minContract: nextProps.minContract,
-                minPayroll: nextProps.minPayroll,
-                minRosterSize: nextProps.minRosterSize,
-                numGames: nextProps.numGames,
-                quarterLength: nextProps.quarterLength,
-                salaryCap: nextProps.salaryCap,
-
-                gameBalance: nextProps.gameBalance,
-                importRestriction: nextProps.importRestriction,
-                residencyRequirement: nextProps.residencyRequirement,
-                countryConcentration: nextProps.countryConcentration,
-                ratioEU: nextProps.ratioEU,
-                germanRatio: nextProps.germanRatio,
-                playoffWins: nextProps.playoffWins,
-
+    useEffect(() => {
+        if (!state.dirty) {
+            setState({
+                ...state,
+                disableInjuries: String(props.disableInjuries),
+                luxuryPayroll: props.luxuryPayroll,
+                luxuryTax: props.luxuryTax,
+                maxContract: props.maxContract,
+                minContract: props.minContract,
+                minPayroll: props.minPayroll,
+                minRosterSize: props.minRosterSize,
+                numGames: props.numGames,
+                quarterLength: props.quarterLength,
+                salaryCap: props.salaryCap,
+                gameBalance: props.gameBalance,
+                importRestriction: props.importRestriction,
+                residencyRequirement: props.residencyRequirement,
+                countryConcentration: props.countryConcentration,
+                ratioEU: props.ratioEU,
+                germanRatio: props.germanRatio,
+                playoffWins: props.playoffWins,
+                customRoster: props.customRoster,
+                regionalRestriction: props.regionalRestriction,
             });
         }
-    }
+    }, [props]);
 
-    handleChange(name, e) {
-        this.setState({
+    const handleChange = (name: keyof GodModeState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setState({
+            ...state,
             dirty: true,
             [name]: e.target.value,
         });
-    }
+    };
 
-    async handleFormSubmit(e) {
+    const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        await toWorker('updateGameAttributes', {
-            disableInjuries: this.state.disableInjuries === 'true',
-            numGames: parseInt(this.state.numGames, 10),
-            quarterLength: parseFloat(this.state.quarterLength),
-            minRosterSize: parseInt(this.state.minRosterSize, 10),
-            salaryCap: parseInt(this.state.salaryCap*1000000),
-            minPayroll: parseInt(this.state.minPayroll*1000000),
-            luxuryPayroll: parseInt(this.state.luxuryPayroll*1000000),
-            luxuryTax: parseFloat(this.state.luxuryTax),
-            minContract: parseInt(this.state.minContract ),
-            maxContract: parseInt(this.state.maxContract),
+        const updateData: Partial<GameAttributes> = {
+            disableInjuries: state.disableInjuries === 'true',
+            numGames: parseInt(state.numGames.toString(), 10),
+            quarterLength: parseFloat(state.quarterLength.toString()),
+            minRosterSize: parseInt(state.minRosterSize.toString(), 10),
+            salaryCap: parseInt((state.salaryCap * 1000000).toString()),
+            minPayroll: parseInt((state.minPayroll * 1000000).toString()),
+            luxuryPayroll: parseInt((state.luxuryPayroll * 1000000).toString()),
+            luxuryTax: parseFloat(state.luxuryTax.toString()),
+            minContract: parseInt(state.minContract.toString()),
+            maxContract: parseInt(state.maxContract.toString()),
+            gameBalance: parseInt(state.gameBalance.toString()),
+            importRestriction: parseInt(state.importRestriction.toString()),
+            residencyRequirement: parseInt(state.residencyRequirement.toString()),
+            countryConcentration: parseInt(state.countryConcentration.toString()),
+            ratioEU: parseInt(state.ratioEU.toString()),
+            germanRatio: parseInt(state.germanRatio.toString()),
+            playoffWins: parseInt(state.playoffWins.toString()),
+        };
 
-            gameBalance: parseInt(this.state.gameBalance),
-            importRestriction: parseInt(this.state.importRestriction),
-            residencyRequirement: parseInt(this.state.residencyRequirement),
-            countryConcentration: parseInt(this.state.countryConcentration),
-            ratioEU: parseInt(this.state.ratioEU),
-            germanRatio: parseInt(this.state.germanRatio),
-            playoffWins: parseInt(this.state.playoffWins),
+        await toWorker('updateGameAttributes', updateData);
 
-
-        });
-
-        this.setState({
+        setState({
+            ...state,
             dirty: false,
         });
 
@@ -128,10 +102,10 @@ class GodMode extends Component {
         });
 
         realtimeUpdate(["toggleGodMode"], helpers.leagueUrl(["god_mode"]));
-    }
+    };
 
-    async handleGodModeToggle() {
-        const attrs = {godMode: !this.props.godMode};
+    const handleGodModeToggle = async () => {
+        const attrs: Partial<GameAttributes> = {godMode: !props.godMode};
 
         if (attrs.godMode) {
             attrs.godModeInPast = true;
@@ -140,222 +114,186 @@ class GodMode extends Component {
         await toWorker('updateGameAttributes', attrs);
         emitter.emit('updateTopMenu', {godMode: attrs.godMode});
         realtimeUpdate(["toggleGodMode"]);
-    }
+    };
 
-   async handleCustomRosterToggle() {
-        const attrs = {customRoster: !this.props.customRoster};
+    const handleCustomRosterToggle = async () => {
+        const attrs: Partial<GameAttributes> = {customRoster: !props.customRoster};
 
         await toWorker('updateGameAttributes', attrs);
         emitter.emit('updateTopMenu', {customRoster: attrs.customRoster});
-        realtimeUpdate(["toggleCustomRoster"]);
-    }
+        realtimeUpdate(["toggleGodMode"]);
+    };
 
-   async handleRegionalRestrictionToggle() {
-        const attrs = {regionalRestriction: !this.props.regionalRestriction};
-
+    const handleRegionalRestrictionToggle = async () => {
+        const attrs: Partial<GameAttributes> = {regionalRestriction: !props.regionalRestriction};
 
         await toWorker('updateGameAttributes', attrs);
         emitter.emit('updateTopMenu', {regionalRestriction: attrs.regionalRestriction});
-        realtimeUpdate(["toggleRegionalRestriction"]);
-    }
+        realtimeUpdate(["toggleGodMode"]);
+    };
 
-    render() {
-        const {godMode} = this.props;
-        const {customRoster} = this.props;
-        const {regionalRestriction} = this.props;
+    setTitle('God Mode');
 
-        setTitle('God Mode');
-
-        return <div>
-            <h1>God Mode <NewWindowLink /></h1>
+    return (
+        <div>
+            <h1>God Mode <NewWindowLink parts={[]} /></h1>
 
             <p>God Mode is a collection of customization features that allow you to kind of do whatever you want. If you enable God Mode, you get access to the following features (which show up in the game as <span className="god-mode god-mode-text">purple text</span>):</p>
 
-			<ul>
-			  <li>Create custom players by going to Tools > Create A Player</li>
-			  <li>Edit any player by going to their player page and clicking Edit Player</li>
-			  <li>Force any trade to be accepted by checking the Force Trade checkbox before proposing a trade</li>
-			  <li>You can become the GM of another team at any time</li>
-			  <li>You will never be fired!</li>
-			  <li>You will be able to change the options below</li>
-			</ul>
+            <ul>
+                <li>Create custom players by going to Tools {'>'} Create A Player</li>
+                <li>Edit any player by going to their player page and clicking Edit Player</li>
+                <li>Force any trade to be accepted by checking the Force Trade checkbox before proposing a trade</li>
+                <li>You can become the GM of another team at any time</li>
+                <li>You will never be fired!</li>
+                <li>You will be able to change the options below</li>
+            </ul>
 
             <p>However, if you enable God Mode within a league, you will not get credit for any <a href="/account">Achievements</a>. This persists even if you disable God Mode. You can only get Achievements in a league where God Mode has never been enabled.</p>
 
             <button
-                className={classNames('btn', godMode ? 'btn-success' : 'btn-danger')}
-                onClick={this.handleGodModeToggle}
+                className={classNames('btn', props.godMode ? 'btn-success' : 'btn-danger')}
+                onClick={handleGodModeToggle}
             >
-                {godMode ? 'Disable God Mode' : 'Enable God Mode'}
+                {props.godMode ? 'Disable God Mode' : 'Enable God Mode'}
             </button>
 
             <h2 style={{marginTop: '1em'}}>God Mode Options</h2>
 
             <p className="text-danger">These options are not well tested and might make the AI do weird things.</p>
 
-            <form onSubmit={this.handleFormSubmit}>
+            <form onSubmit={handleFormSubmit}>
                 <div className="row">
                     <div className="col-sm-3 col-xs-6 form-group">
-                        <label>Injuries <HelpPopover placement="right" title="Injuries">
-                        This won't heal current injuries, but it will prevent any new ones from occurring.
+                        <label>Injuries <HelpPopover placement="right" title="Injuries" style={{}}>
+                            This won't heal current injuries, but it will prevent any new ones from occurring.
                         </HelpPopover></label>
-                        <select className="form-control" disabled={!godMode} onChange={this.handleChanges.disableInjuries} value={this.state.disableInjuries}>
+                        <select className="form-control" disabled={!props.godMode} onChange={handleChange('disableInjuries')} value={state.disableInjuries}>
                             <option value="false">Enabled</option>
                             <option value="true">Disabled</option>
                         </select>
                     </div>
                     <div className="col-sm-3 col-xs-6 form-group">
-                        <label># Games Per Season <HelpPopover placement="left" title="# Games Per Season">
-                        This will only apply to seasons that have not started yet.
+                        <label># Games Per Season <HelpPopover placement="left" title="# Games Per Season" style={{}}>
+                            This will only apply to seasons that have not started yet.
                         </HelpPopover></label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.numGames} value={this.state.numGames} />
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('numGames')} value={state.numGames} />
                     </div>
                     <div className="col-sm-3 col-xs-6 form-group">
                         <label>Quarter Length (minutes)</label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.quarterLength} value={this.state.quarterLength} />
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('quarterLength')} value={state.quarterLength} />
                     </div>
                     <div className="col-sm-3 col-xs-6 form-group">
                         <label>Min Roster Size</label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.minRosterSize} value={this.state.minRosterSize} />
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('minRosterSize')} value={state.minRosterSize} />
                     </div>
                     <div className="col-sm-3 col-xs-6 form-group">
                         <label>Min Contract</label>
                         <div className="input-group">
-                            <span className="input-group-addon">$</span><input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.minContract} value={this.state.minContract} /><span className="input-group-addon">K</span>
+                            <span className="input-group-addon">$</span><input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('minContract')} value={state.minContract} /><span className="input-group-addon">K</span>
                         </div>
                     </div>
                     <div className="col-sm-3 col-xs-6 form-group">
-                        <label>Custom Roster Mode <HelpPopover placement="right" title="Custom Roster Mode">
-                        For custom roster that have very high ratings that are very close together this brings ratings performance more in line with the standard rosters. It can also be used to make the standard game less random
+                        <label>Custom Roster Mode <HelpPopover placement="right" title="Custom Roster Mode" style={{}}>
+                            For custom roster that have very high ratings that are very close together this brings ratings performance more in line with the standard rosters. It can also be used to make the standard game less random
                         </HelpPopover></label>
-                        <select className="form-control" disabled={!godMode} onChange={this.handleChanges.customRoster} value={this.state.customRoster}>
+                        <select className="form-control" disabled={!props.godMode} onChange={handleChange('customRoster')} value={String(state.customRoster)}>
                             <option value="false">Disabled</option>
                             <option value="true">Enabled</option>
                         </select>
                     </div>
 
                     <div className="col-sm-3 col-xs-6 form-group">
-                        <label>Regional Restrictions <HelpPopover placement="right" title="Regional Restrictions">
-                        When enabled teams must have a certain number of players from the region of the team.
+                        <label>Regional Restrictions <HelpPopover placement="right" title="Regional Restrictions" style={{}}>
+                            When enabled teams must have a certain number of players from the region of the team.
                         </HelpPopover></label>
-                        <select className="form-control" disabled={!godMode} onChange={this.handleChanges.regionalRestrictions} value={this.state.regionalRestrictions}>
+                        <select className="form-control" disabled={!props.godMode} onChange={handleChange('regionalRestriction')} value={String(state.regionalRestriction)}>
                             <option value="true">Enabled</option>
                             <option value="false">Disabled</option>
                         </select>
                     </div>
-
 
                     <div className="col-sm-3 col-xs-6 form-group">
                         <label>Team Balance</label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.gameBalance} value={this.state.gameBalance} />
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('gameBalance')} value={state.gameBalance} />
                     </div>
 
                     <div className="col-sm-3 col-xs-6 form-group">
                         <label>Residency Requirement</label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.residencyRequirement} value={this.state.residencyRequirement} />
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('residencyRequirement')} value={state.residencyRequirement} />
                     </div>
 
                     <div className="col-sm-3 col-xs-6 form-group">
-                        <label>Import Restriction <HelpPopover placement="right" title="Import Restriction">
-                        How many years a player from another region has to play for a team before his region changes to his current region.
+                        <label>Import Restriction <HelpPopover placement="right" title="Import Restriction" style={{}}>
+                            How many years a player from another region has to play for a team before his region changes to his current region.
                         </HelpPopover></label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.importRestriction} value={this.state.importRestriction} />
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('importRestriction')} value={state.importRestriction} />
                     </div>
 
                     <div className="col-sm-3 col-xs-6 form-group">
-                        <label>Country Concentration<HelpPopover placement="right" title="Concentration">
-                        0 will have the greatest chance at keeping teams together from the same country, 5 is standard, and 30 will ignore country concentration.
+                        <label>Country Concentration<HelpPopover placement="right" title="Concentration" style={{}}>
+                            0 will have the greatest chance at keeping teams together from the same country, 5 is standard, and 30 will ignore country concentration.
                         </HelpPopover></label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.countryConcentration} value={this.state.countryConcentration} />
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('countryConcentration')} value={state.countryConcentration} />
                     </div>
 
                     <div className="col-sm-3 col-xs-6 form-group">
-                        <label>EU Ratio<HelpPopover placement="right" title="Ratio">
-                        0 will remove that country/region from the free agent list. 1 will keep the current ratio. 2 will double it and so on.
+                        <label>EU Ratio<HelpPopover placement="right" title="Ratio" style={{}}>
+                            0 will remove that country/region from the free agent list. 1 will keep the current ratio. 2 will double it and so on.
                         </HelpPopover></label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.ratioEU} value={this.state.ratioEU} />
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('ratioEU')} value={state.ratioEU} />
                     </div>
 
                     <div className="col-sm-3 col-xs-6 form-group">
-                        <label>German Ratio <HelpPopover placement="right" title="Ratio">
-                        0 will remove that country/region from the free agent list. 1 will keep the current ratio. 2 will double it and so on.
+                        <label>German Ratio <HelpPopover placement="right" title="Ratio" style={{}}>
+                            0 will remove that country/region from the free agent list. 1 will keep the current ratio. 2 will double it and so on.
                         </HelpPopover></label>
-                        <label></label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.germanRatio} value={this.state.germanRatio} />
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('germanRatio')} value={state.germanRatio} />
                     </div>
 
                     <div className="col-sm-3 col-xs-6 form-group">
                         <label>Max Contract</label>
                         <div className="input-group">
-                            <span className="input-group-addon">$</span><input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.maxContract} value={this.state.maxContract} /><span className="input-group-addon">K</span>
+                            <span className="input-group-addon">$</span><input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('maxContract')} value={state.maxContract} /><span className="input-group-addon">K</span>
                         </div>
                     </div>
                     <div className="col-sm-3 col-xs-6 form-group">
                         <label>Salary Cap</label>
                         <div className="input-group">
-                            <span className="input-group-addon">$</span><input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.salaryCap} value={this.state.salaryCap} /><span className="input-group-addon">M</span>
+                            <span className="input-group-addon">$</span><input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('salaryCap')} value={state.salaryCap} /><span className="input-group-addon">M</span>
                         </div>
                     </div>
                     <div className="col-sm-3 col-xs-6 form-group">
                         <label>Min Payroll</label>
                         <div className="input-group">
-                            <span className="input-group-addon">$</span><input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.minPayroll} value={this.state.minPayroll} /><span className="input-group-addon">M</span>
+                            <span className="input-group-addon">$</span><input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('minPayroll')} value={state.minPayroll} /><span className="input-group-addon">M</span>
                         </div>
                     </div>
                     <div className="col-sm-3 col-xs-6 form-group">
                         <label>Luxury Tax Threshold</label>
                         <div className="input-group">
-                            <span className="input-group-addon">$</span><input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.luxuryPayroll} value={this.state.luxuryPayroll} /><span className="input-group-addon">M</span>
+                            <span className="input-group-addon">$</span><input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('luxuryPayroll')} value={state.luxuryPayroll} /><span className="input-group-addon">M</span>
                         </div>
                     </div>
                     <div className="col-sm-3 col-xs-6 form-group">
-                        <label>Luxury Tax <HelpPopover placement="left" title="Luxury Tax">
-                        Take the difference between a team's payroll and the luxury tax threshold. Multiply that by this number. The result is the penalty they have to pay.
+                        <label>Luxury Tax <HelpPopover placement="left" title="Luxury Tax" style={{}}>
+                            Take the difference between a team's payroll and the luxury tax threshold. Multiply that by this number. The result is the penalty they have to pay.
                         </HelpPopover></label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.luxuryTax} value={this.state.luxuryTax} />
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('luxuryTax')} value={state.luxuryTax} />
                     </div>
 
                     <div className="col-sm-3 col-xs-6 form-group">
-                        <label>Playoff Wins <HelpPopover placement="right" title="Playoff wins to advance to next round">
-						</HelpPopover></label>
-                        <input type="text" className="form-control" disabled={!godMode} onChange={this.handleChanges.playoffWins} value={this.state.playoffWins} />
+                        <label>Playoff Wins <HelpPopover placement="right" title="Playoff wins to advance to next round" style={{}}>
+                            Number of wins required to advance in playoffs
+                        </HelpPopover></label>
+                        <input type="text" className="form-control" disabled={!props.godMode} onChange={handleChange('playoffWins')} value={state.playoffWins} />
                     </div>
-
-
                 </div>
 
-                <button className="btn btn-primary" id="save-god-mode-options" disabled={!godMode}>Save God Mode Options</button>
+                <button className="btn btn-primary" id="save-god-mode-options" disabled={!props.godMode}>Save God Mode Options</button>
             </form>
-        </div>;
-    }
-}
-
-GodMode.propTypes = {
-    disableInjuries: PropTypes.bool.isRequired,
-    godMode: PropTypes.bool.isRequired,
-
-    luxuryPayroll: PropTypes.number.isRequired,
-    luxuryTax: PropTypes.number.isRequired,
-    maxContract: PropTypes.number.isRequired,
-    minContract: PropTypes.number.isRequired,
-    minPayroll: PropTypes.number.isRequired,
-    minRosterSize: PropTypes.number.isRequired,
-    numGames: PropTypes.number.isRequired,
-    quarterLength: PropTypes.number.isRequired,
-    salaryCap: PropTypes.number.isRequired,
-
-    regionalRestriction: PropTypes.bool.isRequired,
-    customRoster: PropTypes.bool.isRequired,
-
-	gameBalance: PropTypes.number.isRequired,
-	importRestriction: PropTypes.number.isRequired,
-	residencyRequirement: PropTypes.number.isRequired,
-	countryConcentration: PropTypes.number.isRequired,
-	ratioEU: PropTypes.number.isRequired,
-	germanRatio: PropTypes.number.isRequired,
-	playoffWins: PropTypes.number.isRequired,
-
-
+        </div>
+    );
 };
 
 export default GodMode;

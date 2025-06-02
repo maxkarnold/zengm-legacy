@@ -1,67 +1,79 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
-import {STRIPE_PUBLISHABLE_KEY, fetchWrapper} from '../../common';
-import {getScript, realtimeUpdate, setTitle} from '../util';
+import { useEffect, useState } from 'react';
+import { STRIPE_PUBLISHABLE_KEY, fetchWrapper } from '../../common';
+import { getScript, realtimeUpdate, setTitle } from '../util';
 
-const ajaxErrorMsg = "Error connecting to server. Check your Internet connection or try again later.";
+const AJAX_ERROR_MSG = "Error connecting to server. Check your Internet connection or try again later.";
 
-class AccountUpdateCard extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            disabled: true,
-            formError: null,
-            number: '',
-            cvc: '',
-            exp_month: '',
-            exp_year: '',
-        };
-        this.handleChanges = {
-            cvc: this.handleChange.bind(this, 'cvc'),
-            exp_month: this.handleChange.bind(this, 'exp_month'),
-            exp_year: this.handleChange.bind(this, 'exp_year'),
-            number: this.handleChange.bind(this, 'number'),
-        };
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
+interface AccountUpdateCardProps {
+    goldCancelled: boolean;
+    expMonth: number;
+    expYear: number;
+    last4: string;
+    username?: string;
+}
 
-    componentWillMount() {
-        (async () => {
+interface FormState {
+    disabled: boolean;
+    formError: string | null;
+    number: string;
+    cvc: string;
+    exp_month: string;
+    exp_year: string;
+}
+
+const AccountUpdateCard = ({ goldCancelled, expMonth, expYear, last4, username }: AccountUpdateCardProps) => {
+    const [formState, setFormState] = useState<FormState>({
+        disabled: true,
+        formError: null,
+        number: '',
+        cvc: '',
+        exp_month: '',
+        exp_year: '',
+    });
+
+    useEffect(() => {
+        const initializeStripe = async () => {
             if (!window.Stripe) {
                 await getScript('https://js.stripe.com/v2/');
                 window.Stripe.setPublishableKey(STRIPE_PUBLISHABLE_KEY);
             }
 
-            this.setState({
+            setFormState(prev => ({
+                ...prev,
                 disabled: false,
-            });
-        })();
-    }
+            }));
+        };
 
-    handleChange(name, e) {
-        this.setState({
+        initializeStripe();
+    }, []);
+
+    const handleChange = (name: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormState(prev => ({
+            ...prev,
             [name]: e.target.value,
-        });
-    }
+        }));
+    };
 
-    handleSubmit(e) {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        this.setState({
+        setFormState(prev => ({
+            ...prev,
             disabled: true,
-        });
+        }));
 
         window.Stripe.card.createToken({
-            number: this.state.number,
-            cvc: this.state.cvc,
-            exp_month: this.state.exp_month,
-            exp_year: this.state.exp_year,
+            number: formState.number,
+            cvc: formState.cvc,
+            exp_month: formState.exp_month,
+            exp_year: formState.exp_year,
         }, async (status, response) => {
             if (response.error) {
-                this.setState({
+                setFormState(prev => ({
+                    ...prev,
                     disabled: false,
                     formError: response.error.message,
-                });
+                }));
             } else {
                 const token = response.id;
 
@@ -77,35 +89,37 @@ class AccountUpdateCard extends Component {
                     });
                     realtimeUpdate(["account"], "/account", {goldResult: data});
                 } catch (err) {
-                    this.setState({
+                    console.error(err);
+                    setFormState(prev => ({
+                        ...prev,
                         disabled: false,
-                        formError: ajaxErrorMsg,
-                    });
+                        formError: AJAX_ERROR_MSG,
+                    }));
                 }
             }
         });
+    };
+
+    setTitle('Update Card');
+
+    let errorMessage: string | undefined;
+    if (!username) {
+        errorMessage = 'Log in to view this page.';
     }
-
-    render() {
-        const {goldCancelled, expMonth, expYear, last4, username} = this.props;
-
-        setTitle('Update Card');
-
-        let errorMessage;
-        if (username === undefined || username === null || username === '') {
-            errorMessage = 'Log in to view this page.';
-        }
-        if (goldCancelled) {
-            errorMessage = 'Cannot update card because your Basketball GM Gold account is cancelled.';
-        }
-        if (errorMessage) {
-            return <div>
+    if (goldCancelled) {
+        errorMessage = 'Cannot update card because your Basketball GM Gold account is cancelled.';
+    }
+    if (errorMessage) {
+        return (
+            <div>
                 <h1>Error</h1>
                 <p>{errorMessage}</p>
-            </div>;
-        }
+            </div>
+        );
+    }
 
-        return <div>
+    return (
+        <div>
             <h1>Update Card</h1>
 
             <h3>Saved Card Info</h3>
@@ -118,47 +132,70 @@ class AccountUpdateCard extends Component {
 
             <p>To replace your saved card with a new one, fill out this form:</p>
 
-            <form onSubmit={this.handleSubmit}>
-                {this.state.formError ? <div className="alert alert-danger">{this.state.formError}</div> : null}
+            <form onSubmit={handleSubmit}>
+                {formState.formError && (
+                    <div className="alert alert-danger">{formState.formError}</div>
+                )}
 
                 <div style={{maxWidth: '300px'}}>
                     <div className="form-group">
                         <label htmlFor="card-number">Card Number</label>
-                        <input type="text" onChange={this.handleChanges.number} value={this.state.number} id="card-number" className="form-control" />
+                        <input
+                            type="text"
+                            onChange={handleChange('number')}
+                            value={formState.number}
+                            id="card-number"
+                            className="form-control"
+                        />
                     </div>
 
                     <div className="form-group" style={{maxWidth: '100px'}}>
                         <label htmlFor="cvc">CVC</label>
-                        <input type="text" onChange={this.handleChanges.cvc} value={this.state.cvc} id="cvc" className="form-control" />
+                        <input
+                            type="text"
+                            onChange={handleChange('cvc')}
+                            value={formState.cvc}
+                            id="cvc"
+                            className="form-control"
+                        />
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="exp-month">Expiration (MM/YYYY)</label>
                         <div className="row">
                             <div className="col-xs-5">
-                                <input type="text" onChange={this.handleChanges.exp_month} value={this.state.exp_month} placeholder="MM" id="exp-month" className="form-control" />
+                                <input
+                                    type="text"
+                                    onChange={handleChange('exp_month')}
+                                    value={formState.exp_month}
+                                    placeholder="MM"
+                                    id="exp-month"
+                                    className="form-control"
+                                />
                             </div>
                             <div className="col-xs-7">
-                                <input type="text" onChange={this.handleChanges.exp_year} value={this.state.exp_year} placeholder="YYYY" className="form-control" />
+                                <input
+                                    type="text"
+                                    onChange={handleChange('exp_year')}
+                                    value={formState.exp_year}
+                                    placeholder="YYYY"
+                                    className="form-control"
+                                />
                             </div>
                         </div>
                     </div>
 
-                    <button type="submit" disabled={this.state.disabled} className="btn btn-primary">
+                    <button
+                        type="submit"
+                        disabled={formState.disabled}
+                        className="btn btn-primary"
+                    >
                         Update Card
                     </button>
                 </div>
             </form>
-        </div>;
-    }
-}
-
-AccountUpdateCard.propTypes = {
-    goldCancelled: PropTypes.bool.isRequired,
-    expMonth: PropTypes.number.isRequired,
-    expYear: PropTypes.number.isRequired,
-    last4: PropTypes.string.isRequired,
-    username: PropTypes.string,
+        </div>
+    );
 };
 
 export default AccountUpdateCard;
