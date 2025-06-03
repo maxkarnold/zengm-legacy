@@ -1,13 +1,68 @@
 import classNames from 'classnames';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import {SortableContainer, SortableElement, SortableHandle, arrayMove} from 'react-sortable-hoc';
+import { Dropdown as BSDropdown, DropdownButton } from 'react-bootstrap';
 import {PHASE, g, helpers} from '../../common';
 import {logEvent, realtimeUpdate, setTitle, toWorker} from '../util';
-import {Dropdown, HelpPopover, NewWindowLink, PlayerNameLabels, RatingWithChange, RecordAndPlayoffs} from '../components';
+import {HelpPopover, NewWindowLink, PlayerNameLabels, RatingWithChange, RecordAndPlayoffs} from '../components';
 import clickable from '../wrappers/clickable';
-import PropTypes from 'prop-types';
 import { Component } from 'react';
+
+interface StyleObject {
+    display?: string;
+    backgroundImage?: string;
+}
+
+interface RosterRowProps {
+    clicked?: boolean;
+    editable: boolean;
+    i: number;
+    p: any; // TODO: Define proper player type
+    season: number;
+    selectedPid?: number;
+    showTradeFor: boolean;
+    toggleClicked?: () => void;
+}
+
+interface RosterState {
+    selectedPid?: number;
+    sortBy: string;
+    sortDirection: 'asc' | 'desc';
+}
+
+interface RosterProps {
+    abbrev: string;
+    editable: boolean;
+    payroll?: number;
+    players: any[]; // TODO: Define proper player type
+    salaryCap: number;
+    season: number;
+    showTradeFor: boolean;
+    t: any; // TODO: Define proper team type
+    godMode: boolean;
+    maxRosterSize: number;
+}
+
+interface CustomDropdownProps {
+    view: string;
+    fields: string[];
+    values: (string | number)[];
+}
+
+const CustomDropdown: React.FC<CustomDropdownProps> = ({ view, fields, values }) => {
+    return (
+        <BSDropdown>
+            <BSDropdown.Toggle>
+                {view}
+            </BSDropdown.Toggle>
+            <BSDropdown.Menu>
+                {fields.map((field, i) => (
+                    <BSDropdown.Item key={field} href={helpers.leagueUrl([field, values[i]])}>
+                        {field}
+                    </BSDropdown.Item>
+                ))}
+            </BSDropdown.Menu>
+        </BSDropdown>
+    );
+};
 
 const ptStyles = {
     0: {
@@ -102,42 +157,13 @@ const PlayingTime = ({p}) => {
     </select>;
 };
 
-PlayingTime.propTypes = {
-    p: PropTypes.object.isRequired,
-};
-
-const ReorderHandle = SortableHandle(({i, pid, selectedPid}) => {
-    let backgroundColor = 'rgb(91, 192, 222)';
-    if (selectedPid === pid) {
-        backgroundColor = '#d9534f';
-    } else if (selectedPid !== undefined) {
-        if (i <= 4) {
-            backgroundColor = 'rgba(66, 139, 202, 0.6)';
-        } else {
-            backgroundColor = 'rgba(91, 192, 222, 0.6)';
-        }
-    } else if (i <= 4) {
-        backgroundColor = 'rgb(66, 139, 202)';
-    }
-
-    return <td className="roster-handle" style={{backgroundColor}} />;
-});
-
-ReorderHandle.propTypes = {
-    i: PropTypes.number.isRequired,
-    pid: PropTypes.number.isRequired,
-    selectedPid: PropTypes.number,
-};
-
-const RosterRow = SortableElement(clickable(props => {
+const RosterRow = clickable((props: RosterRowProps) => {
     const {clicked, editable, i, p, season, selectedPid, showTradeFor, toggleClicked} = props;
     return <tr
         key={p.pid}
         className={classNames({separator: i === 4, warning: clicked})}
         data-pid={p.pid}
     >
-        {editable ? <ReorderHandle i={i} pid={p.pid} selectedPid={selectedPid} /> : null}
-
         <td onClick={toggleClicked}>
             <PlayerNameLabels
                 pid={p.pid}
@@ -183,116 +209,69 @@ const RosterRow = SortableElement(clickable(props => {
         <td onClick={toggleClicked}>{p.ratings.languagesGrouped}</td>
         <td onClick={toggleClicked}>{p.born.country}</td>
     </tr>;
-}));
-
-RosterRow.propTypes = {
-    editable: PropTypes.bool.isRequired,
-    i: PropTypes.number.isRequired,
-    p: PropTypes.object.isRequired,
-    season: PropTypes.number.isRequired,
-    selectedPid: PropTypes.number,
-    showTradeFor: PropTypes.bool.isRequired,
-};
-
-const TBody = SortableContainer(({editable, players, season, selectedPid, showTradeFor}) => {
-    return <tbody id="roster-tbody">
-        {players.map((p, i) => {
-            return <RosterRow
-                key={p.pid}
-                editable={editable}
-                i={i}
-                index={i}
-                p={p}
-                season={season}
-                selectedPid={selectedPid}
-                showTradeFor={showTradeFor}
-            />;
-        })}
-    </tbody>;
 });
 
-TBody.propTypes = {
-    editable: PropTypes.bool.isRequired,
-    players: PropTypes.arrayOf(PropTypes.object).isRequired,
-    season: PropTypes.number.isRequired,
-    selectedPid: PropTypes.number,
-    showTradeFor: PropTypes.bool.isRequired,
-};
-
-// Ideally, this function wouldn't be necessary https://github.com/clauderic/react-sortable-hoc/issues/175
-const onSortStart = ({clonedNode, node}) => {
-    const clonedChildren = clonedNode.childNodes;
-    const children = node.childNodes;
-    for (let i = 0; i < children.length; i++) {
-        clonedChildren[i].style.padding = '5px';
-        clonedChildren[i].style.width = `${children[i].offsetWidth}px`;
-    }
-};
-
-class Roster extends Component {
-    constructor(props) {
+class Roster extends Component<RosterProps, RosterState> {
+    constructor(props: RosterProps) {
         super(props);
         this.state = {
             selectedPid: undefined,
-            sortedPids: undefined,
+            sortBy: 'ovr',
+            sortDirection: 'desc'
         };
-
-        this.handleReorderDrag = this.handleReorderDrag.bind(this);
     }
 
-    async handleReorderDrag({oldIndex, newIndex}) {
-        const pids = this.props.players.map((p) => p.pid);
-        const sortedPids = arrayMove(pids, oldIndex, newIndex);
-        this.setState({
-            sortedPids,
-        });
-        await toWorker('reorderRosterDrag', sortedPids);
-        realtimeUpdate(['playerMovement']);
-    }
-
-    componentWillReceiveProps() {
-        this.setState({
-            sortedPids: undefined,
-        });
+    handleSort = (sortBy: string) => {
+        this.setState(prevState => ({
+            sortBy,
+            sortDirection: prevState.sortBy === sortBy && prevState.sortDirection === 'desc' ? 'asc' : 'desc'
+        }));
     }
 
     render() {
         const {abbrev, editable, payroll, players, salaryCap, season, showTradeFor, t, godMode, maxRosterSize} = this.props;
+        const { sortBy, sortDirection } = this.state;
 
         setTitle(`${t.region} Roster - ${season}`);
 
-        const logoStyle = {};
+        const logoStyle: StyleObject = {};
         if (t.imgURL) {
             logoStyle.display = "inline";
             logoStyle.backgroundImage = `url('${t.imgURL}')`;
         }
 
-        const countryStyle = {};
+        const countryStyle: StyleObject = {};
         if (t.imgURLCountry) {
             countryStyle.display = "inline";
             countryStyle.backgroundImage = `url('${t.imgURLCountry}')`;
         }
 
-        // Use the result of drag and drop to sort players, before the "official" order comes back as props
-        let playersSorted;
-        if (this.state.sortedPids !== undefined) {
-            playersSorted = this.state.sortedPids.map((pid) => {
-                return players.find((p) => p.pid === pid);
-            });
-        } else {
-            playersSorted = players;
-        }
+        // Sort players based on current sort criteria
+        const sortedPlayers = [...players].sort((a, b) => {
+            let aValue = a.ratings[sortBy] ?? a.stats[sortBy] ?? a[sortBy];
+            let bValue = b.ratings[sortBy] ?? b.stats[sortBy] ?? b[sortBy];
+
+            if (typeof aValue === 'string') {
+                return sortDirection === 'desc'
+                    ? bValue.localeCompare(aValue)
+                    : aValue.localeCompare(bValue);
+            }
+
+            return sortDirection === 'desc'
+                ? bValue - aValue
+                : aValue - bValue;
+        });
 
         return <div>
-            <Dropdown view="roster" fields={["teams", "seasons"]} values={[abbrev, season]} />
+            <CustomDropdown view="roster" fields={["teams", "seasons"]} values={[abbrev, season]} />
             <div className="pull-right">
                 <DropdownButton id="dropdown-more-info" title="More Info">
-                    <MenuItem href={helpers.leagueUrl(['player_stats', abbrev, season])}>Player Stats</MenuItem>
-                    <MenuItem href={helpers.leagueUrl(['player_ratings', abbrev, season])}>Player Ratings</MenuItem>
+                    <BSDropdown.Item href={helpers.leagueUrl(['player_stats', abbrev, season])}>Player Stats</BSDropdown.Item>
+                    <BSDropdown.Item href={helpers.leagueUrl(['player_ratings', abbrev, season])}>Player Ratings</BSDropdown.Item>
                 </DropdownButton>
             </div>
 
-            <h1>{t.region} Roster <NewWindowLink /></h1>
+            <h1>{t.region} Roster <NewWindowLink parts={[]} /></h1>
             <p>More: <a href={helpers.leagueUrl(['team_finances', abbrev])}>Finances</a> | <a href={helpers.leagueUrl(['game_log', abbrev, season])}>Game Log</a> | <a href={helpers.leagueUrl(['team_history', abbrev])}>History</a> | <a href={helpers.leagueUrl(['transactions', abbrev])}>Transactions</a></p>
             <div className="team-picture" style={logoStyle} />
             <div className="team-picture" style={countryStyle} />
@@ -304,89 +283,72 @@ class Roster extends Component {
                         season={season}
                         wonSpring={t.seasonAttrs.wonSpring}
                         lostSpring={t.seasonAttrs.lostSpring}
-						levelStart={t.seasonAttrs.levelStart}
-						levelMid={t.seasonAttrs.levelMid}
+                        levelStartFull={t.seasonAttrs.levelStart}
+                        levelMidFull={t.seasonAttrs.levelMid}
                         won={t.seasonAttrs.wonSummer}
                         lost={t.seasonAttrs.lostSummer}
                         playoffRoundsWon={t.seasonAttrs.playoffRoundsWon}
-						playoffRoundsWonWorldsGr={t.seasonAttrs.playoffRoundsWonWorldsGr}
+                        playoffRoundsWonWorldsGr={t.seasonAttrs.playoffRoundsWonWorldsGr}
                         option="noSeason"
                     />
-
                 </h3>
 
-				Region:   {t.country} <br />
-				Country:  {t.countrySpecific}
-
+                Region:   {t.country} <br />
+                Country:  {t.countrySpecific}
 
                 {season === g.season ? <p>
                     {maxRosterSize - players.length} open roster spots<br />
                     Payroll: {helpers.formatCurrency(payroll, 'K')}<br />
                     Profit: {helpers.formatCurrency(t.seasonAttrs.profit, 'K')}<br />
-					{godMode ? <div><a href={helpers.leagueUrl(['customize_team', t.tid])} className="god-mode god-mode-text">Edit Team</a><br /></div> : null}<br />
-
+                    {godMode ? <div><a href={helpers.leagueUrl(['customize_team', t.tid])} className="god-mode god-mode-text">Edit Team</a><br /></div> : null}<br />
                 </p> : null}
-
             </div>
-            {editable ? <p>Drag row handles to move players between the starting lineup (<span className="roster-starter">&#9632;</span>) and the bench (<span className="roster-bench">&#9632;</span>).</p> : null}
-            {editable ? <p><button className="btn btn-default" onClick={handleAutoSort}>Auto sort roster</button>
-            </p> : null}
+
+            {editable ? <p><button className="btn btn-default" onClick={handleAutoSort}>Auto sort roster</button></p> : null}
 
             <div className="table-responsive">
                 <table className="table table-striped table-bordered table-condensed table-hover">
                     <thead>
                         <tr>
-                            {editable ? <th /> : null}
-                            <th>Name</th>
-                            <th title="Position">Pos</th>
-                            <th>Age</th>
-                            <th>Region</th>
-                            <th title="Years With Team">YWT</th>
-							<th title="Ranked Match Making Rating">MMR</th>
-                            <th title="Overall Rating">Ovr</th>
-                            <th title="Potential Rating">Pot</th>
+                            <th onClick={() => this.handleSort('name')}>Name {sortBy === 'name' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('pos')}>Pos {sortBy === 'pos' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('age')}>Age {sortBy === 'age' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('loc')}>Region {sortBy === 'loc' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('yearsWithTeam')}>YWT {sortBy === 'yearsWithTeam' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('MMR')}>MMR {sortBy === 'MMR' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('ovr')}>Ovr {sortBy === 'ovr' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('pot')}>Pot {sortBy === 'pot' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
                             {season === g.season ? <th>Contract</th> : null}
-                            <th title="Games Played">GP</th>
-                            <th title="Minutes Per Game">Min</th>
-							<th title="(Kills + Assists) / Deaths">KDA</th>
-							<th title="Gold in thousands">G(k)</th>
-                            {editable ? <th>Release <HelpPopover placement="left" title="Release Player">
+                            <th onClick={() => this.handleSort('gp')}>GP {sortBy === 'gp' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('min')}>Min {sortBy === 'min' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('kda')}>KDA {sortBy === 'kda' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('trb')}>G(k) {sortBy === 'trb' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            {editable ? <th>Release <HelpPopover placement="left" title="Release Player" style={{ position: 'relative' }}>
                                 <p>To free up a roster spot, you can release a player from your team. You will still have to pay his salary (and have it count against the salary cap) until his contract expires (you can view your released players' contracts in your <a href={helpers.leagueUrl(["team_finances"])}>Team Finances</a>).</p>
                                 <p>However, if you just drafted a player and the regular season has not started yet, his contract is not guaranteed and you can release him for free.</p>
                             </HelpPopover></th> : null}
                             {showTradeFor ? <th>Trade For</th> : null}
-							<th title="Languages Fluent In">Languages</th>
-							<th title="Country Born">Country</th>
+                            <th onClick={() => this.handleSort('languagesGrouped')}>Languages {sortBy === 'languagesGrouped' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
+                            <th onClick={() => this.handleSort('country')}>Country {sortBy === 'country' && (sortDirection === 'desc' ? '↓' : '↑')}</th>
                         </tr>
                     </thead>
-                    <TBody
-                        players={playersSorted}
-                        editable={editable}
-                        onSortEnd={this.handleReorderDrag}
-                        onSortStart={onSortStart}
-                        season={season}
-                        selectedPid={this.state.selectedPid}
-                        showTradeFor={showTradeFor}
-                        transitionDuration={0}
-                        useDragHandle
-                    />
+                    <tbody id="roster-tbody">
+                        {sortedPlayers.map((p, i) => (
+                            <RosterRow
+                                key={p.pid}
+                                editable={editable}
+                                i={i}
+                                p={p}
+                                season={season}
+                                selectedPid={this.state.selectedPid}
+                                showTradeFor={showTradeFor}
+                            />
+                        ))}
+                    </tbody>
                 </table>
             </div>
         </div>;
     }
 }
-
-Roster.propTypes = {
-    abbrev: PropTypes.string.isRequired,
-    editable: PropTypes.bool.isRequired,
-    payroll: PropTypes.number,
-    players: PropTypes.arrayOf(PropTypes.object).isRequired,
-    salaryCap: PropTypes.number.isRequired,
-    season: PropTypes.number.isRequired,
-    showTradeFor: PropTypes.bool.isRequired,
-    t: PropTypes.object.isRequired,
-    godMode: PropTypes.bool.isRequired,
-    maxRosterSize: PropTypes.number.isRequired,
-};
 
 export default Roster;

@@ -2,6 +2,39 @@ import {g, helpers} from '../../common';
 import {DataTable, NewWindowLink, PlayerNameLabels} from '../components';
 import {getCols, setTitle} from '../util';
 
+interface Season {
+    season: number;
+    champ?: {
+        tid: number;
+        count: number;
+        region: string;
+        abbrev: string;
+        won: number;
+        lost: number;
+    };
+    runnerUp?: {
+        tid: number;
+        region: string;
+        abbrev: string;
+        won: number;
+        lost: number;
+    };
+    finalsMvp?: {
+        pid: number;
+        name: string;
+        tid: number;
+    };
+    mvp?: {
+        pid: number;
+        name: string;
+        tid: number;
+    };
+}
+
+interface HistoryAllProps {
+    seasons: Season[];
+}
+
 const awardName = (award, season) => {
     if (!award) {
         // For old seasons with no Finals MVP
@@ -22,7 +55,6 @@ const awardName = (award, season) => {
     return ret;
 };
 
-
 const teamName = (t, season) => {
     if (t) {
         return <span>
@@ -34,10 +66,13 @@ const teamName = (t, season) => {
     return 'N/A';
 };
 
-const HistoryAll = ({seasons}) => {
+const HistoryAll: React.FC<HistoryAllProps> = ({seasons}) => {
     setTitle('Summer Split History');
 
-    const cols = getCols('', 'League Champion', 'Runner Up', 'Finals MVP', 'MVP');
+    const cols = getCols('', 'League Champion', 'Runner Up', 'Finals MVP', 'MVP').map(col => ({
+        ...col,
+        title: col.title || col.desc || ''
+    }));
 
     const rows = seasons.map(s => {
         let countText;
@@ -80,7 +115,7 @@ const HistoryAll = ({seasons}) => {
     });
 
     return <div>
-        <h1>Summer Split History <NewWindowLink /></h1>
+        <h1>Summer Split History <NewWindowLink parts={[]} /></h1>
         <p>More: <a href={helpers.leagueUrl(['history_all_MSI'])}>Spring History</a> | <a href={helpers.leagueUrl(['team_records'])}>Team Records</a> | <a href={helpers.leagueUrl(['awards_records'])}>Awards Records</a></p>
 
         <DataTable
@@ -91,10 +126,6 @@ const HistoryAll = ({seasons}) => {
             rows={rows}
         />
     </div>;
-};
-
-HistoryAll.propTypes = {
-    seasons: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default HistoryAll;

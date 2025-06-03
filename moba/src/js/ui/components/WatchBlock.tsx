@@ -1,5 +1,5 @@
 import {realtimeUpdate, toWorker} from '../util';
-import { Component } from 'react';
+import { Component, SyntheticEvent } from 'react';
 import PropTypes from 'prop-types';
 
 type Props = {
@@ -14,7 +14,6 @@ type State = {
 class WatchBlock extends Component {
     props: Props;
     state: State;
-    handleClick: (Event) => void;
 
     constructor(props: Props) {
         super(props);

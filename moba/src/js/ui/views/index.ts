@@ -1,5 +1,3 @@
-// @flow
-
 export {default as Account} from './Account';
 export {default as AccountUpdateCard} from './AccountUpdateCard';
 export {default as AwardsRecords} from './AwardsRecords';
@@ -15,7 +13,7 @@ export {default as CustomizeTeam} from './CustomizeTeam';
 export {default as Dashboard} from './Dashboard';
 export {default as Debugging} from './Debugging';
 export {default as CustomRosters} from './CustomRosters';
-export {default as CustomChampions} from './CustomChampionPatch';
+export {default as CustomChampions} from './CustomChampions';
 export {default as DeleteLeague} from './DeleteLeague';
 export {default as DeleteOldData} from './DeleteOldData';
 export {default as Draft} from './Draft';

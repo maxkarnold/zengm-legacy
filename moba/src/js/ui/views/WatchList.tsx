@@ -1,13 +1,23 @@
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { Dropdown } from 'react-bootstrap';
 import {PLAYER, helpers} from '../../common';
 import {getCols, realtimeUpdate, setTitle, toWorker} from '../util';
-import {DataTable, Dropdown, NewWindowLink, PlayerNameLabels} from '../components';
+import {DataTable, Dropdown as CustomDropdown, NewWindowLink, PlayerNameLabels} from '../components';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-class WatchList extends Component {
-    constructor(props) {
+interface WatchListProps {
+    players: any[]; // TODO: Define proper player type
+    playoffs: 'playoffs' | 'regularSeason';
+    statType: 'per36' | 'perGame' | 'totals';
+}
+
+interface WatchListState {
+    clearing: boolean;
+}
+
+class WatchList extends Component<WatchListProps, WatchListState> {
+    constructor(props: WatchListProps) {
         super(props);
         this.state = {
             clearing: false,
@@ -33,7 +43,10 @@ class WatchList extends Component {
 
         setTitle('Watch List');
 
-        const cols = getCols('Name', 'Pos', 'Age', 'Region', 'Team', 'Ovr', 'Pot', 'Contract', 'GP', 'Min', 'K', 'D', 'A', 'KDA','CS');
+        const cols = getCols('Name', 'Pos', 'Age', 'Region', 'Team', 'Ovr', 'Pot', 'Contract', 'GP', 'Min', 'K', 'D', 'A', 'KDA','CS').map(col => ({
+            ...col,
+            title: col.title || ''
+        }));
 
         // Number of decimals for many stats
         const d = statType === "totals" ? 0 : 1;
@@ -71,14 +84,14 @@ class WatchList extends Component {
         });
 
         return <div>
-            <Dropdown view="watch_list" fields={['statTypes', 'playoffs']} values={[statType, playoffs]} />
+            <CustomDropdown view="watch_list" fields={['statTypes', 'playoffs']} values={[statType, playoffs]} />
             <div className="pull-right">
                 <DropdownButton id="dropdown-other-reports" title="Other Reports">
-                    <MenuItem href={helpers.leagueUrl(['player_stats', 'watch'])}>Player Stats</MenuItem>
-                    <MenuItem href={helpers.leagueUrl(['player_ratings', 'watch'])}>Player Ratings</MenuItem>
+                    <Dropdown.Item href={helpers.leagueUrl(['player_stats', 'watch'])}>Player Stats</Dropdown.Item>
+                    <Dropdown.Item href={helpers.leagueUrl(['player_ratings', 'watch'])}>Player Ratings</Dropdown.Item>
                 </DropdownButton>
             </div>
-            <h1>Watch List <NewWindowLink /></h1>
+            <h1>Watch List <NewWindowLink parts={[]} /></h1>
 
             <p>Click the watch icon <span className="glyphicon glyphicon-flag" /> next to a player's name to add or remove him from this list.</p>
 

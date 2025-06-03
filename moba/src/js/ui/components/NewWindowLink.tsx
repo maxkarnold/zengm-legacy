@@ -9,8 +9,6 @@ type Props = {
 class NewWindowLink extends Component {
     props: Props;
 
-    handleClick: () => void;
-
     constructor(props: Props) {
         super(props);
         this.handleClick = this.handleClick.bind(this);
@@ -20,7 +18,7 @@ class NewWindowLink extends Component {
         const url = this.props.parts ? helpers.leagueUrl(this.props.parts) : document.URL;
 
         // Window name is set to the current time, so each window has a unique name and thus a new window is always opened
-        window.open(`${url}?w=popup`, Date.now(), "height=600,width=800,scrollbars=yes");
+        window.open(`${url}?w=popup`, Date.now().toString(), "height=600,width=800,scrollbars=yes");
     }
 
     render() {

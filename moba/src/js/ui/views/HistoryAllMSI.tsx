@@ -1,8 +1,38 @@
 import {g, helpers} from '../../common';
 import {DataTable, NewWindowLink, PlayerNameLabels} from '../components';
 import {getCols, setTitle} from '../util';
+import React from 'react';
 
-const awardName = (award, season) => {
+interface Team {
+    tid: number;
+    count?: number;
+    region: string;
+    abbrev: string;
+    won: number;
+    lost: number;
+}
+
+interface Award {
+    pid: number;
+    name: string;
+    tid: number;
+}
+
+interface Season {
+    season: number;
+    champ?: Team;
+    runnerUp?: Team;
+    knockout1?: Team;
+    knockout2?: Team;
+    finalsMvp?: Award;
+    mvp?: Award;
+}
+
+interface HistoryAllMSIProps {
+    seasons: Season[];
+}
+
+const awardName = (award: Award | undefined, season: number) => {
     if (!award) {
         // For old seasons with no Finals MVP
         return 'N/A';
@@ -22,8 +52,7 @@ const awardName = (award, season) => {
     return ret;
 };
 
-
-const teamName = (t, season) => {
+const teamName = (t: Team | undefined, season: number) => {
     if (t) {
         return <span>
             <a href={helpers.leagueUrl(["roster", t.abbrev, season])}>{t.region}</a> ({t.won}-{t.lost})
@@ -34,21 +63,21 @@ const teamName = (t, season) => {
     return 'N/A';
 };
 
-const HistoryAllMSI = ({seasons}) => {
+const HistoryAllMSI: React.FC<HistoryAllMSIProps> = ({seasons}) => {
     setTitle('Spring Split History');
 
 	const bothSplits = g.bothSplits;
 
-    const cols = getCols('', 'League Champion', 'Runner Up', 'Knockout', 'Knockout');
-//    const cols = getCols('League Champion', 'Runner Up', 'Knockout', 'Knockout');
+    const cols = getCols('', 'League Champion', 'Runner Up', 'Knockout', 'Knockout').map(col => ({
+        ...col,
+        title: col.title || col.desc || ''
+    }));
 
     const rows = seasons.map(s => {
         let countText;
         let seasonLink;
         if (s.champ) {
             seasonLink = <a href={helpers.leagueUrl(["playoffs2", s.season])}>{s.season}</a>;
-//            seasonLink = <a href={helpers.leagueUrl(["msi", s.season])}>{s.season}</a>;
-//            seasonLink = <a href={helpers.leagueUrl(["history_MSI", s.season])}>{s.season}</a>;
             countText = ` - ${helpers.ordinal(s.champ.count)} title`;
         } else {
             // This happens if there is missing data, such as from Delete Old Data
@@ -59,9 +88,9 @@ const HistoryAllMSI = ({seasons}) => {
         let champEl = <span>{teamName(s.champ, s.season)}{countText}</span>;
         if (s.champ && s.champ.tid === g.userTid) {
           //  champEl = {
-        //        classNames: 'info',
-        //        value: champEl,
-        //    };
+          //      classNames: 'info',
+          //      value: champEl,
+          //  };
         }
 
         let runnerUpEl = teamName(s.runnerUp, s.season);
@@ -80,7 +109,6 @@ const HistoryAllMSI = ({seasons}) => {
         //    };
         }
 
-
         let knockoutE2 = teamName(s.knockout2, s.season);
         if (s.knockout2 && s.knockout2.tid === g.userTid) {
         //    knockoutE2 = {
@@ -97,15 +125,13 @@ const HistoryAllMSI = ({seasons}) => {
                 runnerUpEl,
                 knockoutEl,
                 knockoutE2,
-                //awardName(s.finalsMvp, s.season),
-                //awardName(s.mvp, s.season),
             ],
         };
     });
 
     return <div>
-        <h1>Spring Split History <NewWindowLink /></h1>
-        <p>More:  <a href={helpers.leagueUrl(['history_all'])}>Summer History</a> | <a href={helpers.leagueUrl(['team_records'])}>Team Records</a> | <a href={helpers.leagueUrl(['awards_records'])}>Awards Records</a></p>
+        <h1>Spring Split History <NewWindowLink parts={[]} /></h1>
+        <p>More: <a href={helpers.leagueUrl(['history_all'])}>Summer History</a> | <a href={helpers.leagueUrl(['team_records'])}>Team Records</a> | <a href={helpers.leagueUrl(['awards_records'])}>Awards Records</a></p>
 
 		{!bothSplits ? <p className="text-danger">This league is only the Summer Split. So there will be no results here. Use the Worlds w/ Splits types to play both splits.</p> : null}
 
@@ -117,10 +143,6 @@ const HistoryAllMSI = ({seasons}) => {
             rows={rows}
         />
     </div>;
-};
-
-HistoryAllMSI.propTypes = {
-    seasons: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
 };
 
 export default HistoryAllMSI;

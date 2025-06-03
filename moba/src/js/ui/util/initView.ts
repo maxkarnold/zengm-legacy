@@ -1,10 +1,10 @@
 import type {GetOutput, PageCtx} from '../../common/types';
 import {emitter} from '.';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react';
 
 type InitArgs = {
-    Component: React.ComponentType,
+    Component: React.ComponentType<any>,
     id: string,
     inLeague?: boolean,
     get?: (ctx: PageCtx) => GetOutput | undefined,
@@ -17,13 +17,25 @@ const initView = (args: InitArgs) => {
     if (!args.Component) { throw new Error('Missing arg Component'); }
 
     const ViewWrapper: React.FC = () => {
+        const [data, setData] = useState<GetOutput>({});
+
         useEffect(() => {
             const ctx: PageCtx = { bbgm: {} };
             ctx.bbgm.handled = true;
+
+            const handleData = (newData: GetOutput) => {
+                setData(newData);
+            };
+
+            emitter.on('updateData', handleData);
             emitter.emit('get', args, ctx);
+
+            return () => {
+                emitter.removeListener('updateData', handleData);
+            };
         }, []);
 
-        return React.createElement(args.Component);
+        return React.createElement(args.Component, data);
     };
 
     return React.createElement(ViewWrapper);

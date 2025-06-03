@@ -8,7 +8,7 @@ import type {Conditions, ContractInfo, TeamSeason, TeamStats, TradePickValues} f
 function genSeasonRow(tid: number, cid: number, imgURLCountry: string, countrySpecific: string, prevSeason?: TeamSeason): TeamSeason {
 
 	var numTeams;
-	if (g.gameType == 0 && g.gameType == 2) {
+	if (g.gameType == 0 || g.gameType == 2) {
 	   numTeams = 10;
 	} else if (g.gameType == 1) {
 	   numTeams = 30;

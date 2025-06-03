@@ -1,6 +1,4 @@
-/* eslint react/jsx-no-bind: "off" */
-
-import faces from '../../vendor/faces';
+import * as faces from 'facesjs';
 import React from 'react';
 //import {player} from '../core';
 import {PHASE, g, helpers} from '../../common';
@@ -13,7 +11,8 @@ const region = ["NA","EU","KR", "CN","TW","BR","CIS","JP","LatAm","OCE", "SEA","
 const languagesFirst = ["English","Korean","Chinese","Spanish","German","French","Italian","Romanian","Greek","Armenian","Bulgarian","Dutch","Polish", "Danish","Finnish","Swedish","Hungarian","Norwegian","Icelandic","Russian","Czech","Portuguese","Filipino","Indonesian","Japanese","Malay","Thai","Vietnamese","Turkish"];
 const languagesRest = ["","English","Korean","Chinese","Spanish","German","French","Italian","Romanian","Greek","Armenian","Bulgarian","Dutch","Polish", "Danish","Finnish","Swedish","Hungarian","Norwegian","Icelandic","Russian","Czech","Portuguese","Filipino","Indonesian","Japanese","Malay","Thai","Vietnamese","Turkish"];
 
-const faceOptions = faces.partialFileNames;
+// Remove faceOptions since it's not used
+// const faceOptions = faces.partialFileNames;
 
 const copyValidValues = (source, target, season) => {
 //    for (const attr of ['hgt', 'tid', 'weight']) {
@@ -33,26 +32,26 @@ const copyValidValues = (source, target, season) => {
     target.countrySpecific = source.countrySpecific;
     target.imgURL = source.imgURL;
 
-	
+
     //target.firstName = source.firstName;
-    //target.userID = source.userID;	
+    //target.userID = source.userID;
     //target.lastName = source.lastName;
     //target.imgURL = source.imgURL;
 
   //  {
-		
+
         let valtid = parseInt(source.tid,10);
 		if (!isNaN(valtid)) {
 			target.tid = valtid;
-		}		
+		}
         let valcid = parseInt(source.cid,10);
 		if (!isNaN(valcid)) {
 			target.cid = valcid;
-		}		
+		}
         let valdid = parseInt(source.did,10);
 		if (!isNaN(valdid)) {
 			target.did = valdid;
-		}				
+		}
       //  const age = parseInt(source.age, 10);
    //     if (!isNaN(age)) {
         //    target.born.year = g.season - age;
@@ -60,44 +59,44 @@ const copyValidValues = (source, target, season) => {
    // }
 
  //   target.born.loc = source.born.loc;
-	
- //   target.born.country = source.born.country;	
 
-///    target.languages = source.languages;	
-//    target.languages[0] = source.languages[0];	
+ //   target.born.country = source.born.country;
+
+///    target.languages = source.languages;
+//    target.languages[0] = source.languages[0];
 	{
 	/*	const r = source.ratings.length - 1;
 
 		target.languages[0] = source.language1;
-		target.ratings[r].languages[0] = source.language1;	
-		
-		target.languages[1] = source.language2;	
+		target.ratings[r].languages[0] = source.language1;
+
+		target.languages[1] = source.language2;
 //		if (source.language2 == undefined) {
 			//target.ratings[r].languages.pop(1);
-		//} else {		
-			target.ratings[r].languages[1] = source.language2;	
-		//}				
+		//} else {
+			target.ratings[r].languages[1] = source.language2;
+		//}
 
-		target.languages[2] = source.language3;	
+		target.languages[2] = source.language3;
 		//if (source.language3 == undefined) {
 			//target.ratings[r].languages.pop(2);
-		//} else {		
-			target.ratings[r].languages[2] = source.language3;	
-		//}		
-		//target.ratings[r].languages[2] = source.language3;	
+		//} else {
+			target.ratings[r].languages[2] = source.language3;
+		//}
+		//target.ratings[r].languages[2] = source.language3;
 
 		target.languages[3] = source.language4;
 		//if (source.language4 == undefined) {
 		//	target.ratings[r].languages.pop(3);
-		//} else {		
-		target.ratings[r].languages[3] = source.language4;	
-		
-	//	target.ratings[r].region = source.region;*/			
+		//} else {
+		target.ratings[r].languages[3] = source.language4;
+
+	//	target.ratings[r].region = source.region;*/
 		//}
 
 	}
-	
-	
+
+
    // target.college = source.college;
 
     {
@@ -109,13 +108,13 @@ const copyValidValues = (source, target, season) => {
      //   }
     }
 
-	
+
 	// this doesn't work? what does? need to keep testing. it prevents it from saving
   //  {
     //    const language1 = source.languages[0];
       //  target.language[0] = language1;
-    //}	
-	
+    //}
+
     {
         // Allow any value, even above or below normal limits, but round to $10k and convert from M to k
     //    let amount = Math.round(100 * parseFloat(source.contract.amount)) * 10;
@@ -161,16 +160,16 @@ const copyValidValues = (source, target, season) => {
 		//	if (rating === 'pos') {
 				//if (target.ratings[r].pos  == source.ratings[r].pos) {
 					//target.ratings[r].MMR = 10000;
-				//} 
+				//}
            //     target.ratings[r].pos = source.ratings[r].pos;
-				
+
         //    } else if (['blk', 'dnk', 'drb', 'endu', 'fg', 'ft', 'hgt', 'ins', 'jmp', 'pot', 'pss', 'reb', 'spd', 'stl', 'stre', 'tp'].includes(rating)) {
             //   const val = helpers.bound(parseInt(source.ratings[r][rating], 10), 0, 100);
              ///   if (!isNaN(val)) {
              //       target.ratings[r][rating] = val;
              //   }
-		
-				
+
+
         //    }
       //  }
     }
@@ -184,37 +183,57 @@ const copyValidValues = (source, target, season) => {
   //  target.face.colors.hairColor = source.face.colors.hairColor;
 };
 
-class CustomizePlayer extends React.Component {
+interface CustomizePlayerProps {
+    appearanceOption?: 'Cartoon Face' | 'Image URL';
+    godMode: boolean;
+    originalTid?: number;
+    p?: any;
+    t: any;
+    season: number;
+    teams: Array<{
+        text: string;
+        tid: number;
+    }>;
+    pAll?: any[];
+}
+
+interface CustomizePlayerState {
+    appearanceOption?: string;
+    saving: boolean;
+    t: any;
+}
+
+class CustomizePlayer extends React.Component<CustomizePlayerProps, CustomizePlayerState> {
     constructor(props) {
         super(props);
-console.log(this.props)		
+console.log(this.props)
         const t = helpers.deepCopy(props.t);
 
       //  const p = helpers.deepCopy(props.p);
      /*   if (p !== undefined) {
             p.age = this.props.season - p.born.year;
             p.contract.amount /= 1000;
-			p.language1 = p.languages[0];	
+			p.language1 = p.languages[0];
 			if (p.languages.length > 1) {
 				p.language2 = p.languages[1];
-			}			
+			}
 			if (p.languages.length > 2) {
 				p.language3 = p.languages[2];
-			}	
+			}
 			if (p.languages.length > 3) {
 				p.language4 = p.languages[3];
 			} else {
 			//	p.language4 = [];
-			}				
+			}
 		//	p.ratings[0].MMR = 9999;
-			//p.language3 = p.languages[2];	 		
-			//p.language4 = p.languages[3];			
+			//p.language3 = p.languages[2];
+			//p.language4 = p.languages[3];
         }*/
         this.state = {
           //  appearanceOption: props.appearanceOption,
             saving: false,
       //      p,
-            t,			
+            t,
         };
      //   this.handleChangeAppearanceOption = this.handleChangeAppearanceOption.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -228,8 +247,8 @@ console.log(this.props)
         });
 
         const p = this.props.p;
-        const pAll = this.props.pAll;		
-        const t = this.props.t;		
+        const pAll = this.props.pAll;
+        const t = this.props.t;
 
         // Copy over values from state, if they're valid
    //     copyValidValues(this.state.p, p, this.props.season);
@@ -244,16 +263,16 @@ console.log(this.props)
    console.log("got here");
 //        const tid = await toWorker('upsertCustomizedTeam', t, this.props.originalTid, this.props.season);
         const tid = await toWorker('upsertCustomizedTeam', t, this.props.originalTid, this.props.season);
-		
+
 		if  (this.props.originalTid == undefined) {
 			p.tid = tid;
-			pAll[0].tid = tid;		
-			pAll[1].tid = tid;		
-			pAll[2].tid = tid;		
-			pAll[3].tid = tid;		
-			pAll[4].tid = tid;		
-			pAll[5].tid = tid;		
-			
+			pAll[0].tid = tid;
+			pAll[1].tid = tid;
+			pAll[2].tid = tid;
+			pAll[3].tid = tid;
+			pAll[4].tid = tid;
+			pAll[5].tid = tid;
+
 			let tid2 = -1;
 			// create team?
 			//let p;
@@ -270,7 +289,7 @@ console.log(this.props)
 			const pid3 = await toWorker('upsertCustomizedPlayer', pAll[2], tid2, this.props.season);
 			const pid4 = await toWorker('upsertCustomizedPlayer', pAll[3], tid2, this.props.season);
 			const pid5 = await toWorker('upsertCustomizedPlayer', pAll[4], tid2, this.props.season);
-			const pid6 = await toWorker('upsertCustomizedPlayer', pAll[5], tid2, this.props.season);		
+			const pid6 = await toWorker('upsertCustomizedPlayer', pAll[5], tid2, this.props.season);
 			/*const pid2 = await toWorker('upsertCustomizedPlayer', p, tid2, this.props.season);
 			const pid3 = await toWorker('upsertCustomizedPlayer', p, tid2, this.props.season);
 			const pid4 = await toWorker('upsertCustomizedPlayer', p, tid2, this.props.season);
@@ -288,7 +307,7 @@ console.log(this.props)
     handleChange(type, field, e) {
         let val = e.target.value;
      //   const p = this.state.p;
-        const t = this.state.t;		
+        const t = this.state.t;
 
 		console.log(type+" "+field);
         if (type === 'root') {
@@ -303,16 +322,16 @@ console.log(this.props)
 			//	p.ratings[p.ratings.length - 1][field] = val;
 		//}
         } else if (['born', 'contract', 'injury'].includes(type)) {
-         //   p[type][field] = val;		
+         //   p[type][field] = val;
 		//	if (field = "loc") {
 		///		p.ratings[p.ratings.length - 1].region = val;
 		//	}
         } else if (type === 'rating') {
-			
+
 		//	if (field == "language1") {
 		//		p.ratings[p.ratings.length - 1].languages[0] = val;
 		//		p.languages[0] = val;
-		//	} else {				
+		//	} else {
 		//		p.ratings[p.ratings.length - 1][field] = val;
 		//	}
         } else if (type === 'face') {
@@ -337,7 +356,7 @@ console.log(this.props)
       //      p,
 			t,
         });
-	
+
     }
 
     handleChangeAppearanceOption(e) {
@@ -354,7 +373,7 @@ console.log(this.props)
      //   this.state.p.face = face;
         this.setState({
          //   p: this.state.p,
-            t: this.state.t,			
+            t: this.state.t,
         });
     }
 
@@ -385,7 +404,7 @@ console.log(this.props)
 
         let pictureDiv = null;
 
-     
+
 		pictureDiv = <div className="form-group">
 			<label>Image URL</label>
 			<input type="text" className="form-control" onChange={this.handleChange.bind(this, 'root', 'imgURL')} value={t.imgURL} />
@@ -393,23 +412,23 @@ console.log(this.props)
 		</div>;
 
         return <div>
-            <h1>{title} <NewWindowLink /></h1>
+            <h1>{title} <NewWindowLink parts={[]} /></h1>
 
             <p>Here, you can {originalTid === undefined ? 'create a custom team with' : 'edit a team to have'} whatever name and division/conference you want. Be sure that each divisin/conference has enough teams for the playoffs to work. In general, you can add as many teams as you want to a division/conference, but you can't reduce the number of teams without breaking the playoffs.</p>
 
 			<p>The JSON file format is described in <a href="http://basketball-gm.com/manual/customization/teams/">the manual</a>. As examples of how the game uses TID, DID, and CID, you can download <a href="http://zengm.com/files/LCS.json">LCS </a>,  <a href="http://zengm.com/files/LCSLadder.json" >LCS w/ Ladder </a>,  <a href="http://zengm.com/files/LCK.json">LCK </a>,  <a href="http://zengm.com/files/LPL.json" >LPL </a>,  <a href="http://zengm.com/files/LMS.json">LMS </a>, <a href="http://zengm.com/files/Worlds.json">Worlds </a> , and  <a href="http://zengm.com/files/WorldsWithLadder.json">Worlds w/ Ladder </a> team files.</p>
-			
+
 			            <p className="text-danger">{originalTid === undefined ? 'New teams need to be created during the Preseason to play games for that year.' :  'Existing teams should switch conferences during the preseason for schedules to be created correctly'}</p>
 
-						
-						
+
+
             <form onSubmit={this.handleSubmit}>
                 <div className="row">
                     <div className="col-md-7">
                         <h2>Attributes</h2>
 
                         <div className="row">
-							
+
                             <div className="col-sm-3 form-group">
                                 <label>Name 1</label>
                                 <input type="text" className="form-control" onChange={this.handleChange.bind(this, 'root', 'region')} value={t.region} />
@@ -417,28 +436,25 @@ console.log(this.props)
                             <div className="col-sm-3 form-group">
                                 <label>Name 2</label>
                                 <input type="text" className="form-control" onChange={this.handleChange.bind(this, 'root', 'name')} value={t.name} />
-                            </div>									
+                            </div>
                             <div className="col-sm-3 form-group">
                                 <label>Abbrev</label>
                                 <input type="text" className="form-control" onChange={this.handleChange.bind(this, 'root', 'abbrev')} value={t.abbrev} />
-                            </div>			
+                            </div>
                             <div className="col-sm-3 form-group">
-                                <label>TID <HelpPopover placement="right" title="Team ID">Each team is given a unique ID called TID. 
-                       </HelpPopover>
-						</label>
+                                <label>TID <HelpPopover placement="right" title="Team ID" style={{}}>Each team is given a unique ID called TID.
+                       </HelpPopover></label>
                                 <input type="text" className="form-control"  onChange={this.handleChange.bind(this, 'root', 'tid')} value={t.tid} />
                             </div>
                             <div className="col-sm-3 form-group">
-                                <label>CID <HelpPopover placement="right" title="Conference ID">Each team is given a conference ID called CID. Changing this will change the conference of the team. 
-                       </HelpPopover>								
-								</label>
+                                <label>CID <HelpPopover placement="right" title="Conference ID" style={{}}>Each team is given a conference ID called CID. Changing this will change the conference of the team.
+                       </HelpPopover></label>
                                 <input type="text" className="form-control"  onChange={this.handleChange.bind(this, 'root', 'cid')} value={t.cid} />
                             </div>
                             <div className="col-sm-3 form-group">
-                                <label>DID <HelpPopover placement="right" title="Division ID">Each team is given a division ID called DID. Changing this will change the division of the team. If there is just
+                                <label>DID <HelpPopover placement="right" title="Division ID" style={{}}>Each team is given a division ID called DID. Changing this will change the division of the team. If there is just
 								one division in each conference then it will be the same as the CID for each team.
-                       </HelpPopover>													
-								</label>
+                       </HelpPopover></label>
                                 <input type="integer" className="form-control"  onChange={this.handleChange.bind(this, 'root', 'did')} value={t.did} />
                             </div>
                             <div className="col-sm-3 form-group">
@@ -448,7 +464,7 @@ console.log(this.props)
                                         return <option key={loc} value={loc}>{loc}</option>;
                                     })}
                                 </select>
-                            </div>							
+                            </div>
                             <div className="col-sm-3 form-group">
                                 <label>Country</label>
                                 <select className="form-control" onChange={this.handleChange.bind(this, 'root', 'countrySpecific')} value={t.countrySpecific}>
@@ -456,8 +472,8 @@ console.log(this.props)
                                         return <option key={countrySpecific} value={countrySpecific}>{countrySpecific}</option>;
                                     })}
                                 </select>
-                            </div>									
-								
+                            </div>
+
                         </div>
 
                         <h2>Team Logo</h2>
@@ -483,23 +499,5 @@ console.log(this.props)
         </div>;
     }
 }
-
-CustomizePlayer.propTypes = {
-    appearanceOption: React.PropTypes.oneOf([
-        'Cartoon Face',
-        'Image URL',
-    ]),
-    godMode: React.PropTypes.bool.isRequired,
-    originalTid: React.PropTypes.number,
-    p: React.PropTypes.object,
-    t: React.PropTypes.object,
-    season: React.PropTypes.number,
-    teams: React.PropTypes.arrayOf(React.PropTypes.shape({
-        text: React.PropTypes.string.isRequired,
-        tid: React.PropTypes.number.isRequired,
-    })),
-    pAll: React.PropTypes.array,
-	
-};
 
 export default CustomizePlayer;

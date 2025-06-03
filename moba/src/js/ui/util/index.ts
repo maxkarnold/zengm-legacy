@@ -1,4 +1,5 @@
 import PromiseWorker from 'promise-worker-bi';
+
 const worker = window.useSharedWorker ? new SharedWorker('/gen/worker.js') : new Worker('/gen/worker.js');
 export const promiseWorker = new PromiseWorker(worker);
 promiseWorker.registerError((e) => {
@@ -30,7 +31,40 @@ import processInputs from '../processInputs';
 import * as views from '../views';
 
 export const genPage = (id: string, inLeague = true) => {
-    const componentName = id.charAt(0).toUpperCase() + id.slice(1);
+    // Special cases for components with non-standard naming
+    if (id === 'historyAllMSI') {
+        return initView({
+            id,
+            inLeague,
+            get: processInputs.hasOwnProperty(id) ? processInputs[id] : undefined,
+            Component: views.HistoryAllMSI,
+        });
+    }
+    if (id === 'customChampions') {
+        return initView({
+            id,
+            inLeague,
+            get: processInputs.hasOwnProperty(id) ? processInputs[id] : undefined,
+            Component: views.CustomChampions,
+        });
+    }
+    if (id === 'dashboard') {
+        return initView({
+            id,
+            inLeague,
+            get: processInputs.hasOwnProperty(id) ? processInputs[id] : undefined,
+            Component: views.Dashboard,
+        });
+    }
+
+    // Convert camelCase to PascalCase for other components
+    const componentName = id.split(/(?=[A-Z])/).map(part =>
+        part.charAt(0).toUpperCase() + part.slice(1)
+    ).join('');
+
+    if (!views[componentName]) {
+        throw new Error(`Component ${componentName} not found in views. Available components: ${Object.keys(views).join(', ')}`);
+    }
 
     return initView({
         id,

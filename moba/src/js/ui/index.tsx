@@ -4,7 +4,7 @@ import { BrowserRouter, useNavigate, useLocation } from 'react-router-dom';
 import api from './api';
 import Controller from './components/Controller';
 import {promiseWorker, toWorker} from './util';
-import type {Env} from '../common/types';
+import type {Env} from '../common/window.types';
 import { useRoutes } from 'react-router-dom';
 import routes from './routes';
 import { useEffect } from 'react';
@@ -71,7 +71,7 @@ function AppRouter() {
     return element;
 }
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById("content")!).render(
     <BrowserRouter>
         <AppRouter />
     </BrowserRouter>

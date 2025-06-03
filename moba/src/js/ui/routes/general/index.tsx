@@ -31,10 +31,6 @@ const generalRoutes: RouteObject[] = [
         element: genPage('customChampions', false)
     },
     {
-        path: '/customChampionPatch',
-        element: genPage('customChampionPatch', false)
-    },
-    {
         path: '/changes',
         element: genPage('changes', false)
     }

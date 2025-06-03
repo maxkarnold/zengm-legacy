@@ -2,10 +2,15 @@ import {g, helpers} from '../../common';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
+interface SideMenuProps {
+    lid?: number | void;
+    pageId: string;
+    bothSplits: boolean;
+}
 
-class SideMenu extends Component {
-    shouldComponentUpdate(nextProps) {
-        return this.props.pageId !== nextProps.pageId || this.props.lid !== nextProps.lid || this.props.bothSplits !== nextProps.bothSplits  ;
+class SideMenu extends Component<SideMenuProps> {
+    shouldComponentUpdate(nextProps: SideMenuProps) {
+        return this.props.pageId !== nextProps.pageId || this.props.lid !== nextProps.lid || this.props.bothSplits !== nextProps.bothSplits;
     }
 
     render() {
@@ -115,14 +120,18 @@ class SideMenu extends Component {
 SideMenu.propTypes = {
     lid: PropTypes.number,
     pageId: PropTypes.string.isRequired,
-    bothSplits: PropTypes.number,
-
+    bothSplits: PropTypes.bool.isRequired,
 };
 
-const LeagueWrapper = ({children, bothSplits, lid,  pageId}: {children: React.ReactElement, bothSplits: number, lid: number | void, pageId: string}) => {
+const LeagueWrapper = ({children, bothSplits, lid, pageId}: {
+    children: React.ReactElement,
+    bothSplits: boolean,
+    lid: number | void,
+    pageId: string
+}) => {
     return <div className="row">
         <div className="col-lg-2 hidden-md hidden-sm hidden-xs">
-            <SideMenu bothSplits={bothSplits}  lid={lid} pageId={pageId}/>
+            <SideMenu bothSplits={bothSplits} lid={lid} pageId={pageId}/>
         </div>
         <div className="col-lg-10 col-xs-12 p402_premium" id="screenshot-league">
             {children}

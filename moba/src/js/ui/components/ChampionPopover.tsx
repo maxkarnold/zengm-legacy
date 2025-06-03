@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
-import Popover from 'react-bootstrap/lib/Popover';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 import { toWorker } from '../util';
 
 const colorRating = (rating: number, type?: 'ovr') => {

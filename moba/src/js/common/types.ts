@@ -453,29 +453,28 @@ export type PlayerInjury = {
 
 export type PlayerSkill = '3' | 'A' | 'B' | 'Di' | 'Dp' | 'Po' | 'Ps' | 'R';
 
-export type PlayerRatings = {
-    blk: number,
-    dnk: number,
-    drb: number,
-    endu: number,
-    fg: number,
-    ft: number,
-    fuzz: number,
-    hgt: number,
-    ins: number,
-    jmp: number,
-    ovr: number,
-    pos: string,
-    pot: number,
-    pss: number,
-    reb: number,
-    season: number,
-    spd: number,
-    skills: PlayerSkill[],
-    stl: number,
-    stre: number,
-    tp: number,
-};
+export interface PlayerRatings {
+    hgt: number;
+    stre: number;
+    spd: number;
+    jmp: number;
+    endu: number;
+    ins: number;
+    dnk: number;
+    ft: number;
+    fg: number;
+    tp: number;
+    blk: number;
+    stl: number;
+    drb: number;
+    pss: number;
+    reb: number;
+    pot: number;
+    ovr: number;
+    pos: string;
+    oldOVR?: number;
+    languages?: string[];
+}
 
 export type PlayerSalary = {
     amount: number,
@@ -484,30 +483,62 @@ export type PlayerSalary = {
 
 export type PlayerStats = any;
 
-export type Player = {
+export interface Player {
     pid: number;
     tid: number;
     name: string;
     pos: string;
     ratings: PlayerRatings[];
+    stats: PlayerStats[];
+    contract: {
+        amount: number;
+        exp: number;
+    };
+    injury: {
+        type: string;
+        gamesRemaining: number;
+    };
+    face?: {
+        partials: {
+            ear: string;
+            eyebrow: string;
+            eye: string;
+            faceform: string;
+            haircut: string;
+            mouth: string;
+            nose: string;
+            glasses: string;
+        };
+        colors: {
+            skinColor: string;
+            hairColor: string;
+        };
+    };
+    imgURL?: string;
+    born: {
+        year: number;
+        loc: string;
+        country: string;
+    };
+    diedYear?: number;
+    age: number;
+    firstName: string;
+    lastName: string;
+    userID: string;
+    language1: string;
+    language2?: string;
+    language3?: string;
+    language4?: string;
+    languages?: string[];
     champions?: Array<{
         skill: number;
         name: string;
     }>;
-    born: {
-        loc: string;
-        year: number;
-    };
     awards?: {
         season: number;
         type: string;
     }[];
     college?: string;
-    contract?: {
-        amount: number;
-        exp: number;
-    };
-    diedYear?: number;
     draft?: {
         round: number;
         pick: number;
@@ -518,18 +549,10 @@ export type Player = {
         ovr: number;
         skills: string[];
     };
-    face?: any;
-    firstName?: string;
     freeAgentMood?: number[];
     gamesUntilTradable?: number;
     hgt?: number;
     hof?: boolean;
-    imgURL?: string;
-    injury?: {
-        gamesRemaining: number;
-        type: string;
-    };
-    lastName?: string;
     ptModifier?: number;
     retiredYear?: number;
     rosterOrder?: number;
@@ -546,7 +569,7 @@ export type Player = {
     watch?: boolean;
     weight?: number;
     yearsFreeAgent?: number;
-};
+}
 
 export type PlayerWithoutPid = Omit<Player, 'pid'>;
 

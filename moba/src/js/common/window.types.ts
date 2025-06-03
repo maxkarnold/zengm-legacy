@@ -13,6 +13,13 @@ export interface AdditionalWindowProperties {
       cmd: Array<() => void>;
       refresh: () => void;
   };
+  Bugsnag?: {
+      notifyException: (error: Error, name: string, metadata: {
+          colno: number;
+          lineno: number;
+          groupingHash: string;
+      }) => void;
+  };
   StripeCheckout?: {
       configure: (options: {
           key: string;
